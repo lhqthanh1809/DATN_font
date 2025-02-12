@@ -10,17 +10,17 @@ import Phone from "./active/phone";
 import Camera, {CameraOff} from "./active/camera";
 import Logout from "./active/logout";
 export {
-  Search,
-  Setting,
-  CommentCircle,
-  Microphone,
-  Attachment,
-  Copy,
+  // Search,
+  // Setting,
+  // CommentCircle,
+  // Microphone,
+  // Attachment,
+  // Copy,
   Edit,
-  Share,
-  Phone,
-  Camera,
-  CameraOff,
-  Logout,
-  MicrophoneOff
+  // Share,
+  // Phone,
+  // Camera,
+  // CameraOff,
+  // Logout,
+  // MicrophoneOff
 };

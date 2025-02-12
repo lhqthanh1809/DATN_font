@@ -4,7 +4,6 @@ import { IIcon } from "../../icon";
 const Google: React.FC<IIcon> = ({ className }) => {
   return (
     <Svg
-      xmlns="http://www.w3.org/2000/svg"
       width={25}
       height={25}
       fill="none"

@@ -1,4 +1,4 @@
-import { IIcon } from "@/components/icon";
+import { IIcon } from "../../icon";
 
 const CheckCircle: React.FC<IIcon> = ({ className }) => {
   return (

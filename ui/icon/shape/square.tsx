@@ -1,18 +1,17 @@
 import React from "react";
 import { IIcon } from "../../icon";
-
+import Svg, { Path, Rect } from "react-native-svg";
 
 const Square: React.FC<IIcon> = ({ className }) => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
+    <Svg
       width="24"
       height="24"
       viewBox="0 0 24 24"
       fill="none"
       className={className}
     >
-      <rect
+      <Rect
         x="3"
         y="3"
         width="18"
@@ -22,7 +21,7 @@ const Square: React.FC<IIcon> = ({ className }) => {
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-    </svg>
+    </Svg>
   );
 };
 

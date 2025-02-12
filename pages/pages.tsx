@@ -1,5 +1,19 @@
 import LoginScreen from "./Login/screen";
-import MainScreen from "./Main/screen";
 import RegisterScreen from "./Register/screen";
 
-export {LoginScreen, MainScreen, RegisterScreen}
+// Accommodation
+import CreateLodging from "./Lodging/Create/screen";
+import HomeLodging from "./Lodging/Main/screen";
+
+//User
+import UpdateUser from "./User/Update/screen";
+import HomeUser from "./User/Home/screen";
+
+export {
+  LoginScreen,
+  RegisterScreen,
+  CreateLodging,
+  HomeLodging,
+  HomeUser,
+  UpdateUser
+};

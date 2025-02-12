@@ -10,14 +10,18 @@ import {
 } from "react-native";
 import Icon from "./icon";
 import { Hide, Show } from "./icon/edit";
+import { cn } from "@/helper/helper";
 
 interface Props {
   label?: string;
-  onChange?: () => void;
+  onChange?: (text: string) => void;
   style?: StyleProp<ViewStyle>;
   className?: string;
-  type?: string;
-  icon?: ReactNode;
+  classNameInput?: string;
+  type?: "password" | "number" | "text";
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+  value: string;
 }
 
 function Input({
@@ -25,8 +29,11 @@ function Input({
   onChange,
   style,
   className,
+  classNameInput,
   type = "text",
-  icon,
+  prefix,
+  suffix,
+  value,
 }: Props) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,11 +44,22 @@ function Input({
           {label}
         </Text>
       )}
-      <View className="border-1.5 border-woodSmoke-200 px-2 h-[3.75rem] rounded-xl flex-row items-center gap-2">
+      <View
+        className={cn(
+          "border-1 border-mineShaft-200 bg-white-50 px-3 h-[3rem] rounded-xl flex-row items-center gap-2",
+          className
+        )}
+      >
+        {prefix}
         <TextInput
-          className={`py-0 flex-1 text-14 font-BeVietnamRegular text-doveGray-500 caret-doveGray-600 ${className}`}
+          value={value}
+          onChangeText={onChange}
+          className={`py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-500 caret-mineShaft-600 ${classNameInput}`}
           secureTextEntry={type === "password" && !showPassword}
+          textContentType="none"
+          keyboardType={type === "number" ? "numeric" : "default"}
         />
+        {suffix}
         {type === "password" && (
           <Pressable onPress={() => setShowPassword(!showPassword)}>
             {showPassword ? <Icon icon={Show} /> : <Icon icon={Hide} />}
