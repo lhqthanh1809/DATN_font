@@ -1,6 +1,7 @@
 import { MutableRefObject, ReactNode } from "react";
 import { LocationUnit } from "./LocationInterface";
-import { LodgingType } from "./LodgingInterface";
+import { ILodging, LodgingType } from "./LodgingInterface";
+import { IPermission } from "./Permission";
 
 export interface GeneralContextValue {
   clickRef: (ref: MutableRefObject<any>, callback: () => void) => void;
@@ -19,6 +20,12 @@ export interface GeneralContextValue {
 
   lodgingTypes: LodgingType[];
   setLodgingTypes: (types: LodgingType[]) => void;
+
+  lodging: ILodging | null;
+  setLodging: (lodging: ILodging | null) => void;
+
+  permissions: IPermission[];
+  setPermissions: (permission: IPermission[]) => void;
 }
 
 export interface ComponentRef {

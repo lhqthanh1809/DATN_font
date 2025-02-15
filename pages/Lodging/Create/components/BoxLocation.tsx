@@ -1,4 +1,3 @@
-import { MapInterface } from "@/interfaces/MapInterface";
 import Box from "@/ui/box";
 import Button from "@/ui/button";
 import Divide from "@/ui/divide";
@@ -10,17 +9,13 @@ import Input from "@/ui/input";
 import Map from "@/ui/map";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Text, View } from "react-native";
-import LocationInterface, {
-  LocationUnit,
-} from "@/interfaces/LocationInterface";
-import { ResponseInterface } from "@/interfaces/ResponseInterface";
-import { BaseHttpService } from "@/services/BaseHttpService";
-import { apiRouter } from "@/assets/ApiRouter";
+import ILocation from "@/interfaces/LocationInterface";
 import { useGeneral } from "@/hooks/useGeneral";
-import { debounce } from "lodash";
+import { debounce, isArray } from "lodash";
+import GeneralService from "@/services/GeneralService";
 
 const BoxLocation: React.FC<
-  LocationInterface & {
+  ILocation & {
     setOpenMap: (openMap: boolean) => void;
   }
 > = ({
@@ -35,31 +30,12 @@ const BoxLocation: React.FC<
   setOpenMap,
   location,
 }) => {
+  const service = new GeneralService();
   const { provinces, districts, wards, setLocations, setLocationsWithParent } =
     useGeneral();
   const [loadingProvince, setLoadingProvince] = useState(false);
   const [loadingDistrict, setLoadingDistrict] = useState(false);
   const [loadingWard, setLoadingWard] = useState(false);
-
-  // Fetch danh sách tỉnh/thành phố
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      setLoadingProvince(true);
-      try {
-        const data: ResponseInterface = await new BaseHttpService().https({
-          url: apiRouter.listProvince,
-        });
-        setLocations(data.body?.data || []);
-      } catch (error) {
-        console.error("Error fetching provinces:", error);
-      } finally {
-        setLoadingProvince(false);
-      }
-    };
-    if (provinces.length <= 0) {
-      fetchProvinces();
-    }
-  }, []);
 
   // Fetch danh sách quận/huyện và phường/xã theo tỉnh/thành phố
   const fetchLocationData = useCallback(
@@ -68,23 +44,16 @@ const BoxLocation: React.FC<
 
       const setLoading =
         type === "district" ? setLoadingDistrict : setLoadingWard;
-      const url =
-        type === "district" ? apiRouter.listDistrict : apiRouter.listWard;
-      const bodyKey = type === "district" ? "province_id" : "district_id";
 
       setLoading(true);
-      try {
-        const data: ResponseInterface = await new BaseHttpService().https({
-          url,
-          body: { [bodyKey]: parentId },
-        });
-
-        setLocationsWithParent(type, data.body?.data || [], parentId);
-      } catch (error) {
-        console.error(`Error fetching ${type}s:`, error);
-      } finally {
-        setLoading(false);
+      const data = await (type === "district"
+        ? service.listDistrict(parentId)
+        : service.listWard(parentId));
+      if (isArray(data)) {
+        setLocationsWithParent(type, data, parentId);
       }
+
+      setLoading(false);
     },
     [setLocationsWithParent]
   );
@@ -93,6 +62,21 @@ const BoxLocation: React.FC<
   const debouncedFetchLocation = useRef(
     debounce(fetchLocationData, 300)
   ).current;
+
+  // Fetch danh sách tỉnh/thành phố
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      setLoadingProvince(true);
+      const data = await service.listProvince();
+      if (isArray(data)) {
+        setLocations(data);
+      }
+      setLoadingProvince(false);
+    };
+    if (provinces.length <= 0) {
+      fetchProvinces();
+    }
+  }, []);
 
   useEffect(() => {
     if (!province) {
@@ -169,7 +153,7 @@ const BoxLocation: React.FC<
 
         <Button
           onPress={() => setOpenMap(true)}
-          className={`flex-1 bg-mineShaft-950 ${location ? "gap-2" : "gap-3"}`}
+          className={`flex-1 bg-mineShaft-950 py-4 ${location ? "gap-2" : "gap-3"}`}
         >
           <Icon icon={location ? Edit : PinCircle} className="text-white-50" />
           <Text className="text-white-50 text-14 font-BeVietnamSemiBold">

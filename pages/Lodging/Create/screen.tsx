@@ -7,17 +7,23 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   Text,
   View,
 } from "react-native";
 import * as Location from "expo-location";
-import { MapEdit, InforAndLocation, Config } from "./components";
-import { MapInterface } from "@/interfaces/MapInterface";
-import BackView from "@/ui/back_view";
-import { cn } from "@/helper/helper";
+import { MapEdit, InfoAndLocation, Config } from "./components";
+import { IMap } from "@/interfaces/MapInterface";
+import { cn, formatNumber } from "@/helper/helper";
 import { useRouter } from "expo-router";
-import { LodgingType } from "@/interfaces/LodgingInterface";
+import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
+import { IResponse } from "@/interfaces/ResponseInterface";
+import { BaseHttpService } from "@/services/BaseHttpService";
+import { apiRouter } from "@/assets/ApiRouter";
+import { HttpStatusCode } from "axios";
+import LodgingService from "@/services/Lodging/LodgingService";
+import HeaderBack from "@/ui/layout/header";
 
 function CreateLodging() {
   //Initial
@@ -26,14 +32,20 @@ function CreateLodging() {
   const [province, setProvince] = useState<LocationUnit | null>(null);
   const [district, setDistrict] = useState<LocationUnit | null>(null);
   const [ward, setWard] = useState<LocationUnit | null>(null);
-  const [street, setStreet] = useState("");
+  const [street, setStreet] = useState<string>("");
   const [openMap, setOpenMap] = useState(false);
-  const [location, setLocation] = useState<MapInterface | null>(null); // Vị trí mặc định
-  const [locationCurrent, setLocationCurrent] = useState<MapInterface | null>(
+  const [location, setLocation] = useState<IMap | null>(null); // Vị trí mặc định
+  const [locationCurrent, setLocationCurrent] = useState<IMap | null>(
     null
   ); // Vị trí hiện tại được chọn
-  const [region, setRegion] = useState<MapInterface | null>(location);
+  const [region, setRegion] = useState<IMap | null>(location);
   const [viewIndex, setViewIndex] = useState(0);
+  const [name, setName] = useState<string>("");
+  const [paymentDate, setPaymentDate] = useState(5);
+  const [lateDays, setLateDays] = useState(5);
+  const [areaRoom, setAreaRoom] = useState<string>("");
+  const [priceRoom, setPriceRoom] = useState<string>("");
+  const [processingCreate, setProcessingCreate] = useState(false);
 
   // Callback
   const handleOpenMap = useCallback(
@@ -48,11 +60,52 @@ function CreateLodging() {
     setOpenMap(false);
   }, [location, locationCurrent]);
 
+  // Xử lý tạo nhà trọ
+  const handleCreateLodging = useCallback(async () => {
+    setProcessingCreate(true);
+    if (!lodgingType || !name) return;
+    const dataReq: ILodging = {
+      name,
+      province_id: province?.id ?? null,
+      district_id: district?.id ?? null,
+      ward_id: ward?.id ?? null,
+      type_id: lodgingType.id,
+      address: street ?? null,
+      latitude: location?.latitude?.toString() ?? null,
+      longitude: location?.longitude?.toString() ?? null,
+      late_days: lateDays,
+      payment_date: paymentDate,
+      area_room_default: formatNumber(areaRoom, "float"),
+      price_room_default: formatNumber(priceRoom, "float"),
+    };
+    const data = await new LodgingService().create(dataReq);
+
+    if ("code" in data) {
+      setProcessingCreate(false);
+    } else route.push("/");
+  }, [
+    lodgingType,
+    district,
+    province,
+    ward,
+    street,
+    location,
+    name,
+    lateDays,
+    paymentDate,
+    areaRoom,
+    priceRoom,
+  ]);
+
   const handleNextView = useCallback(() => {
-    setViewIndex((prev) => {
-      return prev == view.length - 1 ? view.length - 1 : ++prev;
-    });
-  }, [viewIndex]);
+    if (viewIndex < view.length - 1) {
+      setViewIndex((prev) => ++prev);
+      return;
+    }
+
+    handleCreateLodging();
+  }, [viewIndex, handleCreateLodging]);
+
   const handleBackView = useCallback(() => {
     if (viewIndex)
       setViewIndex((prev) => {
@@ -99,8 +152,10 @@ function CreateLodging() {
   //Memo
   const view = useMemo(
     () => [
-      <InforAndLocation
+      <InfoAndLocation
         {...{
+          name,
+          setName,
           province,
           district,
           ward,
@@ -115,7 +170,18 @@ function CreateLodging() {
           street,
         }}
       />,
-      <Config />,
+      <Config
+        {...{
+          areaRoom,
+          priceRoom,
+          setAreaRoom,
+          setPriceRoom,
+          lateDays,
+          paymentDate,
+          setLateDays,
+          setPaymentDate,
+        }}
+      />,
     ],
     [
       province,
@@ -130,6 +196,16 @@ function CreateLodging() {
       setStreet,
       setWard,
       street,
+      name,
+      setName,
+      paymentDate,
+      setPaymentDate,
+      lateDays,
+      setLateDays,
+      areaRoom,
+      setAreaRoom,
+      priceRoom,
+      setPriceRoom,
     ]
   );
 
@@ -140,20 +216,9 @@ function CreateLodging() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
       >
-        <View className="px-6 bg-white-50 py-2 flex-row items-center gap-3">
-          <Pressable
-            onPress={() => {
-              route.back();
-            }}
-            className="border-1 border-mineShaft-950 flex items-center justify-center rounded-full"
-          >
-            <Icon icon={ChevronLeft} className="text-mineShaft-950" />
-          </Pressable>
-          <Text className="font-BeVietnamBold text-16 text-mineShaft-900">
-            Thêm mới nhà cho thêm
-          </Text>
-        </View>
-        {view[viewIndex]}
+        <HeaderBack title="Thêm mới nhà cho thêm"/>
+        <ScrollView className="px-5 flex-grow bg-white-50">{view[viewIndex]}</ScrollView>
+
         <View className="bg-white-50 relative">
           <View className="p-3 gap-2 ">
             <View className="flex-row flex gap-1">
@@ -174,16 +239,19 @@ function CreateLodging() {
             </View>
             <View className="flex-row flex gap-1 ">
               <Button
+                disabled={processingCreate}
                 onPress={handleBackView}
-                className="flex-1 bg-white-50 border-1 border-mineShaft-200"
+                className="flex-1 bg-white-50 border-1 border-mineShaft-200 py-4"
               >
                 <Text className="text-mineShaft-950 text-16 font-BeVietnamSemiBold">
                   {viewIndex == view.length - 1 ? "Quay lại" : "Đóng trang"}
                 </Text>
               </Button>
               <Button
+                disabled={processingCreate}
+                loading={processingCreate}
                 onPress={handleNextView}
-                className="flex-1 bg-mineShaft-950"
+                className="flex-1 bg-mineShaft-950 py-4"
               >
                 <Text className="text-white-50 text-16 font-BeVietnamSemiBold">
                   {viewIndex == view.length - 1 ? "Hoàn thành" : "Tiếp theo"}

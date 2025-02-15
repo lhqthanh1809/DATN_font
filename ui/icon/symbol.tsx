@@ -21,6 +21,7 @@ import { Bell } from "./symbol/bell";
 import { Trash } from "./symbol/trash";
 import Home from "./symbol/home";
 import Menu from "./symbol/menu";
+import { Notification } from "./symbol/notification";
 
 export {
   Plus,
@@ -43,6 +44,7 @@ export {
 //   InfoCircle,
 //   CrossSmall,
   Bell,
+  Notification,
 //   CrossMedium,
 //   Save,
   ChevronDownSmall,

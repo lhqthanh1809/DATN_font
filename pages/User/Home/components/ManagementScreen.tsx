@@ -1,21 +1,15 @@
-import { apiRouter } from "@/assets/ApiRouter";
-import { ResponseInterface } from "@/interfaces/ResponseInterface";
-import { BaseHttpService } from "@/services/BaseHttpService";
+import { useGeneral } from "@/hooks/useGeneral";
+import { ILodging } from "@/interfaces/LodgingInterface";
+import LodgingService from "@/services/Lodging/LodgingService";
 import Button from "@/ui/button";
 import Icon from "@/ui/icon";
-import { Building } from "@/ui/icon/general";
-import { Plus, Trash } from "@/ui/icon/symbol";
+import { Plus, PlusTiny, Trash } from "@/ui/icon/symbol";
 import { useRouter } from "expo-router";
 import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native";
-import {
-  Directions,
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import {
   runOnJS,
   useAnimatedStyle,
@@ -26,37 +20,40 @@ import {
 
 const ManagementScreen = () => {
   const route = useRouter();
-  const [lodgings, setLodgings] = useState<Array<any>>([]);
+  const { setLodging } = useGeneral();
+  const [lodgings, setLodgings] = useState<Array<ILodging>>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      try {
-        const data: ResponseInterface = await new BaseHttpService().https({
-          url: apiRouter.listLodgingByUser,
-          authentication_requested: true,
-        });
-        setLodgings(data.body?.data || []); // ✅ Đảm bảo luôn có một mảng hợp lệ
-      } catch (error) {
-        console.error("Lỗi khi tải dữ liệu:", error);
-      } finally {
-        setLoading(false);
+      const data = await new LodgingService().listByUser();
+      if (Array.isArray(data)) {
+        setLodgings(data);
       }
+      setLoading(false);
     };
     fetchData();
+  }, []);
+
+  const handlePressLodging = useCallback((lodging: ILodging) => {
+    setLodging(lodging)
+    route.push('/lodging/home')
   }, []);
 
   return (
     <View className="px-3 py-5 flex-1">
       <View className="flex-row justify-between items-center px-2 mb-4">
         <Text className="font-BeVietnamMedium text-16">Nhà trọ của tôi</Text>
-        <Button
-          className="w-8 h-8 p-0 bg-lime-300 border border-lime-400 rounded-lg"
-          onPress={() => route.push("/lodging/create")}
-        >
-          <Icon icon={Plus} className="text-mineShaft-900"/>
-        </Button>
+        {lodgings.length > 0 && (
+          <Button
+            className="p-2 px-4 bg-lime-100 rounded-lg gap-0"
+            onPress={() => route.push("/lodging/create")}
+          >
+            <Icon icon={PlusTiny} className="text-lime-900" strokeWidth={2}  />
+            <Text className="font-BeVietnamMedium text-lime-900 px-2">Trọ mới</Text>
+          </Button>
+        )}
       </View>
 
       {loading ? (
@@ -68,26 +65,26 @@ const ManagementScreen = () => {
                 key={index}
                 width={"100%"}
                 colorMode="light"
-                height={50}
+                height={64}
               />
             ))}
         </View>
       ) : lodgings && lodgings.length > 0 ? (
         <View className="gap-3">
           {lodgings.map((item, index) => (
-            <LodgingItem
-              key={index}
-              address={item.address || "Địa chỉ không xác định"}
-              name={item.name || "Nhà trọ không có tên"}
-            />
+            <LodgingItem key={index} item={item} onPress={handlePressLodging}/>
           ))}
         </View>
       ) : (
-  
         <View className="flex-1 items-center justify-center">
-          <Button onPress={() => route.push("/lodging/create")} className="items-center gap-3">
-            <Icon icon={Plus} className="text-mineShaft-200"/>
-            <Text className="font-BeVietnamMedium text-mineShaft-200 text-16">Thêm trọ mới</Text>
+          <Button
+            onPress={() => route.push("/lodging/create")}
+            className="items-center gap-3"
+          >
+            <Icon icon={PlusTiny} className="text-mineShaft-200" />
+            <Text className="font-BeVietnamMedium text-mineShaft-200 text-16">
+              Thêm trọ mới
+            </Text>
           </Button>
         </View>
       )}
@@ -95,10 +92,10 @@ const ManagementScreen = () => {
   );
 };
 
-const LodgingItem: React.FC<{ name: string; address: string }> = ({
-  name,
-  address,
-}) => {
+const LodgingItem: React.FC<{
+  item: ILodging;
+  onPress?: (item : ILodging) => void;
+}> = ({ item, onPress }) => {
   const _MIN_TRANSLATE_X = -50;
   const _MAX_TRANSLATE_X = 0;
   const [removeDisabled, setRemoveDisabled] = useState(false);
@@ -137,12 +134,15 @@ const LodgingItem: React.FC<{ name: string; address: string }> = ({
       <View className="h-fit relative w-full overflow-hidden rounded-md">
         <GestureDetector gesture={fling}>
           <MotiView style={animatedStyle}>
-            <Button className="bg-white-50 border-1 border-lime-400 rounded-md gap-2 p-2 flex-col items-start">
+            <Button
+              className="bg-lime-200 border-1 border-lime-400 rounded-md gap-2 p-3 flex-col items-start"
+              onPress={() => onPress && onPress(item)}
+            >
               <Text className="font-BeVietnamSemiBold text-16 text-mineShaft-900">
-                {name}
+                {item.name}
               </Text>
-              <Text className="font-BeVietnamMedium text-10 text-mineShaft-500">
-                {address}
+              <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
+                {item.address}
               </Text>
             </Button>
           </MotiView>

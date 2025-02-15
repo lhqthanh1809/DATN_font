@@ -8,26 +8,28 @@ interface Props {
   description: string;
   icon: React.ElementType<IIcon>;
   className?: string;
+  onPress?: () => void;
 }
 
-const BoxItem = ({ title, description, icon, className }: Props) => {
+const BoxItem = ({ title, description, icon, className, onPress }: Props) => {
   return (
     <Button
+      onPress={onPress}
       className={cn(
-        "bg-mineShaft-950 flex-1 flex-col items-start p-4 gap-4",
+        "bg-lime-100 flex-1 flex-col items-start px-4 pt-4 pb-6 gap-4",
         className
       )}
     >
-      <View className="border-1 border-white-50 rounded-full p-3">
-        <Icon icon={icon} className="text-white-50" />
+      <View className="rounded-lg p-4 bg-white-50">
+        <Icon icon={icon} className="text-lime-500 " />
       </View>
       <View className="gap-1 w-full">
-        <Text className="text-white-50 font-BeVietnamSemiBold text-right text-14">
+        <Text className="text-mineShaft-900 font-BeVietnamSemiBold text-12">
           {title}
         </Text>
-        <Text className="text-white-300 font-BeVietnamRegular text-12 text-justify">
+        {/* <Text className="text-white-300 font-BeVietnamRegular text-12 text-justify">
           {description}
-        </Text>
+        </Text> */}
       </View>
     </Button>
   );

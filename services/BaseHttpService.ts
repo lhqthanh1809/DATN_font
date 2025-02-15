@@ -1,10 +1,10 @@
-import { constant } from "@/helper/helper";
+import { env } from "@/helper/helper";
 import axios, { HttpStatusCode } from "axios";
 import { LocalStorage } from "./LocalStorageService";
 
 export class BaseHttpService {
   private _api = axios.create({
-    baseURL: constant("API_URL"),
+    baseURL: env("API_URL"),
     headers: {
       "Content-Type": "application/json",
     },
@@ -26,7 +26,7 @@ export class BaseHttpService {
     try {
       const headers: Record<string, string> = {};
       if (authentication_requested) {
-        const token = await (new LocalStorage()).getItem(constant("KEY_TOKEN"));
+        const token = await (new LocalStorage()).getItem(env("KEY_TOKEN"));
         if (!token) {
           return false;
         }

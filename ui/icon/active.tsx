@@ -11,7 +11,7 @@ import Camera, {CameraOff} from "./active/camera";
 import Logout from "./active/logout";
 export {
   // Search,
-  // Setting,
+  Setting,
   // CommentCircle,
   // Microphone,
   // Attachment,

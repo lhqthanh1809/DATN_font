@@ -1,10 +1,10 @@
 import { HttpStatusCode } from "axios";
 
-export interface ResponseInterface {
+export interface IResponse {
   status: HttpStatusCode;
   body?: {
     [key: string]: any;
     data?: any;
   };
-  error?: any;
+  error?: Array<{ message: string; field?: string }>;
 }

@@ -10,7 +10,6 @@ const PersonScreen = () => {
   const [widthFuncs, setWidthFuncs] = useState<Array<number>>([]);
   const [funcIndex, setFuncIndex] = useState(0);
 
-  
   const functions = [
     "Trò chuyện",
     "Phản hồi",
@@ -32,6 +31,7 @@ const PersonScreen = () => {
             {functions.map((func, index) => {
               return (
                 <Button
+                  className="py-4"
                   key={index}
                   onPress={() => {
                     setFuncIndex(index);
@@ -46,7 +46,12 @@ const PersonScreen = () => {
                     });
                   }}
                 >
-                  <Text className={cn("font-BeVietnamMedium", index === funcIndex ? "text-lime-600" : "text-white-400")}>
+                  <Text
+                    className={cn(
+                      "font-BeVietnamMedium",
+                      index === funcIndex ? "text-lime-600" : "text-white-400"
+                    )}
+                  >
                     {func}
                   </Text>
                 </Button>

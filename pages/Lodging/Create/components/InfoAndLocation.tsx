@@ -1,15 +1,17 @@
 import { ScrollView, View } from "react-native";
-import BoxInfor from "./BoxInfor";
-import { BoxLocation } from "./BoxLocation";
-import React from "react";
-import LocationInterface from "@/interfaces/LocationInterface";
+import React, { useEffect } from "react";
+import ILocation from "@/interfaces/LocationInterface";
 import { LodgingType } from "@/interfaces/LodgingInterface";
+import { BoxInfo } from "./BoxInfo";
+import { BoxLocation } from "./BoxLocation";
 
-const InforAndLocation: React.FC<
-  LocationInterface & {
+const InfoAndLocation: React.FC<
+  ILocation & {
     lodgingType: LodgingType | null;
     setLodgingType: (type: LodgingType | null) => void;
     setOpenMap: (openMap: boolean) => void;
+    name: string;
+    setName: (name: string) => void;
   }
 > = ({
   setLodgingType,
@@ -24,12 +26,16 @@ const InforAndLocation: React.FC<
   setStreet,
   setWard,
   street,
+  name,
+  setName,
 }) => {
+  
   return (
-    <ScrollView className="px-5 flex-grow">
       <View className="gap-3 items-center py-3 flex-1">
-        <BoxInfor
+        <BoxInfo
           {...{
+            name,
+            setName,
             setLodgingType,
             lodgingType,
           }}
@@ -49,8 +55,7 @@ const InforAndLocation: React.FC<
           }}
         />
       </View>
-    </ScrollView>
   );
 };
 
-export default InforAndLocation;
+export default InfoAndLocation;

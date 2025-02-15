@@ -1,4 +1,4 @@
-import { MapInterface } from "@/interfaces/MapInterface";
+import { IMap } from "@/interfaces/MapInterface";
 import Button from "@/ui/button";
 import Icon from "@/ui/icon";
 import {
@@ -12,10 +12,10 @@ import { View, Pressable, Text } from "react-native";
 import { MapPressEvent } from "react-native-maps";
 
 const MapEdit: React.FC<{
-  location: MapInterface;
-  region: MapInterface;
-  setLocation: (location: MapInterface) => void;
-  setRegion: (region: MapInterface) => void;
+  location: IMap;
+  region: IMap;
+  setLocation: (location: IMap) => void;
+  setRegion: (region: IMap) => void;
   setOpenMap: (openMap: boolean) => void;
   handleSelectLocation: () => void;
 }> = ({

@@ -1,13 +1,13 @@
-import { MapInterface } from "@/interfaces/MapInterface";
+import { IMap } from "@/interfaces/MapInterface";
 import React from "react";
 import MapView, { Marker } from "react-native-maps";
 
 const Map: React.FC<{
-  location: MapInterface;
-  region: MapInterface;
+  location: IMap;
+  region: IMap;
   onPress?: (e: any) => void;
   showUserLocation?: boolean;
-  onChangeRegion?: (region: MapInterface) => void;
+  onChangeRegion?: (region: IMap) => void;
 }> = ({
   location,
   region,

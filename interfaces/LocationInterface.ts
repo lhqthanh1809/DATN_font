@@ -1,4 +1,4 @@
-import { MapInterface } from "./MapInterface";
+import { IMap } from "./MapInterface";
 
 export interface LocationUnit {
   id: number;
@@ -6,7 +6,7 @@ export interface LocationUnit {
 }
 
 
-export default interface LocationInterface {
+export default interface ILocation {
   province: LocationUnit | null;
   setProvince: (province: LocationUnit | null) => void;
 
@@ -19,5 +19,5 @@ export default interface LocationInterface {
   street: string;
   setStreet: (street: string) => void;
 
-  location: MapInterface | null;
+  location: IMap | null;
 }

@@ -1,4 +1,4 @@
-export interface MapInterface {
+export interface IMap {
   latitude: number;
   longitude: number;
   latitudeDelta: number;

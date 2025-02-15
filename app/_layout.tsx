@@ -1,21 +1,21 @@
-import { Href, SplashScreen, Stack, useRouter } from "expo-router";
+import { Href, SplashScreen, Stack, usePathname, useRouter } from "expo-router";
 import "../global.css";
 import {
   SafeAreaView,
   StatusBar,
+  Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { useEffect, useRef, useState, useContext } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { constant } from "@/helper/helper";
-import { BaseHttpService } from "@/services/BaseHttpService";
-import { ResponseInterface } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { env } from "@/helper/helper";
 import { LocalStorage } from "@/services/LocalStorageService";
-import { GeneralProvider, GeneralContext } from "@/providers/GeneralProvider";
+import { GeneralProvider } from "@/providers/GeneralProvider";
 import { useGeneral } from "@/hooks/useGeneral";
+import UserService from "@/services/User/UserService";
+import FCMService from "@/services/FCMService";
 
 export default function RootLayout() {
   const [user, setUser] = useState<Record<any, any> | null>(null);
@@ -23,6 +23,7 @@ export default function RootLayout() {
   const localStorage = new LocalStorage();
   const route = useRouter();
   const [page, setPage] = useState<Href | null>(null);
+  const pathName = usePathname();
 
   // Load fonts
   const [fontsLoaded] = useFonts({
@@ -36,29 +37,28 @@ export default function RootLayout() {
   // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
+      // const token = await new FCMService().getToken();
+      // console.log(token);
       try {
-        const token = await localStorage.getItem(constant("KEY_TOKEN"));
+        const token = await localStorage.getItem(env("KEY_TOKEN"));
         if (!token) {
           setPage("/login");
           setLoading(false);
           return;
         }
 
-        const data: ResponseInterface = await new BaseHttpService().https({
-          method: "GET",
-          url: apiRouter.infoUser,
-          authentication_requested: true,
-        });
+        const data = await new UserService().info();
 
-        if (!data || !data.body?.data) {
-          await localStorage.removeItem(constant("KEY_TOKEN"));
+        if (!data) {
+          await localStorage.removeItem(env("KEY_TOKEN"));
           setUser(null);
           setPage("/login");
           return;
         }
 
-        setUser(data.body?.data);
-        setPage(data.body?.data.is_completed ? "/" : "/user/update");
+        setUser(data);
+
+        setPage(data?.is_completed ? "/" : "/user/update");
       } catch (error) {
         setPage("/login");
       } finally {
@@ -68,24 +68,24 @@ export default function RootLayout() {
 
     SplashScreen.preventAutoHideAsync();
     fetchUserData();
+
+    // console.log(new NotificationService().getToken())
   }, []);
 
-  // Khi `page` thay đổi, điều hướng đến trang tương ứng
   useEffect(() => {
-    if (page) {
+    if (!loading && fontsLoaded && page) {
+      SplashScreen.hideAsync();
       route.replace(page);
     }
-  }, [page]);
+  }, [loading, fontsLoaded, page]);
 
-  // Hide SplashScreen khi đã load xong
-  useEffect(() => {
-    if (fontsLoaded && !loading) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, loading]);
-
+  // Hiển thị màn hình chờ khi chưa load xong
   if (!fontsLoaded || loading) {
-    return null;
+    return (
+      <View className="flex-1 bg-lime-300 items-center justify-center">
+        {/* <Text className="font-BeVietnamMedium text-16 text-mineShaft-900">Get ready...</Text> */}
+      </View>
+    );
   }
 
   return (
@@ -118,5 +118,16 @@ const Container = () => {
         <Stack screenOptions={{ headerShown: false }} />
       </View>
     </TouchableWithoutFeedback>
+  );
+};
+
+const CustomSafeView: React.FC<{
+  children: ReactNode;
+  useSafeArea?: boolean;
+}> = ({ children, useSafeArea = true }) => {
+  return useSafeArea ? (
+    <SafeAreaView className="flex-1 bg-white-50">{children}</SafeAreaView>
+  ) : (
+    <View className="flex-1 bg-white-50">{children}</View>
   );
 };

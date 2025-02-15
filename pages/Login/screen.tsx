@@ -5,14 +5,16 @@ import Input from "@/ui/input";
 import { Platform, Text, View } from "react-native";
 import BackView from "@/ui/back_view";
 import { useCallback, useEffect, useState } from "react";
-import { constant, encrypt } from "@/helper/helper";
+import { env, encrypt } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
 import { apiRouter } from "@/assets/ApiRouter";
-import { ResponseInterface } from "@/interfaces/ResponseInterface";
+import { IResponse } from "@/interfaces/ResponseInterface";
 import { LocalStorage } from "@/services/LocalStorageService";
 import { HttpStatusCode } from "axios";
 import { useRouter } from "expo-router";
 import { useGeneral } from "@/hooks/useGeneral";
+import UserService from "@/services/User/UserService";
+import OAuthLogin from "@/ui/layout/oauth_login";
 
 function LoginScreen() {
   const httpService = new BaseHttpService();
@@ -37,7 +39,7 @@ function LoginScreen() {
     setLoading(true);
     setActiveLogin(false);
     try {
-      const dataLogin: ResponseInterface = await httpService.https({
+      const dataLogin: IResponse = await httpService.https({
         method: "POST",
         url: apiRouter.loginUser,
         body: fields,
@@ -45,20 +47,16 @@ function LoginScreen() {
 
       if (dataLogin && dataLogin.status === HttpStatusCode.Ok) {
         const token = dataLogin.body?.token || "";
-        await new LocalStorage().setItem(constant("KEY_TOKEN"), token);
+        await new LocalStorage().setItem(env("KEY_TOKEN"), token);
         if (token) {
-          const dataUser: ResponseInterface = await httpService.https({
-            method: "GET",
-            url: apiRouter.infoUser,
-            authentication_requested: true,
-          });
+          const dataUser = await new UserService().info();
           if (!dataUser) {
-            await new LocalStorage().removeItem(constant("KEY_TOKEN"));
+            await new LocalStorage().removeItem(env("KEY_TOKEN"));
             return;
           }
 
-          changeUser(dataUser.body?.data);
-          if (dataUser.body?.data.is_completed) {
+          changeUser(dataUser);
+          if (dataUser?.is_completed) {
             route.push("/");
           } else {
             route.push("/user/update");
@@ -136,22 +134,7 @@ function LoginScreen() {
             <View className="h-[1] flex-1 bg-mineShaft-500" />
           </View>
 
-          <View className="flex gap-5">
-            <Button className="bg-white-50 border-1.5 border-lime-500 ">
-              <Icon icon={Google} />
-              <Text className="text-mineShaft-950 text-18 font-BeVietnamMedium">
-                Tiếp tục với Google
-              </Text>
-            </Button>
-            {Platform.OS === "ios" && (
-              <Button className="bg-white-50 border-1.5 border-lime-500">
-                <Icon icon={Apple} />
-                <Text className="text-mineShaft-950 text-18 font-BeVietnamMedium">
-                  Tiếp tục với Apple
-                </Text>
-              </Button>
-            )}
-          </View>
+          <OAuthLogin />
         </View>
       </View>
     </BackView>

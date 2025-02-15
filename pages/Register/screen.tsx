@@ -15,6 +15,7 @@ import { encrypt } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
 import { apiRouter } from "@/assets/ApiRouter";
 import { useRouter } from "expo-router";
+import OAuthLogin from "@/ui/layout/oauth_login";
 
 function RegisterScreen() {
   const httpService = new BaseHttpService();
@@ -55,7 +56,9 @@ function RegisterScreen() {
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView className="pt-8">
+        <ScrollView className="pt-8"        contentContainerStyle={{ paddingBottom: 26
+          
+         }}>
           <View
             style={{
               flex: 1,
@@ -99,9 +102,9 @@ function RegisterScreen() {
               </View>
               <Button
                 onPress={handleRegister}
-                className="w-full bg-mineShaft-950"
+                className="w-full min-h-16 bg-lime-400"
               >
-                <Text className="text-white-50 text-20 font-BeVietnamSemiBold">
+                <Text className="text-mineShaft-900 text-20 font-BeVietnamSemiBold">
                   Đăng ký
                 </Text>
               </Button>
@@ -124,23 +127,7 @@ function RegisterScreen() {
                 </Text>
                 <View className="h-[1] flex-1 bg-mineShaft-500" />
               </View>
-
-              <View className="flex gap-5">
-                <Button className="bg-white-50 border-1 border-mineShaft-200 ">
-                  <Icon icon={Google} />
-                  <Text className="text-mineShaft-950 text-18 font-BeVietnamMedium">
-                    Tiếp tục với Google
-                  </Text>
-                </Button>
-                {Platform.OS === "ios" && (
-                  <Button className="bg-white-50 border-1 border-mineShaft-200 ">
-                    <Icon icon={Apple} />
-                    <Text className="text-mineShaft-950 text-18 font-BeVietnamMedium">
-                      Tiếp tục với Apple
-                    </Text>
-                  </Button>
-                )}
-              </View>
+              <OAuthLogin />
             </View>
           </View>
         </ScrollView>

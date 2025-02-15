@@ -51,7 +51,7 @@ const Tabs: React.FC<{
       >
         {tabLayout && (
           <Animated.View
-            className="bg-mineShaft-950 h-full rounded-full"
+            className="bg-lime-300 h-full rounded-full"
             style={{
               width: tabLayout.width / tabs.length,
               transform: [{ translateX }],
@@ -79,30 +79,30 @@ const Tab: React.FC<{ tab: string; indexAction: number; index: number }> = ({
   indexAction,
   index,
 }) => {
-  const animationText = useRef(new Animated.Value(0)).current;
+  // const animationText = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    Animated.timing(animationText, {
-      toValue: index === indexAction ? 1 : 0,
-      useNativeDriver: true,
-      duration: 100,
-    }).start();
-  }, [indexAction]);
+  // useEffect(() => {
+  //   Animated.timing(animationText, {
+  //     toValue: index === indexAction ? 1 : 0,
+  //     useNativeDriver: true,
+  //     duration: 100,
+  //   }).start();
+  // }, [indexAction]);
 
-  const animatedStyle = useMemo(
-    () => ({
-      color: animationText.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["#151515", "#fdfdfd"],
-      }),
-    }),
-    []
-  );
+  // const animatedStyle = useMemo(
+  //   () => ({
+  //     color: animationText.interpolate({
+  //       inputRange: [0, 1],
+  //       outputRange: ["#4D7C0F", "#3D3D3D"],
+  //     }),
+  //   }),
+  //   []
+  // );
 
   return (
     <Animated.Text
-      className="font-BeVietnamSemiBold text-center"
-      style={animatedStyle}
+      className="font-BeVietnamSemiBold text-center text-mineShaft-900"
+      // style={}
     >
       {tab}
     </Animated.Text>

@@ -2,7 +2,7 @@ import React from "react";
 import { IIcon } from "../../icon";
 import Svg, { Path } from "react-native-svg";
 
-const Plus: React.FC<IIcon> = ({ className, currentColor }) => {
+const Plus: React.FC<IIcon> = ({ className, currentColor, strokeWidth = 1.5 }) => {
   return (
     <Svg
       width="24"
@@ -14,14 +14,14 @@ const Plus: React.FC<IIcon> = ({ className, currentColor }) => {
       <Path
         d="M12 5V12M12 12V19M12 12H19M12 12H5"
         stroke={currentColor}
-        strokeWidth="1.5"
+        strokeWidth={strokeWidth}
         strokeLinecap="round"
       />
     </Svg>
   );
 };
 
-const PlusTiny: React.FC<IIcon> = ({ className, currentColor }) => {
+const PlusTiny: React.FC<IIcon> = ({ className, currentColor, strokeWidth = "1.5" }) => {
   return (
     <Svg
       width="24"
@@ -33,7 +33,7 @@ const PlusTiny: React.FC<IIcon> = ({ className, currentColor }) => {
       <Path
         d="M12 8V12M12 12V16M12 12H16M12 12H8"
         stroke={currentColor}
-        strokeWidth="1.5"
+        strokeWidth={strokeWidth}
         strokeLinecap="round"
       />
     </Svg>

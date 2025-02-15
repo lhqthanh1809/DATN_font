@@ -1,7 +1,7 @@
 import { apiRouter } from "@/assets/ApiRouter";
 import { useGeneral } from "@/hooks/useGeneral";
 import { LodgingType } from "@/interfaces/LodgingInterface";
-import { ResponseInterface } from "@/interfaces/ResponseInterface";
+import { IResponse } from "@/interfaces/ResponseInterface";
 import { BaseHttpService } from "@/services/BaseHttpService";
 import Box from "@/ui/box";
 import Dropdown from "@/ui/dropdown";
@@ -9,19 +9,23 @@ import Icon from "@/ui/icon";
 import { Home } from "@/ui/icon/symbol";
 import Input from "@/ui/input";
 import { useEffect, useState } from "react";
+import React from "react";
 
-const BoxInfor: React.FC<{
+const BoxInfo: React.FC<{
   lodgingType: LodgingType | null;
   setLodgingType: (type: LodgingType | null) => void;
-}> = ({ setLodgingType, lodgingType }) => {
+  name: string;
+  setName: (name: string) => void;
+}> = ({ setLodgingType, lodgingType, name, setName }) => {
   const { lodgingTypes, setLodgingTypes } = useGeneral();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);  
+  
 
   useEffect(() => {
     const fetchTypes = async () => {
       setLoading(true);
       try {
-        const data: ResponseInterface = await new BaseHttpService().https({
+        const data: IResponse = await new BaseHttpService().https({
           url: apiRouter.listTypeLodging,
         });
         const types = data.body?.data || [];
@@ -62,12 +66,14 @@ const BoxInfor: React.FC<{
       />
       {!loading && lodgingType && (
         <Input
-          value=""
-          label={`Tên ${lodgingType?.name.toLocaleLowerCase()}`}
-        />
+        value={name}
+        onChange={setName}
+        label={`Tên ${lodgingType?.name.toLocaleLowerCase()}`}
+      />
+      
       )}
     </Box>
   );
 };
 
-export default BoxInfor;
+export { BoxInfo };

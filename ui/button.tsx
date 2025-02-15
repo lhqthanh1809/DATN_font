@@ -43,7 +43,7 @@ function Button({
       onPress={onPress}
       style={[style]}
       className={cn(
-        "rounded-2xl flex flex-row gap-5 items-center justify-center py-4 disabled:opacity-85",
+        "rounded-2xl flex flex-row gap-5 items-center justify-center disabled:opacity-85",
         className
       )}
       accessibilityLabel={accessibilityLabel}
