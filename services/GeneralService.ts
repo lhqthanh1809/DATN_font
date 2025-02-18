@@ -1,13 +1,10 @@
 import { IError } from "@/interfaces/ErrorInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { BaseHttpService } from "./BaseHttpService";
 import { apiRouter } from "@/assets/ApiRouter";
-import { HttpStatusCode } from "axios";
+import BaseService from "./BaseService";
 
-export default class GeneralService {
-  private _service = new BaseHttpService();
-
+export default class GeneralService extends BaseService {
   public async listProvince(): Promise<LocationUnit[] | IError> {
     try {
       const res: IResponse = await this._service.https({
@@ -15,11 +12,7 @@ export default class GeneralService {
       });
       return res.body?.data || [];
     } catch (error: any) {
-      return {
-        message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
-        code: error?.code || HttpStatusCode.InternalServerError,
-        details: error?.response || null,
-      };
+      return this.returnError(error);
     }
   }
 
@@ -33,17 +26,11 @@ export default class GeneralService {
       });
       return res.body?.data || [];
     } catch (error: any) {
-      return {
-        message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
-        code: error?.code || HttpStatusCode.InternalServerError,
-        details: error?.response || null,
-      };
+      return this.returnError(error);
     }
   }
 
-  public async listWard(
-    districtId: number
-  ): Promise<LocationUnit[] | IError> {
+  public async listWard(districtId: number): Promise<LocationUnit[] | IError> {
     try {
       const res: IResponse = await this._service.https({
         url: apiRouter.listWard,
@@ -51,11 +38,7 @@ export default class GeneralService {
       });
       return res.body?.data || [];
     } catch (error: any) {
-      return {
-        message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
-        code: error?.code || HttpStatusCode.InternalServerError,
-        details: error?.response || null,
-      };
+      return this.returnError(error);
     }
   }
 }

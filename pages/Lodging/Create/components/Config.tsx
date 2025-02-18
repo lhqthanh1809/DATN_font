@@ -1,7 +1,7 @@
 import Box from "@/ui/box";
 import { ScrollView, View } from "react-native";
 
-import { BoxPaymentTimeBill } from "./BoxPaymentTimeBill";
+import { BoxPaymentTimeBill } from "@/ui/layout/box_payment_time_bill";
 import { BoxRetailInfo } from "./BoxRetailInfo";
 
 const Config: React.FC<{
@@ -24,14 +24,14 @@ const Config: React.FC<{
   setPaymentDate,
 }) => {
   return (
-      <View className="gap-3 items-center py-3 flex-1">
+      <>
         <BoxRetailInfo
           {...{ areaRoom, priceRoom, setAreaRoom, setPriceRoom }}
         />
         <BoxPaymentTimeBill
           {...{ lateDays, paymentDate, setLateDays, setPaymentDate }}
         />
-      </View>
+      </>
   );
 };
 

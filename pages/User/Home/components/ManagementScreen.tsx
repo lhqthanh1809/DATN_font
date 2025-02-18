@@ -4,6 +4,7 @@ import LodgingService from "@/services/Lodging/LodgingService";
 import Button from "@/ui/button";
 import Icon from "@/ui/icon";
 import { Plus, PlusTiny, Trash } from "@/ui/icon/symbol";
+import ItemFling from "@/ui/item_fling";
 import { useRouter } from "expo-router";
 import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
@@ -37,8 +38,8 @@ const ManagementScreen = () => {
   }, []);
 
   const handlePressLodging = useCallback((lodging: ILodging) => {
-    setLodging(lodging)
-    route.push('/lodging/home')
+    setLodging(lodging);
+    route.push("/lodging/home");
   }, []);
 
   return (
@@ -50,8 +51,10 @@ const ManagementScreen = () => {
             className="p-2 px-4 bg-lime-100 rounded-lg gap-0"
             onPress={() => route.push("/lodging/create")}
           >
-            <Icon icon={PlusTiny} className="text-lime-900" strokeWidth={2}  />
-            <Text className="font-BeVietnamMedium text-lime-900 px-2">Trọ mới</Text>
+            <Icon icon={PlusTiny} className="text-lime-900" strokeWidth={2} />
+            <Text className="font-BeVietnamMedium text-lime-900 px-2">
+              Trọ mới
+            </Text>
           </Button>
         )}
       </View>
@@ -72,7 +75,7 @@ const ManagementScreen = () => {
       ) : lodgings && lodgings.length > 0 ? (
         <View className="gap-3">
           {lodgings.map((item, index) => (
-            <LodgingItem key={index} item={item} onPress={handlePressLodging}/>
+            <LodgingItem key={index} item={item} onPress={handlePressLodging} />
           ))}
         </View>
       ) : (
@@ -94,69 +97,17 @@ const ManagementScreen = () => {
 
 const LodgingItem: React.FC<{
   item: ILodging;
-  onPress?: (item : ILodging) => void;
-}> = ({ item, onPress }) => {
-  const _MIN_TRANSLATE_X = -50;
-  const _MAX_TRANSLATE_X = 0;
-  const [removeDisabled, setRemoveDisabled] = useState(false);
-
-  const translateX = useSharedValue(0);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
-
-  const fling = Gesture.Pan()
-    .onUpdate((event) => {
-      translateX.value = withSpring(
-        Math.min(
-          Math.max(event.translationX, _MIN_TRANSLATE_X),
-          _MAX_TRANSLATE_X
-        ),
-        { damping: 50, stiffness: 200 }
-      );
-    })
-    .onEnd(() => {
-      // Khi thả tay, tự động về _MAX_TRANSLATE_X (0)
-      translateX.value = withSpring(
-        translateX.value < _MIN_TRANSLATE_X / 2
-          ? _MIN_TRANSLATE_X
-          : _MAX_TRANSLATE_X,
-        { damping: 50, stiffness: 200 }
-      );
-    });
-
-  useDerivedValue(() => {
-    runOnJS(setRemoveDisabled)(translateX.value < _MIN_TRANSLATE_X);
-  });
+  onPress?: (item: ILodging) => void;
+}> = ({ item, onPress = () => {} }) => {
   return (
-    <View>
-      <View className="h-fit relative w-full overflow-hidden rounded-md">
-        <GestureDetector gesture={fling}>
-          <MotiView style={animatedStyle}>
-            <Button
-              className="bg-lime-200 border-1 border-lime-400 rounded-md gap-2 p-3 flex-col items-start"
-              onPress={() => onPress && onPress(item)}
-            >
-              <Text className="font-BeVietnamSemiBold text-16 text-mineShaft-900">
-                {item.name}
-              </Text>
-              <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
-                {item.address}
-              </Text>
-            </Button>
-          </MotiView>
-        </GestureDetector>
-        <Button
-          className="h-full absolute w-full rounded-md bg-red-600 -z-10 justify-end"
-          disabled={removeDisabled}
-        >
-          <View className="w-[50] items-center ">
-            <Icon icon={Trash} className="text-red-100" />
-          </View>
-        </Button>
-      </View>
-    </View>
+    <ItemFling<ILodging> item={item} onPress={onPress}>
+      <Text className="font-BeVietnamSemiBold text-16 text-mineShaft-900">
+        {item.name}
+      </Text>
+      <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
+        {item.address}
+      </Text>
+    </ItemFling>
   );
 };
 

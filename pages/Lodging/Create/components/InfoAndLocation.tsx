@@ -31,7 +31,7 @@ const InfoAndLocation: React.FC<
 }) => {
   
   return (
-      <View className="gap-3 items-center py-3 flex-1">
+      <>
         <BoxInfo
           {...{
             name,
@@ -54,7 +54,7 @@ const InfoAndLocation: React.FC<
             location,
           }}
         />
-      </View>
+      </>
   );
 };
 

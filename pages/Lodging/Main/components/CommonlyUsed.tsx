@@ -5,7 +5,7 @@ import { Pressable, Text, View } from "react-native";
 
 function CommonlyUsed({ permissions }: { permissions: IPermission[] }) {
   return (
-    <Pressable className="p-2 gap-2">
+    <Pressable className="p-2 gap-4">
       <Text className="font-BeVietnamMedium font-16">Thao tác thường dùng</Text>
       <View className="flex-row gap-2 flex-wrap">
         {permissions.map((permission, index) => {
@@ -16,7 +16,7 @@ function CommonlyUsed({ permissions }: { permissions: IPermission[] }) {
               title={
                 reference.permission[
                   permission.name as keyof typeof reference.permission
-                ].title
+                ].name
               }
               description={permission.description ?? ""}
               icon={

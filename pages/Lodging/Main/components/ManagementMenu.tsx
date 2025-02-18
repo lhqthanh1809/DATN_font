@@ -11,7 +11,7 @@ function ManagementMenu({
 }) {
   const route = useRouter();
   return (
-    <Pressable className="p-2 gap-2">
+    <Pressable className="p-2 gap-4">
       <Text className="font-BeVietnamMedium font-16">
         Danh mục quản lý nhà trọ
       </Text>
@@ -24,7 +24,7 @@ function ManagementMenu({
               className="basis-1/4"
               title={
                 reference.permission[permission.name as keyof typeof  reference.permission]
-                  .title
+                  .name
               }
               description={permission.description ?? ""}
               icon={

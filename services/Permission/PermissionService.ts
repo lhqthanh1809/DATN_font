@@ -4,11 +4,12 @@ import { HttpStatusCode } from "axios";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { IPermission } from "@/interfaces/Permission";
 import { IError } from "@/interfaces/ErrorInterface";
+import BaseService from "../BaseService";
 
-export default class PermissionService {
+export default class PermissionService extends BaseService {
   private _lodgingId: string | null;
-  private _service = new BaseHttpService();
   constructor(lodgingId: string | null = null) {
+    super()
     this._lodgingId = lodgingId;
   }
 
@@ -30,11 +31,7 @@ export default class PermissionService {
       }
       return res.body?.data || [];
     } catch (error: any) {
-      return {
-        message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
-        code: error?.code || HttpStatusCode.InternalServerError,
-        details: error?.response || null,
-      };
+      return this.returnError(error);
     }
   }
 }

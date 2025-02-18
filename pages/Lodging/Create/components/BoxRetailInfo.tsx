@@ -1,3 +1,4 @@
+
 import Box from "@/ui/box";
 import Dropdown from "@/ui/dropdown";
 import Input from "@/ui/input";
@@ -11,16 +12,6 @@ export const BoxRetailInfo: React.FC<{
   setAreaRoom: (area: string) => void;
   setPriceRoom: (price: string) => void;
 }> = ({ areaRoom, priceRoom, setAreaRoom, setPriceRoom }) => {
-  const [numberPeople, setNumberPeople] = useState("");
-  const numberPeopleList = [
-    "1 người ở",
-    "2 người ở",
-    "3 người ở",
-    "4 người ở",
-    "5-6 người ở",
-    "7-10 người ở",
-    "Không giới hạn",
-  ];
   return (
     <Box title="Thông tin đơn vị thuê" className="z-10">
       <Input
@@ -32,13 +23,9 @@ export const BoxRetailInfo: React.FC<{
       />
 
       <Input
-        value={
-          priceRoom
-            ? new Intl.NumberFormat("vi-VN").format(Number(priceRoom))
-            : ""
-        }
+        value={priceRoom}
         onChange={(price) => {
-          setPriceRoom(price.replace(/[^0-9,]/g, ""));
+          setPriceRoom(price);
         }}
         label="Giá thuê"
         type="number"

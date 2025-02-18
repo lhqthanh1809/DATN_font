@@ -2,6 +2,8 @@ import { MutableRefObject, ReactNode } from "react";
 import { LocationUnit } from "./LocationInterface";
 import { ILodging, LodgingType } from "./LodgingInterface";
 import { IPermission } from "./Permission";
+import { IUnit } from "./UnitInterface";
+import { IService } from "./ServiceInterface";
 
 export interface GeneralContextValue {
   clickRef: (ref: MutableRefObject<any>, callback: () => void) => void;
@@ -36,4 +38,9 @@ export interface ComponentRef {
 export interface GeneralProviderProps {
   user?: Record<any, any> | null;
   children: ReactNode;
+}
+
+export interface PaymentDate {
+  payment_date?: number;
+  late_days?: number;
 }

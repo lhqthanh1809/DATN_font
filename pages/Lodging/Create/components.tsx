@@ -1,7 +1,6 @@
 import { BoxLocation } from "./components/BoxLocation";
 import {BoxInfo} from "./components/BoxInfo";
 import { BoxRetailInfo } from "./components/BoxRetailInfo";
-import { BoxPaymentTimeBill } from "./components/BoxPaymentTimeBill";
 import MapEdit from "./components/MapEdit";
 import InfoAndLocation from "./components/InfoAndLocation";
 import Config from "./components/Config";
@@ -13,5 +12,4 @@ export {
   MapEdit,
   Config,
   InfoAndLocation,
-  BoxPaymentTimeBill,
 };

@@ -6,6 +6,8 @@ import {
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { IPermission } from "@/interfaces/Permission";
+import { IService } from "@/interfaces/ServiceInterface";
+import { IUnit } from "@/interfaces/UnitInterface";
 import React, {
   createContext,
   MutableRefObject,
@@ -37,6 +39,7 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
   }, []);
 
   const [lodging, setLodging] = useState<ILodging | null>(null);
+
 
   const setLocationsWithParent = useCallback(
     (

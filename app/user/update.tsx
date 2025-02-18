@@ -1,5 +1,12 @@
-import { UpdateUser } from "@/pages/pages";
+import { Text, View } from "react-native";
 
-export default function Update() {
-  return <UpdateUser />;
+function UpdateUser() {
+
+  return (
+    <View>
+      <Text>Cập nhật người dùng</Text>
+    </View>
+  );
 }
+
+export default UpdateUser;

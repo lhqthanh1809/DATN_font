@@ -126,7 +126,7 @@ function Dropdown({
               {value
                 ? typeof value !== "object"
                   ? value
-                  : value[optionKey]
+                  : renderOption ? renderOption(value) : value[optionKey]
                 : placeHolder}
             </Text>
             {loading ? (

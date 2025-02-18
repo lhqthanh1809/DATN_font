@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Icon from "./icon";
 import { Hide, Show } from "./icon/edit";
-import { cn } from "@/helper/helper";
+import { cn, convertToNumber } from "@/helper/helper";
 
 interface Props {
   label?: string;
@@ -22,6 +22,8 @@ interface Props {
   prefix?: ReactNode;
   suffix?: ReactNode;
   value: string;
+  placeHolder?: string;
+  onBlur?: () => void;
 }
 
 function Input({
@@ -34,6 +36,8 @@ function Input({
   prefix,
   suffix,
   value,
+  placeHolder,
+  onBlur,
 }: Props) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -52,12 +56,19 @@ function Input({
       >
         {prefix}
         <TextInput
-          value={value}
-          onChangeText={onChange}
+          value={type === "number" ? convertToNumber(value) : value}
+          onChangeText={(text) =>
+            type === "number"
+              ? onChange && onChange(text.replace(/[^0-9,]/g, ""))
+              : onChange && onChange(text)
+          }
           className={`py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-500 caret-mineShaft-600 ${classNameInput}`}
           secureTextEntry={type === "password" && !showPassword}
           textContentType="none"
           keyboardType={type === "number" ? "numeric" : "default"}
+          placeholder={placeHolder}
+          placeholderTextColor={"#B0B0B0"}
+          onBlur={onBlur}
         />
         {suffix}
         {type === "password" && (

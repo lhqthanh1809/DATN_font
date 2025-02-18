@@ -34,8 +34,20 @@ export function formatNumber(number: string, type: "int" | "float" = "int") {
   return type === "int" ? parseInt(number, 10) : parseFloat(number);
 }
 
-
 export const checkLastChar = (str: string, char: string) => {
   return str.slice(-1) === char;
 };
 
+export function clamp(val: number, min: number, max: number) {
+  return Math.min(Math.max(val, min), max);
+}
+
+export const convertToNumber = (value: string) => {
+  if(!value) return ""
+  const indexLastComma = value.lastIndexOf(",")
+  if(indexLastComma == -1) return new Intl.NumberFormat("vi-VN").format(Number(value));
+
+  const fontPart = value.slice(0, indexLastComma).replaceAll(",", "")
+  const backPart = value.slice(indexLastComma + 1, value.length )
+  return `${new Intl.NumberFormat("vi-VN").format(Number(fontPart))},${backPart}`
+};

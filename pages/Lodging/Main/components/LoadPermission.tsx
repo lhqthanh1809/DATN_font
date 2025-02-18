@@ -15,9 +15,8 @@ function LoadPermission() {
                 key={index}
               >
                 <Skeleton
-                  radius={"square"}
-                  width={36}
-                  height={36}
+                  width={40}
+                  height={40}
                   colorMode="light"
                 />
                 <View className="gap-1 w-full">

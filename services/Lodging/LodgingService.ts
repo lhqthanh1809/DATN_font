@@ -4,35 +4,32 @@ import { BaseHttpService } from "../BaseHttpService";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { apiRouter } from "@/assets/ApiRouter";
 import { HttpStatusCode } from "axios";
+import BaseService from "../BaseService";
 
-export default class LodgingService {
-  private _server = new BaseHttpService();
+export default class LodgingService extends BaseService {
   private _userId: string;
 
   public constructor(userId?: string) {
+    super();
     this._userId = userId ?? "";
   }
 
   public async listByUser(): Promise<ILodging[] | IError> {
     try {
-      const res: IResponse = await this._server.https({
+      const res: IResponse = await this._service.https({
         url: apiRouter.listLodgingByUser,
         authentication_requested: true,
       });
 
       return res.body?.data ?? [];
     } catch (error: any) {
-      return {
-        message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
-        code: error?.code || HttpStatusCode.InternalServerError,
-        details: error?.response || null,
-      };
+      return this.returnError(error);
     }
   }
 
   public async create(data: ILodging): Promise<any | IError> {
     try {
-      const res: IResponse = await this._server.https({
+      const res: IResponse = await this._service.https({
         method: "POST",
         url: apiRouter.createLodging,
         body: data,
@@ -40,18 +37,11 @@ export default class LodgingService {
       });
 
       if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return {
-          message: res.error?.[0].message,
-          code: res.status,
-        };
+        return this.getErrorResponse(res);
       }
       return res.body?.data ?? null;
     } catch (error: any) {
-      return {
-        message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
-        code: error?.code || HttpStatusCode.InternalServerError,
-        details: error?.response || null,
-      };
+      return this.returnError(error);
     }
   }
 }

@@ -16,5 +16,20 @@ export const apiRouter = {
     "listWard" :  "/general/wards",
 
     //Permission
-    "listPermissionByUser" : "/permission/list_by_user"
+    "listPermissionByUser" : "/permission/list_by_user",
+
+    //Service
+    "listService" : "/service/list",
+
+    //Unit
+    "listUnit" : "/unit/list",
+    "listUnitByService" : "/unit/list_by_service",
+
+    //LodgingService
+    "createLodgingService": "/lodging_service/create",
+    "listLodgingService": "/lodging_service/list/:id",
+
+    //Room
+    "createRoom" : "/room/create",
+    "listRoomByLodging": "/room/list/:id"
 }

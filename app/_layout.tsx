@@ -17,7 +17,10 @@ import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
 import FCMService from "@/services/FCMService";
 
+import registerNNPushToken from "native-notify";
+
 export default function RootLayout() {
+  registerNNPushToken(27513, "QLJhpcwxfBIPqKDS9rC8sd");
   const [user, setUser] = useState<Record<any, any> | null>(null);
   const [loading, setLoading] = useState(true);
   const localStorage = new LocalStorage();
@@ -115,7 +118,7 @@ const Container = () => {
           backgroundColor="#FDFDFD"
           translucent
         />
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false, gestureEnabled: false }} />
       </View>
     </TouchableWithoutFeedback>
   );
