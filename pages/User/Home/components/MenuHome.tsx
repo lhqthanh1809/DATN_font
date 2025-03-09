@@ -2,7 +2,7 @@ import Button from "@/ui/button";
 import Icon, { IIcon } from "@/ui/icon";
 import { Building } from "@/ui/icon/general";
 import { Fingerprint } from "@/ui/icon/security";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { MotiView } from "moti";
 import React, { useState } from "react";
 import Animated, { Easing } from "react-native-reanimated";
@@ -21,56 +21,52 @@ interface MenuProps {
 }
 
 const MenuHome = ({ items, onChange, active }: MenuProps) => {
+  const [width, setWidth] = useState(0);
   return (
-    <View className="flex-row gap-2 p-3">
+    <View className="relative bg-white-100 rounded-full p-1 items-center">
+    <View
+      className="flex-row relative"
+      onLayout={(event) => {
+        const { width } = event.nativeEvent.layout;
+        setWidth(width);
+      }}
+    >
+      <MotiView
+        className="bg-mineShaft-950 h-full rounded-full absolute"
+        style={{
+          width: width / items.length,
+        }}
+        animate={{
+          translateX:
+            (width / items.length) *
+            items.findIndex((item) => item === active),
+        }}
+        transition={{
+          type: "timing",
+          duration: 200
+        }}
+      />
       {items.map((item, index) => (
-        <MotiView
-          from={{
-            flexGrow: index == 0 ? 1 : 0,
-          }}
-          animate={{
-            flexGrow: active == item ? 1 : 0,
-          }}
-          transition={{
-            duration: 200,
-            easing: Easing.linear,
-            type: "timing",
-          }}
+        <Button
           key={index}
+          className="px-3 py-2 rounded-full"
+          onPress={() => onChange && onChange(item)}
         >
-          <Button
+          <Text
             className={cn(
-              "border border-mineShaft-950 py-3 px-6 gap-3",
-              active == item || (!active && index == 0)
-                ? "bg-mineShaft-950"
-                : "bg-white-50"
+              "font-BeVietnamMedium",
+              active === item ? "text-white-50" : "text-mineShaft-950"
             )}
-            onPress={() => {
-              onChange && onChange(item);
+            style={{
+              fontSize: 10,
             }}
           >
-            <Icon
-              icon={item.icon}
-              className={cn(
-                active == item || (!active && index == 0)
-                  ? "text-white-50"
-                  : "text-mineShaft-950"
-              )}
-            />
-            <Animated.Text
-              className={cn(
-                "font-BeVietnamMedium ",
-                active == item || (!active && index == 0)
-                  ? "text-white-50"
-                  : "text-mineShaft-950"
-              )}
-            >
-              {item.text}
-            </Animated.Text>
-          </Button>
-        </MotiView>
+            {item.text}
+          </Text>
+        </Button>
       ))}
     </View>
+  </View>
   );
 };
 

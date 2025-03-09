@@ -2,7 +2,7 @@ import { MotiView } from "moti";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Button from "../button";
 import Icon from "../icon";
-import { PlusTiny } from "../icon/symbol";
+import { Plus, PlusTiny } from "../icon/symbol";
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -10,7 +10,7 @@ import {
 } from "react-native-reanimated";
 import { useWindowDimensions, View } from "react-native";
 import { useEffect, useState } from "react";
-import { clamp } from "@/helper/helper";
+import { clamp, cn } from "@/helper/helper";
 
 const BUTTON_SIZE = 46;
 const SPACING_WIDTH = 14;
@@ -19,7 +19,8 @@ const SPACING_HEIGHT = 14;
 const ViewHasButtonAdd: React.FC<{
   children?: React.ReactNode;
   onPressAdd: () => void;
-}> = ({ children, onPressAdd }) => {
+  className?: string;
+}> = ({ children, onPressAdd, className }) => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const [parentSize, setParentSize] = useState({
     width: screenWidth,
@@ -81,7 +82,7 @@ const ViewHasButtonAdd: React.FC<{
         const { width, height } = event.nativeEvent.layout;
         setParentSize({ width, height });
       }}
-      className="flex-1 bg-white-50"
+      className={cn("flex-1 bg-white-50", className)}
     >
       {children}
       <GestureDetector gesture={pan}>
@@ -98,7 +99,7 @@ const ViewHasButtonAdd: React.FC<{
             }}
             className="items-center justify-center"
           >
-            <Icon icon={PlusTiny} />
+            <Icon icon={Plus} strokeWidth={2} />
           </Button>
         </MotiView>
       </GestureDetector>

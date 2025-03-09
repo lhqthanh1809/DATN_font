@@ -6,8 +6,6 @@ import {
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { IPermission } from "@/interfaces/Permission";
-import { IService } from "@/interfaces/ServiceInterface";
-import { IUnit } from "@/interfaces/UnitInterface";
 import React, {
   createContext,
   MutableRefObject,
@@ -32,14 +30,15 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
     {}
   );
   const [wards, setWards] = useState<Record<number, LocationUnit[]>>({});
-  const [permissions, setPermissions] = useState<IPermission[]>([]);
+  const [permissions, setPermissions] = useState<Record<string, IPermission[]>>(
+    {}
+  );
 
   const setLocations = useCallback((data: Array<LocationUnit>): void => {
     setProvinces(data);
   }, []);
 
-  const [lodging, setLodging] = useState<ILodging | null>(null);
-
+  const [lodgings, setLodgings] = useState<ILodging[]>([]);
 
   const setLocationsWithParent = useCallback(
     (
@@ -67,6 +66,13 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
     setUser(user);
   }, []);
 
+  const setPermissionsForLodging = useCallback(
+    (parentId: string, permission: IPermission[]) => {
+      setPermissions((prev) => ({ ...prev, [parentId]: permission }));
+    },
+    [permissions]
+  );
+
   return (
     <GeneralContext.Provider
       value={{
@@ -83,11 +89,11 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
         lodgingTypes,
         setLodgingTypes,
 
-        lodging,
-        setLodging,
+        lodgings,
+        setLodgings,
 
         permissions,
-        setPermissions,
+        setPermissionsForLodging,
       }}
     >
       {children}

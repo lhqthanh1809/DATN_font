@@ -2,8 +2,8 @@ import { Plus, PlusCircle, PlusTiny } from "./symbol/plus";
 // import Star from "./symbol/star";
 // import Dots from "./symbol/dots";
 // import PaperPlane from "./symbol/paper-plane";
-// import Cross, {CrossSmall, CrossMedium} from "./symbol/cross";
-// import Globe from "./symbol/globe";
+import Cross, { CrossSmall, CrossMedium } from "./symbol/cross";
+import Globe from "./symbol/globe";
 // import Link, {LinkShape} from "./symbol/link";
 import {
   CheckCircle,
@@ -12,7 +12,7 @@ import {
   CheckSimpleMedium,
 } from "./symbol/check";
 // import { ArrowRight } from "./symbol/arrow";
-// import { Chat } from "./symbol/chat";
+import { Chat } from "./symbol/chat";
 // import Users from "./symbol/users";
 // import { User } from "./symbol/users";
 // import { PadLock } from "./symbol/lock";
@@ -30,7 +30,7 @@ import { Bell } from "./symbol/bell";
 // import Warning from "./symbol/warning";
 // import Error from "./symbol/error";
 import { Trash } from "./symbol/trash";
-import Home from "./symbol/home";
+import Home, { Home2 } from "./symbol/home";
 import Menu from "./symbol/menu";
 import { Notification } from "./symbol/notification";
 import { Water } from "./symbol/water";
@@ -38,6 +38,12 @@ import { Bulb } from "./symbol/bulb";
 import { Wifi } from "./symbol/wifi";
 import { Car } from "./symbol/car";
 import { TagLine } from "./symbol/tag";
+import { QR } from "./symbol/qr";
+import Document from "./symbol/document";
+import { FilterSearch } from "./symbol/filter";
+import { Calender } from "./symbol/calender";
+import { Time } from "./symbol/time";
+import { ImageAdd } from "./symbol/image";
 
 export {
   Plus,
@@ -46,25 +52,25 @@ export {
   //   Star,
   //   Dots,
   //   PaperPlane,
-  //   Cross,
-  //   Globe,
+  Cross,
+    Globe,
   //   Link,
   CheckCircle,
   CheckSimpleTiny,
   CheckSimple,
   CheckSimpleMedium,
   //   ArrowRight,
-  //   Chat,
+    Chat,
   //   Users,
   //   PadLock,
   //   User,
   ChevronDown,
   ChevronRight,
   //   InfoCircle,
-  //   CrossSmall,
+  CrossSmall,
   Bell,
   Notification,
-  //   CrossMedium,
+  CrossMedium,
   //   Save,
   ChevronDownSmall,
   ChevronLeft,
@@ -79,4 +85,11 @@ export {
   Wifi,
   Car,
   TagLine,
+  QR,
+  Document,
+  Home2,
+  FilterSearch,
+  Calender,
+  Time,
+  ImageAdd
 };

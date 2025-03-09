@@ -11,15 +11,18 @@ import {
 import Button from "./button";
 import Icon from "./icon";
 import { Trash } from "./icon/symbol";
+import { cn } from "@/helper/helper";
 
 const ItemFling = <T,>({
   children,
   onPress,
   item,
+  className
 }: {
   children: ReactNode;
   onPress: (item: T) => void;
   item: T;
+  className?: string
 }) => {
   const _MIN_TRANSLATE_X = -50;
   const _MAX_TRANSLATE_X = 0;
@@ -60,7 +63,7 @@ const ItemFling = <T,>({
         <GestureDetector gesture={fling}>
           <MotiView style={animatedStyle}>
             <Button
-              className="bg-lime-200 border-1 border-lime-400 rounded-md gap-2 p-3 flex-col items-start"
+              className={cn("bg-lime-100 border-1 border-lime-400 rounded-md gap-2 p-3 flex-col items-start", className)}
               onPress={() => onPress && onPress(item)}
             >
               {children}

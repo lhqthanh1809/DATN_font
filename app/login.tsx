@@ -1,9 +1,16 @@
 import Button from "@/ui/button";
 import Input from "@/ui/input";
-import {  Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import BackView from "@/ui/back_view";
 import { useCallback, useEffect, useState } from "react";
-import { env, encrypt } from "@/helper/helper";
+import { env, encrypt, getDeviceID } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
 import { apiRouter } from "@/assets/ApiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
@@ -26,12 +33,14 @@ function LoginScreen() {
   const handleInputPhone = useCallback((text: string) => setPhone(text), []);
   const handleInputPassword = useCallback(
     (text: string) => setPassword(text),
-    []
+    [password]
   );
 
   const handleLogin = useCallback(async () => {
+    const token = await getDeviceID();
     const fields = {
       phone,
+      token,
       password: encrypt(password),
     };
     setLoading(true);
@@ -74,8 +83,15 @@ function LoginScreen() {
 
   return (
     <BackView>
-      <View className="px-8 gap-11 flex-1 justify-center items-center">
-        <View className="px-4 w-full">
+      <View
+        className="px-8 gap-11 flex-1 justify-center items-center"
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View className="px-4 w-full ">
           <View className="py-4 bg-white-50 w-full flex items-center justify-center rounded-2xl border-1.5 border-mineShaft-200">
             <Text className="font-BeVietnamBold text-30 text-mineShaft-950">
               Đăng nhập
@@ -83,12 +99,13 @@ function LoginScreen() {
           </View>
         </View>
         <View className="w-full flex gap-3">
-          <View className="flex gap-5">
+          <View className="gap-5">
             <Input
+              className=""
               value={phone}
               onChange={handleInputPhone}
               label="Số điện thoại"
-              type="number"
+              type="phone"
             />
             <Input
               value={password}

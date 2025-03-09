@@ -5,7 +5,7 @@ import Button from "@/ui/button";
 import Icon from "@/ui/icon";
 import { Plus, PlusTiny, Trash } from "@/ui/icon/symbol";
 import ItemFling from "@/ui/item_fling";
-import { useRouter } from "expo-router";
+import { Href, router, useRouter } from "expo-router";
 import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import React, { useCallback, useEffect, useState } from "react";
@@ -20,9 +20,7 @@ import {
 } from "react-native-reanimated";
 
 const ManagementScreen = () => {
-  const route = useRouter();
-  const { setLodging } = useGeneral();
-  const [lodgings, setLodgings] = useState<Array<ILodging>>([]);
+  const { setLodgings, lodgings } = useGeneral();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,19 +35,18 @@ const ManagementScreen = () => {
     fetchData();
   }, []);
 
-  const handlePressLodging = useCallback((lodging: ILodging) => {
-    setLodging(lodging);
-    route.push("/lodging/home");
+  const handlePressLodging = useCallback((item: ILodging) => {
+    router.push(`/lodging/${item.id ?? ""}` as Href);
   }, []);
 
   return (
-    <View className="px-3 py-5 flex-1">
+    <View className="px-3 py-5 flex-1 ">
       <View className="flex-row justify-between items-center px-2 mb-4">
         <Text className="font-BeVietnamMedium text-16">Nhà trọ của tôi</Text>
         {lodgings.length > 0 && (
           <Button
             className="p-2 px-4 bg-lime-100 rounded-lg gap-0"
-            onPress={() => route.push("/lodging/create")}
+            onPress={() => router.push("/lodging/create")}
           >
             <Icon icon={PlusTiny} className="text-lime-900" strokeWidth={2} />
             <Text className="font-BeVietnamMedium text-lime-900 px-2">
@@ -81,7 +78,7 @@ const ManagementScreen = () => {
       ) : (
         <View className="flex-1 items-center justify-center">
           <Button
-            onPress={() => route.push("/lodging/create")}
+            onPress={() => router.push("/lodging/create")}
             className="items-center gap-3"
           >
             <Icon icon={PlusTiny} className="text-mineShaft-200" />
@@ -104,8 +101,20 @@ const LodgingItem: React.FC<{
       <Text className="font-BeVietnamSemiBold text-16 text-mineShaft-900">
         {item.name}
       </Text>
-      <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
-        {item.address}
+      <Text
+        numberOfLines={1}
+        className="font-BeVietnamMedium text-12 text-lime-950 truncate w-3/4"
+      >
+        {[
+          item.address,
+          item.ward?.prefix
+            ? `${item.ward.prefix} ${item.ward.name}`
+            : item.ward?.name,
+          item.district?.name,
+          item.province?.name,
+        ]
+          .filter(Boolean)
+          .join(", ")}
       </Text>
     </ItemFling>
   );

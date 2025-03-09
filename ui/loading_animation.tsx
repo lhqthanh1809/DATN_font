@@ -3,8 +3,11 @@ import { MotiView } from "moti";
 import { Loading } from "./icon/general";
 import Icon from "./icon";
 import { Easing } from "react-native-reanimated";
+import { cn } from "@/helper/helper";
 
-function LoadingAnimation() {
+const LoadingAnimation:React.FC<{
+  className?: string
+}> = ({className}) => {
   return (
     <MotiView
       className="items-center justify-center"
@@ -22,7 +25,7 @@ function LoadingAnimation() {
         easing: Easing.linear,
       }}
     >
-      <Icon icon={Loading} className="text-" />
+      <Icon icon={Loading} className={cn("text-mineShaft-950", className)} />
     </MotiView>
   );
 }

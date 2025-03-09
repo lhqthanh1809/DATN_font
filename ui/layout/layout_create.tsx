@@ -1,7 +1,7 @@
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import HeaderBack from "./header";
 
-const LayoutCreate: React.FC<{
+const Layout: React.FC<{
   children?: React.ReactNode;
   title: string;
 }> = ({ children, title }) => {
@@ -12,9 +12,12 @@ const LayoutCreate: React.FC<{
       keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
     >
       <HeaderBack title={title} />
+      <View className="flex-1">
+
       {children}
+      </View>
     </KeyboardAvoidingView>
   );
 };
 
-export default LayoutCreate;
+export default Layout;

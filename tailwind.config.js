@@ -6,6 +6,7 @@ module.exports = {
     "./ui/*.{js,jsx,ts,tsx}",
     "./ui/**/*.{js,jsx,ts,tsx}",
     "./pages/**/*.{js,jsx,ts,tsx}",
+    "./providers/*.{js,jsx,ts,tsx}"
   ],
 
   presets: [require("nativewind/preset")],
@@ -50,6 +51,21 @@ module.exports = {
           800: "#3f6212",
           900: "#365314",
           950: "#1a2e05",
+        },
+        happyOrange: {
+          100: "#FFF2E9",
+          600: "#E26F20",
+          900: "#391C08",
+        },
+        electricGreen: {
+          100: "#F3FBF7",
+          600: "#4AC97E",
+          900: "#122B1D",
+        },
+        redPower: {
+          100: "#FBECEC",
+          600: "#D0302F",
+          900: "#2F0F0E",
         },
       },
       fontFamily: {

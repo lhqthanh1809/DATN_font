@@ -14,13 +14,13 @@ const CheckBox: React.FC<{
     <View
       className={cn(
         "items-center justify-center rounded-md border-1 p-1 h-5 w-5",
-        checked ? cn("bg-lime-50 border-transparent", classNameChecked) : className
+        checked ? cn("bg-lime-900 border-transparent", classNameChecked) : className
       )}
     >
       {checked && (
         <Icon
           icon={CheckSimpleTiny}
-          className={cn("text-lime-900", classNameIcon)}
+          className={cn("text-lime-50", classNameIcon)}
         />
       )}
     </View>

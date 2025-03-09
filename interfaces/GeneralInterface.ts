@@ -23,11 +23,11 @@ export interface GeneralContextValue {
   lodgingTypes: LodgingType[];
   setLodgingTypes: (types: LodgingType[]) => void;
 
-  lodging: ILodging | null;
-  setLodging: (lodging: ILodging | null) => void;
+  lodgings: ILodging[]
+  setLodgings: (lodgings: ILodging[]) => void
 
-  permissions: IPermission[];
-  setPermissions: (permission: IPermission[]) => void;
+  permissions: Record<string, IPermission[]>;
+  setPermissionsForLodging: (parentId : string ,permission: IPermission[]) => void;
 }
 
 export interface ComponentRef {
@@ -43,4 +43,8 @@ export interface GeneralProviderProps {
 export interface PaymentDate {
   payment_date?: number;
   late_days?: number;
+}
+
+export interface IDataRealtime<T>{
+  data : T
 }

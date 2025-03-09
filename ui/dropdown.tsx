@@ -119,7 +119,7 @@ function Dropdown({
           >
             <Text
               className={cn(
-                `py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-500 ${className}`,
+                `py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-600 ${className}`,
                 !value && "text-mineShaft-300"
               )}
             >

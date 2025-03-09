@@ -2,6 +2,9 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import Constants from "expo-constants";
 import CryptoJS from "crypto-js";
+import moment from "moment";
+import * as Application from "expo-application"
+import { Platform } from "react-native";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -43,11 +46,59 @@ export function clamp(val: number, min: number, max: number) {
 }
 
 export const convertToNumber = (value: string) => {
-  if(!value) return ""
-  const indexLastComma = value.lastIndexOf(",")
-  if(indexLastComma == -1) return new Intl.NumberFormat("vi-VN").format(Number(value));
+  if (!value) return "";
+  const indexLastComma = value.lastIndexOf(",");
+  if (indexLastComma == -1)
+    return new Intl.NumberFormat("vi-VN").format(Number(value));
 
-  const fontPart = value.slice(0, indexLastComma).replaceAll(",", "")
-  const backPart = value.slice(indexLastComma + 1, value.length )
-  return `${new Intl.NumberFormat("vi-VN").format(Number(fontPart))},${backPart}`
+  const fontPart = value.slice(0, indexLastComma).replaceAll(",", "");
+  const backPart = value.slice(indexLastComma + 1, value.length);
+  return `${new Intl.NumberFormat("vi-VN").format(
+    Number(fontPart)
+  )},${backPart}`;
+};
+
+export const getTimezone = () => {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+};
+
+export const convertStringToDate = (dateString: string) => {
+  if (dateString.length < 8) return null;
+  const day = dateString.substring(0, 2);
+  const month = dateString.substring(2, 4);
+  const year = dateString.substring(4, 8);
+  return new Date(`${year}-${month}-${day}`);
+};
+
+export const formatDateForRequest = (date: Date, isTime: boolean = false) => {
+  let format = "YYYY-MM-DD";
+  if (isTime) {
+    format = `${format} HH:mm:ss`;
+  }
+  return moment(date).tz(env("TIMEZONE")).format(format);
+};
+
+export const getDeviceID = async () => {
+  if (Platform.OS === "android") {
+    return await Application.getAndroidId();
+  } else {
+    return await Application.getIosIdForVendorAsync();
+  }
+};
+
+export const getTimeAgo = (timestamp: string) => {
+  const now = moment().tz(getTimezone());
+  const notifTime = moment.tz(timestamp, env("TIMEZONE")).tz(getTimezone()); 
+  const diffHours = now.diff(notifTime, "hours");
+  const diffSeconds = now.diff(notifTime, "seconds");
+
+  if (diffSeconds < 60) {
+    return `${diffSeconds} giây trước`;
+  } else if (diffHours < 1) {
+    return `${Math.floor(diffSeconds / 60)} phút trước`;
+  } else if (diffHours < 24) {
+    return `${diffHours} giờ trước`;
+  } else {
+    return notifTime.format("DD/MM/YYYY");
+  }
 };

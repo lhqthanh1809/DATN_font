@@ -3,18 +3,16 @@ import Divide from "@/ui/divide";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import * as Location from "expo-location";
-import {
-  MapEdit,
-  InfoAndLocation,
-  Config,
-} from "@pages/Lodging/Create/components";
+import MapEdit from "@/pages/Lodging/Create/MapEdit";
+import InfoAndLocation from "@/pages/Lodging/Create/InfoAndLocation";
+import Config from "@/pages/Lodging/Create/Config";
 import { IMap } from "@/interfaces/MapInterface";
 import { cn, formatNumber } from "@/helper/helper";
 import { useRouter } from "expo-router";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import LayoutCreate from "@/ui/layout/layout_create";
+import Layout from "@/ui/layout/layout_create";
 
 function CreateLodging() {
   //Initial
@@ -69,9 +67,10 @@ function CreateLodging() {
     };
     const data = await new LodgingService().create(dataReq);
 
-    if ("code" in data) {
-      setProcessingCreate(false);
-    } else route.push("/");
+    if (!("message" in data)) {
+      route.push("/");
+    }
+    setProcessingCreate(false);
   }, [
     lodgingType,
     district,
@@ -200,7 +199,7 @@ function CreateLodging() {
 
   return (
     <View className="flex-1">
-      <LayoutCreate title={"Thêm mới nhà cho thêm"}>
+      <Layout title={"Thêm mới nhà cho thêm"}>
         <ScrollView className="px-5 flex-grow bg-white-50">
           <View className="gap-3 items-center py-3 flex-1">
             {view[viewIndex]}
@@ -254,7 +253,7 @@ function CreateLodging() {
             <View className="absolute h-5 w-5 rounded-br-full bg-mineShaft-50"></View>
           </View>
         </View>
-      </LayoutCreate>
+      </Layout>
       {location && region && openMap && (
         <MapEdit
           {...{

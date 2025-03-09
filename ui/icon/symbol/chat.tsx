@@ -1,22 +1,46 @@
-import { IIcon } from "@/components/icon";
+import { IIcon } from "../../icon";
+import Svg, { Path } from "react-native-svg";
 
-const Chat: React.FC<IIcon> = ({ className }) => {
+const Chat: React.FC<IIcon> = ({ className, currentColor, strokeWidth = 1.5 }) => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
+    <Svg
       width="25"
       height="24"
-      viewBox="0 0 25 24"
+      viewBox="0 0 24 24"
       fill="none"
       className={className}
     >
-      <path
-        d="M18.5 3H6.5C4.84315 3 3.5 4.34315 3.5 6V15.7574C3.5 16.553 3.81607 17.3161 4.37868 17.8787L7.21967 20.7197C7.69214 21.1921 8.5 20.8575 8.5 20.1893V19C8.5 17.8954 9.39543 17 10.5 17H18.5C20.1569 17 21.5 15.6569 21.5 14V6C21.5 4.34315 20.1569 3 18.5 3Z"
-        stroke="currentColor"
+      <Path
+        d="M14.9394 11.4131H14.9484"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M10.9304 11.4131H10.9394"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M6.9214 11.4131H6.9304"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M18.071 18.0698C15.0159 21.1264 10.4896 21.7867 6.78631 20.074C6.23961 19.8539 2.70113 20.8339 1.93334 20.067C1.16555 19.2991 2.14639 15.7601 1.92631 15.2134C0.212846 11.5106 0.874111 6.9826 3.9302 3.9271C7.83147 0.0243001 14.1698 0.0243001 18.071 3.9271C21.9803 7.83593 21.9723 14.1681 18.071 18.0698Z"
+        stroke={currentColor}
         strokeWidth="1.5"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
-    </svg>
+    </Svg>
   );
 };
 

@@ -46,10 +46,21 @@ const ChevronDownSmall: React.FC<IIcon> = ({ className, currentColor }) => {
 
 const ChevronRight: React.FC<IIcon> = ({ className, currentColor }) => {
   return (
-    <ChevronDown
-      className={cn(className, "-rotate-90")}
-      currentColor={currentColor}
-    />
+    <Svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      className={className}
+    >
+      <Path
+        d="M4.5 9L7.5 6L4.5 3"
+        stroke={currentColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
   );
 };
 

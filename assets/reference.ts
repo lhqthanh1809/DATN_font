@@ -19,11 +19,11 @@ export const reference = {
       name: "Cọc giữ chỗ",
       icon: Home,
     },
-    delete_contact: {
+    delete_contract: {
       name: "Thanh lý (Trả phòng)",
       icon: Home,
     },
-    create_contact: {
+    create_contract: {
       name: "Lập hợp đồng mới",
       icon: Home,
     },
@@ -89,6 +89,16 @@ export const reference = {
       3: {
         name: "Đã đủ",
       },
+    },
+  },
+
+  feedback: {
+    status: {
+      1: { name: "Đã gửi" },
+      2: { name: "Đã nhận" },
+      3: { name: "Đang xử lý" },
+      4: { name: "Đã giải quyết" },
+      5: { name: "Đã đóng" },
     },
   },
 

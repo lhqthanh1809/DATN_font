@@ -1,3 +1,3 @@
-import { Pin, PinCircle } from "./travel/pin";
+import { Pin, PinCircle, PinSmall } from "./travel/pin";
 import { Compass } from "./travel/compass";
-export { Pin, PinCircle, Compass };
+export { Pin, PinCircle, Compass, PinSmall };

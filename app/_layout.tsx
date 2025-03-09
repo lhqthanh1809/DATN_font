@@ -1,32 +1,39 @@
 import { Href, SplashScreen, Stack, usePathname, useRouter } from "expo-router";
 import "../global.css";
 import {
+  AppState,
+  AppStateStatus,
   SafeAreaView,
   StatusBar,
   Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { env } from "@/helper/helper";
+import { env, getDeviceID } from "@/helper/helper";
 import { LocalStorage } from "@/services/LocalStorageService";
 import { GeneralProvider } from "@/providers/GeneralProvider";
 import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
 import FCMService from "@/services/FCMService";
-
-import registerNNPushToken from "native-notify";
+import * as Notifications from "expo-notifications";
+import registerNNPushToken, {
+  getPushDataObject,
+  registerIndieID,
+} from "native-notify";
+import { UIProvider } from "@/providers/UIProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RootLayout() {
-  registerNNPushToken(27513, "QLJhpcwxfBIPqKDS9rC8sd");
   const [user, setUser] = useState<Record<any, any> | null>(null);
   const [loading, setLoading] = useState(true);
   const localStorage = new LocalStorage();
   const route = useRouter();
   const [page, setPage] = useState<Href | null>(null);
   const pathName = usePathname();
+  const [hasHandledPush, setHasHandledPush] = useState(false);
 
   // Load fonts
   const [fontsLoaded] = useFonts({
@@ -36,6 +43,51 @@ export default function RootLayout() {
     BeVietnamProRegular: require("../assets/fonts/BeVietnamPro-Regular.ttf"),
     BeVietnamProSemiBold: require("../assets/fonts/BeVietnamPro-SemiBold.ttf"),
   });
+
+  const registerNotify = useCallback(async () => {
+    try {
+      const hasRequested = await AsyncStorage.getItem(
+        "hasRequestedPermissionNotification"
+      );
+
+      if (!hasRequested) {
+        const { status } = await Notifications.getPermissionsAsync();
+
+        if (status !== "granted") {
+          const { status: newStatus } =
+            await Notifications.requestPermissionsAsync();
+          const isGranted = newStatus === "granted";
+
+          await AsyncStorage.setItem(
+            "hasRequestedPermissionNotification",
+            isGranted ? "true" : "false"
+          );
+
+          if (!isGranted) return;
+        } else {
+          await AsyncStorage.setItem(
+            "hasRequestedPermissionNotification",
+            "true"
+          );
+        }
+      }
+
+      const token = await getDeviceID();
+      registerIndieID(token, 27513, "QLJhpcwxfBIPqKDS9rC8sd");
+    } catch (error) {}
+  }, []);
+
+  const handlePushData = useCallback(
+    async (response: Notifications.NotificationResponse) => {
+      if (response.notification && response.notification.request.content.data) {
+        console.log(
+          "📌 Push data nhận được:",
+          response.notification.request.content.data
+        );
+      }
+    },
+    []
+  );
 
   // Fetch user data
   useEffect(() => {
@@ -71,9 +123,30 @@ export default function RootLayout() {
 
     SplashScreen.preventAutoHideAsync();
     fetchUserData();
-
-    // console.log(new NotificationService().getToken())
+    registerNotify();
   }, []);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === "active") {
+        // handlePushData();
+        setHasHandledPush(false);
+      }
+    };
+
+    const appStateListener = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener(handlePushData);
+
+    return () => {
+      appStateListener.remove();
+      responseListener.remove();
+    };
+  }, [hasHandledPush]);
 
   useEffect(() => {
     if (!loading && fontsLoaded && page) {
@@ -94,9 +167,11 @@ export default function RootLayout() {
   return (
     <SafeAreaView className="flex-1 bg-white-50">
       <GeneralProvider user={user}>
-        <GestureHandlerRootView>
-          <Container />
-        </GestureHandlerRootView>
+        <UIProvider>
+          <GestureHandlerRootView>
+            <Container />
+          </GestureHandlerRootView>
+        </UIProvider>
       </GeneralProvider>
     </SafeAreaView>
   );
@@ -112,25 +187,17 @@ const Container = () => {
         clickRef(containerRef, () => {});
       }}
     >
-      <View className="flex-1 bg-white-50" ref={containerRef}>
-        <StatusBar
-          barStyle="dark-content"
-          backgroundColor="#FDFDFD"
-          translucent
+      <View className="flex-1 bg-white-50 relative" ref={containerRef}>
+        <StatusBar barStyle="dark-content" translucent />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            gestureEnabled: false,
+            freezeOnBlur: false,
+          }}
         />
-        <Stack screenOptions={{ headerShown: false, gestureEnabled: false }} />
+        {/* <View className="w-screen h-screen absolute bg-black"></View> */}
       </View>
     </TouchableWithoutFeedback>
-  );
-};
-
-const CustomSafeView: React.FC<{
-  children: ReactNode;
-  useSafeArea?: boolean;
-}> = ({ children, useSafeArea = true }) => {
-  return useSafeArea ? (
-    <SafeAreaView className="flex-1 bg-white-50">{children}</SafeAreaView>
-  ) : (
-    <View className="flex-1 bg-white-50">{children}</View>
   );
 };

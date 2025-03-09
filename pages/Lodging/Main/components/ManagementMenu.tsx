@@ -6,8 +6,10 @@ import { Pressable, Text, View } from "react-native";
 
 function ManagementMenu({
   permissions,
+  path,
 }: {
   permissions: IPermission[];
+  path: string;
 }) {
   const route = useRouter();
   return (
@@ -19,17 +21,21 @@ function ManagementMenu({
         {permissions.map((permission, index) => {
           return (
             <BoxItem
-              onPress={() => route.push(permission?.end_point as any)}
+              onPress={() =>
+                route.push(`${path}/${permission?.end_point}` as any)
+              }
               key={index}
               className="basis-1/4"
               title={
-                reference.permission[permission.name as keyof typeof  reference.permission]
-                  .name
+                reference.permission[
+                  permission.name as keyof typeof reference.permission
+                ].name
               }
               description={permission.description ?? ""}
               icon={
-                reference.permission[permission.name as keyof typeof  reference.permission]
-                  .icon
+                reference.permission[
+                  permission.name as keyof typeof reference.permission
+                ].icon
               }
             />
           );

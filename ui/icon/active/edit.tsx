@@ -2,7 +2,11 @@ import React from "react";
 import { IIcon } from "../../icon";
 import Svg, { Path } from "react-native-svg";
 
-const Edit: React.FC<IIcon> = ({ className, currentColor }) => {
+const Edit: React.FC<IIcon> = ({
+  className,
+  currentColor,
+  strokeWidth = 1.5,
+}) => {
   return (
     <Svg
       width="24"
@@ -12,9 +16,25 @@ const Edit: React.FC<IIcon> = ({ className, currentColor }) => {
       className={className}
     >
       <Path
-        d="M13 7L4.58579 15.4142C4.21071 15.7893 4 16.298 4 16.8284V18C4 19.1046 4.89543 20 6 20H7.17157C7.70201 20 8.21071 19.7893 8.58579 19.4142L17 11M13 7L14.5858 5.41421C15.3668 4.63317 16.6332 4.63317 17.4142 5.41421L18.5858 6.58579C19.3668 7.36684 19.3668 8.63317 18.5858 9.41421L17 11M13 7L17 11"
+        d="M11 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22H15C20 22 22 20 22 15V13"
         stroke={currentColor}
-        strokeWidth="1.5"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        stroke-Linejoin="round"
+      />
+      <Path
+        d="M16.0399 3.02001L8.15988 10.9C7.85988 11.2 7.55988 11.79 7.49988 12.22L7.06988 15.23C6.90988 16.32 7.67988 17.08 8.76988 16.93L11.7799 16.5C12.1999 16.44 12.7899 16.14 13.0999 15.84L20.9799 7.96001C22.3399 6.60001 22.9799 5.02001 20.9799 3.02001C18.9799 1.02001 17.3999 1.66001 16.0399 3.02001Z"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M14.9102 4.1499C15.5802 6.5399 17.4502 8.4099 19.8502 9.0899"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

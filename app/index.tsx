@@ -36,24 +36,19 @@ function HomeUser() {
 
   return (
     <View className="flex-1 bg-white-50">
-      <View className="p-5 flex-row justify-between items-center border-b-1 border-white-100">
+      <View className="p-5 flex-row justify-between items-center">
         <Text className="font-BeVietnamSemiBold text-18 text-mineShaft-950">
           {user?.full_name}
         </Text>
-        <View className="relative">
-          <Icon icon={Bell} className="text-white-950" />
-          <View className="absolute bg-lime-500 rounded-full w-2 h-2 items-center justify-center -top-1 right-0"></View>
-        </View>
-      </View>
-      <View className="flex-1 bg-white-50">{navActive?.screen}</View>
-
-      <MenuHome
+        <MenuHome
         active={navActive}
         items={navItem}
         onChange={(item) => {
           setNavActive(item);
         }}
       />
+      </View>
+      <View className="flex-1 bg-white-50">{navActive?.screen}</View>
     </View>
   );
 }

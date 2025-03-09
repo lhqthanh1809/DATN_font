@@ -7,10 +7,12 @@ export const BoxPaymentTimeBill: React.FC<{
   lateDays: number;
   setPaymentDate: (paymentDate: number) => void;
   setLateDays: (lateDays: number) => void;
-}> = ({ lateDays, paymentDate, setLateDays, setPaymentDate }) => {
+  disabled?: boolean;
+}> = ({ lateDays, paymentDate, setLateDays, setPaymentDate, disabled }) => {
   return (
     <Box title="Cài đặt ngày chốt & hạn hoá đơn">
       <Input
+        disabled={disabled}
         value={paymentDate.toString()}
         onChange={(value) => {
           const num = Number(value);
@@ -20,6 +22,7 @@ export const BoxPaymentTimeBill: React.FC<{
         label="Ngày lập hoá đơn thu tiền"
       />
       <Input
+        disabled={disabled}
         value={lateDays.toString()}
         type="number"
         onChange={(value) => {

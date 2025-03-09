@@ -13,17 +13,19 @@ import { Hide, Show } from "./icon/edit";
 import { cn, convertToNumber } from "@/helper/helper";
 
 interface Props {
+  required?: boolean;
   label?: string;
   onChange?: (text: string) => void;
   style?: StyleProp<ViewStyle>;
   className?: string;
   classNameInput?: string;
-  type?: "password" | "number" | "text";
+  type?: "password" | "number" | "text" | "phone" | "code";
   prefix?: ReactNode;
   suffix?: ReactNode;
   value: string;
   placeHolder?: string;
   onBlur?: () => void;
+  disabled?: boolean;
 }
 
 function Input({
@@ -38,34 +40,49 @@ function Input({
   value,
   placeHolder,
   onBlur,
+  required,
+  disabled,
 }: Props) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View className="flex gap-2">
+    <View className="gap-2 relative">
       {label && (
-        <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
-          {label}
-        </Text>
+        <View className="flex-row">
+          <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
+            {label}
+          </Text>
+          {required && (
+            <Text className="font-BeVietnamRegular text-14 text-red-600 ml-2">
+              *
+            </Text>
+          )}
+        </View>
       )}
       <View
         className={cn(
           "border-1 border-mineShaft-200 bg-white-50 px-3 h-[3rem] rounded-xl flex-row items-center gap-2",
+          (disabled) && "bg-mineShaft-50",
           className
         )}
       >
         {prefix}
         <TextInput
+          readOnly={disabled}
           value={type === "number" ? convertToNumber(value) : value}
           onChangeText={(text) =>
             type === "number"
               ? onChange && onChange(text.replace(/[^0-9,]/g, ""))
               : onChange && onChange(text)
           }
-          className={`py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-500 caret-mineShaft-600 ${classNameInput}`}
+          className={`py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-600 caret-mineShaft-700 ${classNameInput}`}
           secureTextEntry={type === "password" && !showPassword}
           textContentType="none"
-          keyboardType={type === "number" ? "numeric" : "default"}
+          keyboardType={
+            type === "number" || type === "code" || type === "phone"
+              ? "numeric"
+              : "default"
+          }
           placeholder={placeHolder}
           placeholderTextColor={"#B0B0B0"}
           onBlur={onBlur}

@@ -1,3 +1,6 @@
+import { LocationUnit } from "./LocationInterface";
+import { IRoom } from "./RoomInterface";
+
 export interface LodgingType {
   id: number;
   name: string;
@@ -20,4 +23,14 @@ export interface ILodging {
   late_days: number;
   area_room_default?: number | null;
   price_room_default?: number | null;
+  province?: LocationUnit;
+  district?: LocationUnit;
+  ward?: LocationUnit & {
+    prefix: string;
+  };
+  rooms?: IRoom[];
+  type?: {
+    id: number,
+    name: string
+  }
 }

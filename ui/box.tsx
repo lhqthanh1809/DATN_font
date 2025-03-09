@@ -2,16 +2,25 @@ import { cn } from "@/helper/helper";
 import { ReactNode, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
 import Divide from "./divide";
-import { useGeneral } from "@/hooks/useGeneral"; 
+import { useGeneral } from "@/hooks/useGeneral";
 
 interface Props {
   className?: string;
   children: ReactNode;
   title?: string;
   icon?: ReactNode;
+  suffix?: ReactNode;
+  description?: string;
 }
 
-function Box({ className, children, title, icon = null }: Props) {
+function Box({
+  className,
+  children,
+  title,
+  icon = null,
+  description,
+  suffix,
+}: Props) {
   const { clickRef } = useGeneral();
   const boxRef = useRef(null);
 
@@ -26,13 +35,23 @@ function Box({ className, children, title, icon = null }: Props) {
         className
       )}
     >
-      {(title || icon) && (
+      {(title || icon || suffix) && (
         <View className="gap-2">
-          <View className="ml-2 flex-row items-center gap-2">
-            {icon}
-            <Text className={cn("text-mineShaft-950 font-BeVietnamBold")}>
-              {title}
-            </Text>
+          <View className="flex-row items-center justify-between">
+            <View className="ml-2 flex-row items-center gap-2">
+              {icon}
+              <View>
+                <Text className={cn("text-mineShaft-950 font-BeVietnamBold")}>
+                  {title}
+                </Text>
+                {description && (
+                  <Text className="font-BeVietnamRegular text-mineShaft-400 text-12">
+                    {description}
+                  </Text>
+                )}
+              </View>
+            </View>
+            {suffix}
           </View>
           <Divide direction="horizontal" className="w-2/3 bg-mineShaft-600" />
         </View>

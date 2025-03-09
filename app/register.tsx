@@ -78,7 +78,7 @@ function RegisterScreen() {
                   value={phone}
                   onChange={handleInputPhone}
                   label="Số điện thoại"
-                  type="number"
+                  type="phone"
                 />
                 <Input
                   value={email}

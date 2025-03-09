@@ -1,0 +1,278 @@
+import { constant } from "@/assets/constant";
+import { reference } from "@/assets/reference";
+import { cn } from "@/helper/helper";
+import { IFeedback } from "@/interfaces/FeedbackInterface";
+import { IDataRealtime } from "@/interfaces/GeneralInterface";
+import { INotification } from "@/interfaces/NotificationInterface";
+import FeedbackService from "@/services/Feedback/FeedbackService";
+import useFeedbackStore from "@/store/feedback/useFeedbackStore";
+import Button from "@/ui/button";
+import Icon from "@/ui/icon";
+import { Search } from "@/ui/icon/active";
+import { ChevronRight, Home2, Plus, PlusTiny } from "@/ui/icon/symbol";
+import Input from "@/ui/input";
+import { initializeEcho } from "@/utils/echo";
+import { Channel } from "@ably/laravel-echo";
+import axios from "axios";
+import { router, useFocusEffect } from "expo-router";
+import { isArray } from "lodash";
+import { Skeleton } from "moti/skeleton";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollView, Text } from "react-native";
+import { View } from "react-native";
+
+const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
+  const { feedbacks, setFeedbacks, addFeedback, updateFeedback } =
+    useFeedbackStore();
+  const [search, setSearch] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [statusActive, setStatusActive] = useState<number | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const feedbackService = new FeedbackService();
+
+  const statusRef = useRef(statusActive);
+
+  const fetchFeedback = useCallback(
+    async (cancelToken: any) => {
+      setLoading(true);
+
+      const data = await feedbackService.list(
+        {
+          lodging_id: lodgingId,
+          status: statusActive,
+        },
+        cancelToken
+      );
+      if (isArray(data)) {
+        setFeedbacks(data);
+      }
+
+      if (!cancelToken.reason) setLoading(false);
+    },
+    [lodgingId, statusActive]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const source = axios.CancelToken.source();
+      statusRef.current = statusActive;
+
+      fetchFeedback(source.token);
+
+      return () => {
+        source.cancel("Hủy request do mất focus hoặc dữ liệu thay đổi");
+      };
+    }, [lodgingId, statusActive])
+  );
+
+  useEffect(() => {
+    let channel: Channel | null = null;
+    const setupEcho = async () => {
+      try {
+        const echo = await initializeEcho();
+        channel = echo.private(`feedback.lodging.${lodgingId}`);
+        channel
+          .listen(".new", (data: IDataRealtime<IFeedback>) => {
+            if (!statusRef.current || data.data.status == statusRef.current) {
+              addFeedback(data.data);
+            }
+          })
+          .listen(".update", (data: IDataRealtime<IFeedback>) => {
+            if (!statusRef.current || data.data.status == statusRef.current) {
+              updateFeedback(data.data);
+            }
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    setupEcho();
+    return () => {
+      if (channel) {
+        channel.stopListening(".new");
+        channel.stopListening(".update");
+      }
+    };
+  }, [lodgingId]);
+
+  return (
+    <View className="flex-1">
+      <Text className="font-BeVietnamBold text-20 text-mineShaft-950 px-3 pb-5 pt-3">
+        Phản hồi/ Đóng góp ý kiến
+      </Text>
+      <View className="px-3 gap-2 flex-1">
+        <View className="gap-2">
+          <View className="flex-row gap-2">
+            <View className="flex-1">
+              <Input
+                placeHolder="Tìm kiếm phản hồi/đóng góp ý kiến..."
+                value={search}
+                onChange={(text) => setSearch(text)}
+                suffix={<Icon icon={Search} />}
+              />
+            </View>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View className="flex-row gap-2">
+              <Button
+                onPress={() => setStatusActive(null)}
+                className={cn(
+                  "border-1 rounded-full px-4 py-2 border-lime-300",
+                  !statusActive && "bg-lime-200"
+                )}
+              >
+                <Text className="font-BeVietnamRegular">Tất cả</Text>
+              </Button>
+              {Object.entries(reference.feedback.status).map(
+                ([key, status]) => (
+                  <Button
+                    onPress={() => setStatusActive(parseInt(key))}
+                    key={key}
+                    className={cn(
+                      "border-1 rounded-full px-4 py-2 border-lime-300",
+                      statusActive == parseInt(key) && "bg-lime-200"
+                    )}
+                  >
+                    <Text className="font-BeVietnamRegular">{status.name}</Text>
+                  </Button>
+                )
+              )}
+            </View>
+          </ScrollView>
+        </View>
+        {loading ? (
+          <ScrollView
+            contentContainerStyle={{
+              paddingBottom: 76,
+            }}
+            className="flex-1"
+          >
+            <View className="gap-2 w-full">
+              {Array(3)
+                .fill("")
+                .map((_, index) => (
+                  <View
+                    className="justify-between items-start px-4 py-3 gap-3 flex-row rounded-2xl bg-gray-100"
+                    key={index}
+                  >
+                    <View className="items-start gap-3 flex-1">
+                      <Skeleton height={20} width="60%" colorMode="light" />
+                      <View className="gap-2">
+                        <Skeleton height={24} width="50%" colorMode="light" />
+                        <Skeleton height={24} width="60%" colorMode="light" />
+                      </View>
+                      <Skeleton height={20} width="50%" colorMode="light" />
+                    </View>
+                    <View className="w-1/4">
+                      <Skeleton height={24} width="100%" colorMode="light" />
+                    </View>
+                  </View>
+                ))}
+            </View>
+          </ScrollView>
+        ) : feedbacks.length <= 0 ? (
+          <View className="flex-1 items-center justify-center">
+            <Text className="font-BeVietnamRegular text-mineShaft-200">
+              Không có kết quả
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            contentContainerStyle={{
+              paddingBottom: 76,
+            }}
+            className="flex-1"
+          >
+            <View className="gap-2 w-full h-full">
+              {feedbacks.map((feedback, index) => {
+                const status = feedbackService.getReferenceToStatus(
+                  feedback.status
+                );
+                return (
+                  <Button
+                    key={index}
+                    onPress={() =>
+                      router.push(
+                        `/lodging/${lodgingId}/feedback/detail/${feedback.id}`
+                      )
+                    }
+                    className="border-1 border-mineShaft-100 justify-between items-start px-4 py-3 gap-3"
+                  >
+                    <View className="items-start gap-3">
+                      <Text className="font-BeVietnamMedium">
+                        {feedback.title}
+                      </Text>
+                      <View className="flex-row items-center gap-3">
+                        <View>
+                          <Icon icon={Home2} />
+                        </View>
+                        <Text className="font-BeVietnamRegular text-12">
+                          Phòng {feedback.room?.room_code ?? "Không xác định"}
+                        </Text>
+                      </View>
+
+                      <Button
+                        onPress={() =>
+                          router.push(
+                            `/lodging/${lodgingId}/feedback/detail/${feedback.id}`
+                          )
+                        }
+                        className="gap-1"
+                      >
+                        <Text className="font-BeVietnamRegular text-lime-600 text-12">
+                          Xem chi tiết
+                        </Text>
+                        <Icon icon={ChevronRight} className="text-lime-600" />
+                      </Button>
+                    </View>
+                    <View
+                      className={cn(
+                        "px-4 py-2 rounded-full",
+                        feedback.status === constant.feedback.status.submitted
+                          ? "bg-blue-500"
+                          : feedback.status ===
+                            constant.feedback.status.received
+                          ? "bg-yellow-500"
+                          : feedback.status ===
+                            constant.feedback.status.in_progress
+                          ? "bg-orange-500"
+                          : feedback.status ===
+                            constant.feedback.status.resolved
+                          ? "bg-lime-500"
+                          : "bg-gray-500"
+                      )}
+                    >
+                      <Text
+                        className={cn(
+                          "font-BeVietnamRegular text-12",
+                          feedback.status === constant.feedback.status.submitted
+                            ? "text-blue-50"
+                            : feedback.status ===
+                              constant.feedback.status.received
+                            ? "text-yellow-50"
+                            : feedback.status ===
+                              constant.feedback.status.in_progress
+                            ? "text-orange-50"
+                            : feedback.status ===
+                              constant.feedback.status.resolved
+                            ? "text-lime-50"
+                            : "text-gray-50"
+                        )}
+                      >
+                        {status?.name}
+                      </Text>
+                    </View>
+                  </Button>
+                );
+              })}
+            </View>
+          </ScrollView>
+        )}
+      </View>
+    </View>
+  );
+};
+
+export default ListFeedback;

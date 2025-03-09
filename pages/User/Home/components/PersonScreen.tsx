@@ -1,90 +1,28 @@
-import { cn } from "@/helper/helper";
-import Button from "@/ui/button";
-import { MotiView, View } from "moti";
-import { useEffect, useState } from "react";
-import { Text, ScrollView } from "react-native";
-
-const _gap = 16;
+import { useGeneral } from "@/hooks/useGeneral";
+import useUserScreenStore from "@/store/useUserScreenStore";
+import Menu from "@/ui/layout/menu";
+import { View } from "moti";
+import { useEffect } from "react";
 
 const PersonScreen = () => {
-  const [widthFuncs, setWidthFuncs] = useState<Array<number>>([]);
-  const [funcIndex, setFuncIndex] = useState(0);
+  const { user } = useGeneral(); // Lấy user từ hook
+  const { tabs, tab, setTab, updateTabs } = useUserScreenStore();
 
-  const functions = [
-    "Trò chuyện",
-    "Phản hồi",
-    "Hợp đồng",
-    "Nơi thuê",
-    "Lịch sử thuê",
-  ];
+  // Cập nhật tabs khi user.id thay đổi
+  useEffect(() => {
+    if (user) {
+      updateTabs(user);
+    }
+  }, [user]);
 
   return (
-    <View className="flex-1">
-      <View className="px-5">
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View
-            className="flex-row relative"
-            style={{
-              gap: _gap,
-            }}
-          >
-            {functions.map((func, index) => {
-              return (
-                <Button
-                  className="py-4"
-                  key={index}
-                  onPress={() => {
-                    setFuncIndex(index);
-                  }}
-                  onLayout={(event) => {
-                    const { width } = event.nativeEvent.layout;
-                    setWidthFuncs((prev) => {
-                      const newWidths = prev;
-                      if (newWidths.length < index + 1) newWidths.push(width);
-                      else newWidths[index] = width;
-                      return newWidths;
-                    });
-                  }}
-                >
-                  <Text
-                    className={cn(
-                      "font-BeVietnamMedium",
-                      index === funcIndex ? "text-lime-600" : "text-white-400"
-                    )}
-                  >
-                    {func}
-                  </Text>
-                </Button>
-              );
-            })}
-
-            {/* Animated underline */}
-            <MotiView
-              className="bg-lime-500 h-[2] rounded-full w-9 absolute bottom-2"
-              animate={{
-                left:
-                  widthFuncs
-                    .slice(0, funcIndex)
-                    .reduce((sum, width) => sum + width, 0) + // Sum the widths
-                  _gap * funcIndex,
-              }}
-              transition={{
-                type: "timing",
-                duration: 200,
-              }}
-            />
-          </View>
-        </ScrollView>
-      </View>
-      {/* Uncomment this section if you want to add more content below the ScrollView */}
-      {/* <View
-        className="flex-1 px-3 pb-3"
-        style={{
-          paddingBottom: 12,
-        }}
-      >
-        <View className="bg-white-50 flex-1 rounded-xl"></View>
-      </View> */}
+    <View className="flex-1 bg-white-50">
+      <View className="flex-1">{tab?.view || tabs[0]?.view}</View>
+      <Menu
+        items={tabs}
+        active={tab || tabs[0]}
+        onChange={(item: any) => setTab(item)}
+      />
     </View>
   );
 };

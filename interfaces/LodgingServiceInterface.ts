@@ -10,5 +10,13 @@ export interface ILodgingService extends PaymentDate {
   price_per_unit: number;
   unit_id: number;
   unit?: IUnit | null;
+  late_days?: number;
+  payment_date?: number;
   service?: IService | null;
+  rooms?: {
+    id: string;
+    room_code: string;
+    is_usage_service: boolean;
+    is_enabled_service?: boolean;
+  }[];
 }

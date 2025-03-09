@@ -29,6 +29,38 @@ export const constant = {
       fixing: 2,
       filled: 3,
     },
-    max_tenants_default: 3
+    max_tenants_default: 3,
+  },
+  contract: {
+    status: {
+      pending: 1,
+      active: 2,
+      finished: 3,
+      cancel: 4,
+    },
+  },
+  feedback: {
+    status: {
+      submitted: 1,
+      received: 2,
+      in_progress: 3,
+      resolved: 4,
+      closed: 5,
+    },
+  },
+
+  equipment: {
+    type: {
+      private: 1,
+      public: 2,
+    },
+  },
+
+  object: {
+    type: {
+      lodging: "lodging",
+      user: "user",
+      room: "room",
+    },
   },
 };
