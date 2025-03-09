@@ -1,8 +1,9 @@
-import { ICreateEquipment } from "@/interfaces/EquipmentInterface";
+import { ICreateEquipment, IEquipment } from "@/interfaces/EquipmentInterface";
 import BaseService from "../BaseService";
 import { apiRouter } from "@/assets/ApiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { HttpStatusCode } from "axios";
+import { IError } from "@/interfaces/ErrorInterface";
 
 export class EquipmentService extends BaseService {
   private _lodgingId: string | null;
@@ -15,11 +16,13 @@ export class EquipmentService extends BaseService {
     return this._lodgingId;
   }
 
-  set lodgingId(value: string){
-    this._lodgingId = value
+  set lodgingId(value: string) {
+    this._lodgingId = value;
   }
 
-  public async createEquipment(data: ICreateEquipment) {
+  public async createEquipment(
+    data: ICreateEquipment
+  ): Promise<IEquipment | IError> {
     try {
       const res: IResponse = await this._service.https({
         method: "POST",
@@ -38,7 +41,7 @@ export class EquipmentService extends BaseService {
     }
   }
 
-  public async listEquipment() {
+  public async listEquipment(): Promise<IEquipment[] | IError> {
     try {
       const res: IResponse = await this._service.https({
         url: apiRouter.listEquipment,

@@ -63,4 +63,11 @@ export const constant = {
       room: "room",
     },
   },
+
+  toast: {
+    type: {
+      success: 1,
+      error: 2,
+    },
+  },
 };

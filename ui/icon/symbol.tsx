@@ -28,7 +28,7 @@ import { Bell } from "./symbol/bell";
 // import { DownloadMedium } from "./symbol/download";
 // import { Save } from "./symbol/save";
 // import Warning from "./symbol/warning";
-// import Error from "./symbol/error";
+import Error from "./symbol/error";
 import { Trash } from "./symbol/trash";
 import Home, { Home2 } from "./symbol/home";
 import Menu from "./symbol/menu";
@@ -44,6 +44,7 @@ import { FilterSearch } from "./symbol/filter";
 import { Calender } from "./symbol/calender";
 import { Time } from "./symbol/time";
 import { ImageAdd } from "./symbol/image";
+import { File, FileAdd } from "./symbol/file";
 
 export {
   Plus,
@@ -76,7 +77,7 @@ export {
   ChevronLeft,
   ChevronUp,
   //   Warning,
-  //   Error,
+    Error,
   Trash,
   Home,
   Menu,
@@ -91,5 +92,6 @@ export {
   FilterSearch,
   Calender,
   Time,
-  ImageAdd
+  ImageAdd,
+  File, FileAdd
 };

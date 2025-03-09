@@ -11,10 +11,12 @@ import {
   MenuHome,
   PersonScreen,
 } from "@/pages/User/Home/components";
+import useToastStore from "@/store/ToastStore";
 
 function HomeUser() {
   const { user } = useGeneral();
   const [navActive, setNavActive] = useState<ItemMenu | null>(null);
+  const {addToast} = useToastStore()
 
   const navItem = useMemo(
     () => [
@@ -32,7 +34,9 @@ function HomeUser() {
     []
   );
 
-  useEffect(() => setNavActive(navItem[0]), []);
+  useEffect(() => {
+    setNavActive(navItem[0])
+  }, []);
 
   return (
     <View className="flex-1 bg-white-50">

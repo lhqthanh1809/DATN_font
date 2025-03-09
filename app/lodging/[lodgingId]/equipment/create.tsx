@@ -13,6 +13,7 @@ import { IRoom } from "@/interfaces/RoomInterface";
 import { AssetInfo } from "expo-media-library";
 import { ICreateEquipment } from "@/interfaces/EquipmentInterface";
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
+import useToastStore from "@/store/ToastStore";
 
 function CreateEquipment() {
   const { lodgings } = useGeneral();
@@ -26,17 +27,33 @@ function CreateEquipment() {
 
   const [loading, setLoading] = useState(false);
   const equipmentService = new EquipmentService();
+  const { addToast } = useToastStore();
 
   const handleCreateEquipment = useCallback(async () => {
     const images = selectPhotos.filter((item) => item.mediaType === "photo");
-    if (
-      images.length <= 0 ||
-      name ||
-      type ||
-      quantity ||
-      quantity < selectPhotos.length
-    )
+
+    if (images.length <= 0) {
+      addToast(constant.toast.type.error, "Ảnh đại diện là bắt buộc");
       return;
+    }
+
+    if (!name) {
+      addToast(constant.toast.type.error, "Tên thiết bị là bắt buộc");
+      return;
+    }
+
+    if (!quantity) {
+      addToast(constant.toast.type.error, "Số lượng là bắt buộc");
+      return;
+    }
+
+    if (quantity < selectRooms.length) {
+      addToast(
+        constant.toast.type.error,
+        "Số lượng trang thiết bị không đủ để trang bị"
+      );
+      return;
+    }
     setLoading(true);
     try {
       const base64 = await FileSystem.readAsStringAsync(images[0].uri, {
@@ -59,9 +76,11 @@ function CreateEquipment() {
         };
       }
       const res = await equipmentService.createEquipment(dataReq);
-      if (!("message" in res)) {
-        router.back();
+      if ("message" in res) {
+        addToast(constant.toast.type.error, res.message);
       }
+      addToast(constant.toast.type.success, "Thêm trang thiết bị thành công.");
+      router.back();
     } catch (error) {
     } finally {
       setLoading(false);

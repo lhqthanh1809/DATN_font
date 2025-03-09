@@ -9,7 +9,7 @@ import Divide from "@/ui/divide";
 import Icon from "@/ui/icon";
 import { Edit } from "@/ui/icon/active";
 import { Show } from "@/ui/icon/edit";
-import { CrossMedium, Document, Home2 } from "@/ui/icon/symbol";
+import { CrossMedium, Document, File, FileAdd, Home2 } from "@/ui/icon/symbol";
 import ViewHasButtonAdd from "@/ui/layout/add_button";
 import HeaderBack from "@/ui/layout/header";
 import RoomItem from "@/ui/layout/room_item";
@@ -44,13 +44,18 @@ function ListRoom() {
           icon: Edit,
           url: `/lodging/${lodgingId}/room/edit/${room.id}?router_from=list`,
         },
+        {
+          title: "Quản lý hợp đồng",
+          icon: File,
+          url: `/lodging/${lodgingId}/room/edit/${room.id}?router_from=list`,
+        },
         ...(room.status !== constant.room.status.filled &&
         typeof room.current_tenants == "number" &&
         room.current_tenants < room.max_tenants
           ? [
               {
                 title: "Lập hợp đồng cho thuê mới",
-                icon: Document,
+                icon: FileAdd,
                 url: `/contract/create/${room.id}?name=${room.room_code}&price=${room.price}`,
               },
             ]

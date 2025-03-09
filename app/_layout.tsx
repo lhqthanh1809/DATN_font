@@ -17,7 +17,6 @@ import { LocalStorage } from "@/services/LocalStorageService";
 import { GeneralProvider } from "@/providers/GeneralProvider";
 import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
-import FCMService from "@/services/FCMService";
 import * as Notifications from "expo-notifications";
 import registerNNPushToken, {
   getPushDataObject,
@@ -89,28 +88,24 @@ export default function RootLayout() {
     []
   );
 
-  // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
-      // const token = await new FCMService().getToken();
-      // console.log(token);
       try {
         const token = await localStorage.getItem(env("KEY_TOKEN"));
         if (!token) {
           setPage("/login");
-          setLoading(false);
           return;
         }
-
+        setUser(null);
         const data = await new UserService().info();
 
         if (!data) {
           await localStorage.removeItem(env("KEY_TOKEN"));
-          setUser(null);
+
           setPage("/login");
           return;
         }
-
+        
         setUser(data);
 
         setPage(data?.is_completed ? "/" : "/user/update");
@@ -126,6 +121,8 @@ export default function RootLayout() {
     registerNotify();
   }, []);
 
+
+  //Push notification
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === "active") {
@@ -150,13 +147,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!loading && fontsLoaded && page) {
-      SplashScreen.hideAsync();
       route.replace(page);
+      SplashScreen.hideAsync();
     }
   }, [loading, fontsLoaded, page]);
 
   // Hiển thị màn hình chờ khi chưa load xong
-  if (!fontsLoaded || loading) {
+  if (!fontsLoaded || loading || !page) {
     return (
       <View className="flex-1 bg-lime-300 items-center justify-center">
         {/* <Text className="font-BeVietnamMedium text-16 text-mineShaft-900">Get ready...</Text> */}

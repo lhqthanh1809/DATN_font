@@ -3,8 +3,8 @@ import { twMerge } from "tailwind-merge";
 import Constants from "expo-constants";
 import CryptoJS from "crypto-js";
 import moment from "moment";
-import * as Application from "expo-application"
-import { Platform } from "react-native";
+import * as Application from "expo-application";
+import { Platform, StatusBar, Dimensions } from "react-native";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -88,7 +88,7 @@ export const getDeviceID = async () => {
 
 export const getTimeAgo = (timestamp: string) => {
   const now = moment().tz(getTimezone());
-  const notifTime = moment.tz(timestamp, env("TIMEZONE")).tz(getTimezone()); 
+  const notifTime = moment.tz(timestamp, env("TIMEZONE")).tz(getTimezone());
   const diffHours = now.diff(notifTime, "hours");
   const diffSeconds = now.diff(notifTime, "seconds");
 
@@ -101,4 +101,26 @@ export const getTimeAgo = (timestamp: string) => {
   } else {
     return notifTime.format("DD/MM/YYYY");
   }
+};
+
+export const getStatusBarHeight = () => {
+  const X_WIDTH = 375;
+  const X_HEIGHT = 812;
+
+  const XSMAX_WIDTH = 414;
+  const XSMAX_HEIGHT = 896;
+
+  const { height, width } = Dimensions.get("window");
+
+  const isIPhoneX = () =>
+    Platform.OS === "ios" && !Platform.isPad && !Platform.isTV
+      ? (width === X_WIDTH && height === X_HEIGHT) ||
+        (width === XSMAX_WIDTH && height === XSMAX_HEIGHT)
+      : false;
+
+  return Platform.select({
+    ios: isIPhoneX() ? 44 : 20,
+    android: StatusBar.currentHeight,
+    default: 0,
+  });
 };

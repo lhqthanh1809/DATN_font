@@ -1,7 +1,11 @@
 import Svg, { Path } from "react-native-svg";
 import { IIcon } from "../../icon";
 
-const CheckCircle: React.FC<IIcon> = ({ className }) => {
+const CheckCircle: React.FC<IIcon> = ({
+  className,
+  currentColor,
+  strokeWidth = 1.5,
+}) => {
   return (
     <Svg
       width="24"
@@ -12,8 +16,8 @@ const CheckCircle: React.FC<IIcon> = ({ className }) => {
     >
       <Path
         d="M8 12L10.2929 14.2929C10.6834 14.6834 11.3166 14.6834 11.7071 14.2929L16 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
         strokeLinecap="round"
       />
     </Svg>

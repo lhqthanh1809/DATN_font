@@ -1,3 +1,5 @@
+import { constant } from "@/assets/constant";
+import { cn, getStatusBarHeight } from "@/helper/helper";
 import {
   ComponentRef,
   GeneralContextValue,
@@ -6,13 +8,19 @@ import {
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { IPermission } from "@/interfaces/Permission";
+import useToastStore from "@/store/ToastStore";
+import Button from "@/ui/button";
+import Icon from "@/ui/icon";
+import { CheckCircle, CrossSmall, Error } from "@/ui/icon/symbol";
+import { AnimatePresence, MotiView } from "moti";
 import React, {
   createContext,
   MutableRefObject,
   useCallback,
   useState,
 } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
+import { Platform } from "react-native";
 
 export const GeneralContext = createContext<GeneralContextValue | undefined>(
   undefined
@@ -33,6 +41,8 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
   const [permissions, setPermissions] = useState<Record<string, IPermission[]>>(
     {}
   );
+
+  const { toasts, removeToast } = useToastStore();
 
   const setLocations = useCallback((data: Array<LocationUnit>): void => {
     setProvinces(data);
@@ -97,6 +107,50 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
       }}
     >
       {children}
+      <View
+        className="absolute left-1/2 -translate-x-1/2 gap-1"
+        style={{
+          top: getStatusBarHeight() + 10,
+        }}
+      >
+        <AnimatePresence>
+          {toasts.map((toast) => (
+            <MotiView
+              className="bg-mineShaft-950 px-4 py-3 rounded-lg flex-row items-center justify-between gap-4"
+              from={{ translateX: 300, opacity: 0 }}
+              animate={{ translateX: 0, opacity: 1 }}
+              exit={{ translateX: 300, opacity: 0 }}
+              transition={{ type: "timing", duration: 500 }}
+              key={toast.id}
+            >
+              <View className="flex-row items-center gap-3">
+                <Icon
+                  icon={
+                    toast.type == constant.toast.type.success
+                      ? CheckCircle
+                      : Error
+                  }
+                  className={cn(
+                    toast.type == constant.toast.type.success
+                      ? "text-lime-500"
+                      : "text-redPower-600"
+                  )}
+                />
+
+                <Text
+                  numberOfLines={1}
+                  className=" truncate text-white-50 font-BeVietnamMedium text-12"
+                >
+                  {toast.message}
+                </Text>
+              </View>
+              <Button className="p-2" onPress={() => removeToast(toast.id)}>
+                <Icon icon={CrossSmall} />
+              </Button>
+            </MotiView>
+          ))}
+        </AnimatePresence>
+      </View>
     </GeneralContext.Provider>
   );
 };
