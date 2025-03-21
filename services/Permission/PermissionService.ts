@@ -15,21 +15,17 @@ export default class PermissionService extends BaseService {
 
   public async listByUser(): Promise<IPermission[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.listPermissionByUser,
         authentication_requested: true,
         body: {
           lodging_id: this._lodgingId,
         },
       });
-
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return {
-          message: res.error?.[0].message || "Không xác định",
-          code: res.status,
-        };
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
-      return res.body?.data || [];
+      return (res as IResponse).body?.data || [];
     } catch (error: any) {
       return this.returnError(error);
     }

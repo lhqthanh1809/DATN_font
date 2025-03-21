@@ -1,5 +1,5 @@
 import React from "react";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 import Svg, { Path } from "react-native-svg";
 
 const Compass: React.FC<IIcon> = ({ className, currentColor }) => {

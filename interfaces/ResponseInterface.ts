@@ -6,5 +6,5 @@ export interface IResponse {
     [key: string]: any;
     data?: any;
   };
-  error?: Array<{ message: string; field?: string }>;
+  errors?: Array<{ message: string; field?: string }>;
 }

@@ -1,6 +1,6 @@
-import Box from "@/ui/box";
-import Input from "@/ui/input";
-import Label from "@/ui/label";
+import Box from "@/ui/Box";
+import Input from "@/ui/Input";
+import Label from "@/ui/Label";
 import React from "react";
 
 const BoxInfo: React.FC<{

@@ -1,26 +1,18 @@
-import { useGeneral } from "@/hooks/useGeneral";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import Button from "@/ui/button";
-import Icon from "@/ui/icon";
+import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import Button from "@/ui/Button";
+import Icon from "@/ui/Icon";
 import { Plus, PlusTiny, Trash } from "@/ui/icon/symbol";
-import ItemFling from "@/ui/item_fling";
+import ItemFling from "@/ui/ItemFling";
 import { Href, router, useRouter } from "expo-router";
 import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import React, { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import {
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 
 const ManagementScreen = () => {
-  const { setLodgings, lodgings } = useGeneral();
+  const { setLodgings, lodgings } = useLodgingsStore();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

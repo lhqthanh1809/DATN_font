@@ -1,23 +1,130 @@
+import { env } from "@/helper/helper";
+import axios, { HttpStatusCode, AxiosError } from "axios";
+import { LocalStorage } from "./LocalStorageService";
 import { IError } from "@/interfaces/ErrorInterface";
-import { BaseHttpService } from "./BaseHttpService";
-import { HttpStatusCode } from "axios";
 import { IResponse } from "@/interfaces/ResponseInterface";
+import { apiRouter } from "@/assets/ApiRouter";
+import { router } from "expo-router";
 
 export default class BaseService {
-  protected _service = new BaseHttpService();
+  private _api = axios.create({
+    baseURL: env("API_URL"),
+  });
 
-  protected returnError = (error: any): IError => {
+  constructor() {
+    // Cài interceptor vào đây luôn
+    this._api.interceptors.response.use(
+      (response) => response,
+      async (error: AxiosError) => {
+        const originalRequest = error.config as any;
+
+        const errData = error.response?.data as IResponse;
+        if (
+          (error.response?.status === 401 ||
+            errData.errors?.[0]?.message === "Token has expired") &&
+          !originalRequest._retry
+        ) {
+          originalRequest._retry = true;
+          const localStorage = new LocalStorage();
+          try {
+            // Gọi API refresh
+            const refreshRes = await this._api.get(apiRouter.refreshUser, {
+              headers: {
+                Authorization: `Bearer ${await localStorage.getItem(
+                  env("KEY_TOKEN")
+                )}`,
+              },
+            });
+
+            const newToken = refreshRes.data.body.access_token;
+            await localStorage.setItem(env("KEY_TOKEN"), newToken);
+
+            // Gắn lại token mới
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+
+            // Retry request cũ
+            return this._api(originalRequest);
+          } catch (e) {
+            // Nếu refresh fail
+            await localStorage.removeItem(env("KEY_TOKEN"));
+            router.dismissAll();
+            router.replace("/login");
+            return Promise.reject(e);
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  protected async https({
+    method = "GET",
+    url,
+    body,
+    cancelToken,
+    authentication_requested = false,
+  }: {
+    method?: "POST" | "PUT" | "GET";
+    url: string;
+    body?: any;
+    cancelToken?: any;
+    formData_requested?: boolean;
+    authentication_requested?: boolean;
+  }) {
+    try {
+      const headers: Record<string, string> = {};
+
+      if (authentication_requested) {
+        const token = await new LocalStorage().getItem(env("KEY_TOKEN"));
+        if (!token) {
+          return this.returnError({
+            message: "Unauthorized",
+            code: HttpStatusCode.Unauthorized,
+          });
+        }
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await this._api.request({
+        method,
+        url,
+        ...(method === "GET" ? { params: body } : { data: body }),
+        cancelToken,
+        headers,
+      });
+
+      if ((response.data as any).status >= HttpStatusCode.BadRequest) {
+        return this.getErrorResponse(response.data as IResponse);
+      }
+
+      return response.data;
+    } catch (error) {
+      return this.returnError(error);
+    }
+  }
+
+  protected returnError(error: any): IError {
+    if (error instanceof AxiosError) {
+      return {
+        message: error.response?.data?.message || "Lỗi khi tải dữ liệu",
+        code: error.response?.status || HttpStatusCode.InternalServerError,
+        details: error.response?.data || null,
+      };
+    }
+
     return {
-      message: `Lỗi khi tải dữ liệu: ${error?.message || "Không xác định"}`,
+      message: error?.message || "Lỗi không xác định",
       code: error?.code || HttpStatusCode.InternalServerError,
-      details: error?.response || null,
+      details: null,
     };
-  };
+  }
 
-  protected getErrorResponse = (response: IResponse): IError => {
+  // Xử lý lỗi từ API trả về
+  protected getErrorResponse(response: IResponse): IError {
     return {
-      message: response.error?.[0].message || "Không xác định",
+      message: response.errors?.[0]?.message || "Lỗi không xác định",
       code: response.status,
     };
-  };
+  }
 }

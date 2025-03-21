@@ -1,5 +1,5 @@
 import React from "react";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 import Svg, { Path, Rect } from "react-native-svg";
 
 const Square: React.FC<IIcon> = ({ className }) => {

@@ -1,3 +1,9 @@
+import { IRoomSetup } from "./RoomSetupInterface";
+
+export interface IUpdateEquipment extends ICreateEquipment {
+  id: string;
+}
+
 export interface ICreateEquipment {
   lodging_id: string;
   name: string;
@@ -15,4 +21,5 @@ export interface IEquipment {
   quantity: number;
   thumbnail: string;
   remaining_quantity: number;
+  room_setups: IRoomSetup[];
 }

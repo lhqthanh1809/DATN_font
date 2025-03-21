@@ -1,5 +1,5 @@
 import { useGeneral } from "@/hooks/useGeneral";
-import Icon from "@/ui/icon";
+import Icon from "@/ui/Icon";
 import { Bell } from "@/ui/icon/symbol";
 import { Text, View } from "react-native";
 import { Building } from "@/ui/icon/general";
@@ -11,12 +11,14 @@ import {
   MenuHome,
   PersonScreen,
 } from "@/pages/User/Home/components";
-import useToastStore from "@/store/ToastStore";
+import useToastStore from "@/store/useToastStore";
+import Button from "@/ui/Button";
+import { router } from "expo-router";
 
 function HomeUser() {
   const { user } = useGeneral();
   const [navActive, setNavActive] = useState<ItemMenu | null>(null);
-  const {addToast} = useToastStore()
+  const { addToast } = useToastStore();
 
   const navItem = useMemo(
     () => [
@@ -35,22 +37,24 @@ function HomeUser() {
   );
 
   useEffect(() => {
-    setNavActive(navItem[0])
+    setNavActive(navItem[0]);
   }, []);
 
   return (
     <View className="flex-1 bg-white-50">
       <View className="p-5 flex-row justify-between items-center">
-        <Text className="font-BeVietnamSemiBold text-18 text-mineShaft-950">
-          {user?.full_name}
-        </Text>
+        <Button onPress={() => {router.push("/user/update")}}>
+          <Text className="font-BeVietnamSemiBold text-18 text-mineShaft-950">
+            {user?.full_name}
+          </Text>
+        </Button>
         <MenuHome
-        active={navActive}
-        items={navItem}
-        onChange={(item) => {
-          setNavActive(item);
-        }}
-      />
+          active={navActive}
+          items={navItem}
+          onChange={(item) => {
+            setNavActive(item);
+          }}
+        />
       </View>
       <View className="flex-1 bg-white-50">{navActive?.screen}</View>
     </View>

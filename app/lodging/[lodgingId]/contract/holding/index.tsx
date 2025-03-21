@@ -1,10 +1,9 @@
 import { formatDateForRequest } from "@/helper/helper";
-import { useGeneral } from "@/hooks/useGeneral";
 import { IRoom } from "@/interfaces/RoomInterface";
 import FilterRoom from "@/pages/Contract/filterRoom";
 import RoomService from "@/services/Room/RoomService";
-import HeaderBack from "@/ui/layout/header";
-import RoomItem from "@/ui/layout/room_item";
+import HeaderBack from "@/ui/layout/HeaderBack";
+import RoomItem from "@/ui/layout/RoomItem";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
@@ -12,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 function Holding() {
-  const {lodgingId} = useLocalSearchParams()
+  const { lodgingId } = useLocalSearchParams();
   const [rooms, setRooms] = useState<IRoom[]>([]);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [quantity, setQuantity] = useState(1);
@@ -20,31 +19,57 @@ function Holding() {
   const [loading, setLoading] = useState(false);
   const route = useRouter();
 
-  const fetchRoom = useCallback(async ({startDate, quantity, leaseDuration} : {startDate : Date, quantity : number, leaseDuration: number}) => {
-    setLoading(true);
-    const service = new RoomService(lodgingId as string);
-    const data = await service.filter({
-      lodging_id: lodgingId as string,
-      // status: constant.room.status.unfilled,
-      start_date: formatDateForRequest(startDate),
+  const filterBase64Url = useCallback(() => {
+    const field = JSON.stringify({
+      start_date: startDate,
       lease_duration: leaseDuration,
       quantity: quantity,
     });
-    if (isArray(data)) {
-      setRooms(data);
-    }
-    setLoading(false);
-  }, [lodgingId]);
+  
+    return btoa(field)
+      .replace(/\+/g, "-")  
+      .replace(/\//g, "_")  
+      .replace(/=+$/, "");  
+  }, [startDate, quantity, leaseDuration]);
+
+
+  const fetchRoom = useCallback(
+    async ({
+      startDate,
+      quantity,
+      leaseDuration,
+    }: {
+      startDate: Date;
+      quantity: number;
+      leaseDuration: number;
+    }) => {
+      setLoading(true);
+      const service = new RoomService(lodgingId as string);
+      const data = await service.filter({
+        lodging_id: lodgingId as string,
+        start_date: formatDateForRequest(startDate),
+        lease_duration: leaseDuration,
+        quantity: quantity,
+      });
+      if (isArray(data)) {
+        setRooms(data);
+      }
+      setLoading(false);
+    },
+    [lodgingId]
+  );
 
   // useEffect(() => console.log(quantity), [quantity])
   useEffect(() => {
-    fetchRoom({startDate, quantity, leaseDuration});
+    fetchRoom({ startDate, quantity, leaseDuration });
   }, []);
   return (
     <View className="flex-1 bg-white-50">
       <HeaderBack title="Cọc giữ chỗ" />
       <FilterRoom
-        onFilter={({ startDate, quantity, leaseDuration }) => fetchRoom({ startDate, quantity, leaseDuration })}
+        onFilter={({ startDate, quantity, leaseDuration }) =>
+          fetchRoom({ startDate, quantity, leaseDuration })
+        }
         {...{
           leaseDuration,
           setLeaseDuration,
@@ -85,7 +110,7 @@ function Holding() {
                     onPress={() =>
                       room.id &&
                       route.push(
-                        `/contract/holding/${room.id}?name=${room.room_code}&price=${room.price}` as any
+                        `lodging/${lodgingId}/contract/holding/${room.id}?name=${room.room_code}&price=${room.price}&filter=${filterBase64Url()}` as any
                       )
                     }
                   />

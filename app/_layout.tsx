@@ -24,9 +24,10 @@ import registerNNPushToken, {
 } from "native-notify";
 import { UIProvider } from "@/providers/UIProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { IUser } from "@/interfaces/UserInterface";
 
 export default function RootLayout() {
-  const [user, setUser] = useState<Record<any, any> | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const localStorage = new LocalStorage();
   const route = useRouter();
@@ -99,16 +100,16 @@ export default function RootLayout() {
         setUser(null);
         const data = await new UserService().info();
 
-        if (!data) {
+        if (!data || data.hasOwnProperty("message")) {
           await localStorage.removeItem(env("KEY_TOKEN"));
 
           setPage("/login");
           return;
         }
         
-        setUser(data);
+        setUser(data as IUser);
 
-        setPage(data?.is_completed ? "/" : "/user/update");
+        setPage((data as IUser)?.is_completed ? "/" : "/user/update");
       } catch (error) {
         setPage("/login");
       } finally {

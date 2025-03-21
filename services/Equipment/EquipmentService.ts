@@ -1,4 +1,4 @@
-import { ICreateEquipment, IEquipment } from "@/interfaces/EquipmentInterface";
+import { ICreateEquipment, IEquipment, IUpdateEquipment } from "@/interfaces/EquipmentInterface";
 import BaseService from "../BaseService";
 import { apiRouter } from "@/assets/ApiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
@@ -24,18 +24,18 @@ export class EquipmentService extends BaseService {
     data: ICreateEquipment
   ): Promise<IEquipment | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         method: "POST",
         url: apiRouter.createEquipment,
         body: data,
         authentication_requested: true,
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
 
-      return res.body?.data || null;
+      return (res as IResponse).body?.data || null;
     } catch (error: any) {
       return this.returnError(error);
     }
@@ -43,7 +43,7 @@ export class EquipmentService extends BaseService {
 
   public async listEquipment(): Promise<IEquipment[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listEquipment,
         body: {
           lodging_id: this._lodgingId,
@@ -51,6 +51,47 @@ export class EquipmentService extends BaseService {
       });
 
       return res.body?.data || [];
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+
+  public async detailEquipment(
+    equipmentId: string
+  ): Promise<IEquipment | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        url: apiRouter.detailEquipment.replace(":id", equipmentId),
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+
+      return (res as IResponse).body?.data || null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+  public async updateEquipment(
+    data: FormData
+  ): Promise<IEquipment | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        url: apiRouter.updateEquipment,
+        method: "POST",
+        authentication_requested: true,
+        formData_requested: true,
+        body: data,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+
+      return (res as IResponse).body?.data || null;
     } catch (error: any) {
       return this.returnError(error);
     }

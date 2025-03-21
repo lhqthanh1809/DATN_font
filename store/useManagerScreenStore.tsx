@@ -2,10 +2,11 @@ import { create } from "zustand";
 import { ReactNode } from "react";
 import { Bell, Chat, Home2, Document, Notification } from "@/ui/icon/symbol";
 import { constant } from "@/assets/constant";
-import ListNotify from "@/ui/layout/view_list_notification";
+import ListNotify from "@/ui/layout/ViewListNotification";
 import ListFeedback from "@/pages/Feedback/Management/List";
 import HomeScreen from "@/pages/Lodging/Main/screen";
 import { Setting } from "@/ui/icon/active";
+import SettingScreen from "@/pages/Lodging/Setting/Setting";
 
 interface ITab {
   name: string;
@@ -63,7 +64,7 @@ const useManagerScreenStore = create<ManagerScreenStore>((set, get) => ({
         name: "Cài đặt",
         slug: "setting",
         icon: Setting,
-        view: <></>,
+        view: <SettingScreen lodgingId={lodgingId}/>,
       },
     ];
 

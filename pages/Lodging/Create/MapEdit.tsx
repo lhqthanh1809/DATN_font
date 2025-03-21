@@ -1,12 +1,12 @@
 import { IMap } from "@/interfaces/MapInterface";
-import Button from "@/ui/button";
-import Icon from "@/ui/icon";
+import Button from "@/ui/Button";
+import Icon from "@/ui/Icon";
 import {
   QuarterCircleInsideBLeft,
   QuarterCircleInsideBRight,
 } from "@/ui/icon/shapes";
 import { Compass } from "@/ui/icon/travel";
-import Map from "@/ui/map";
+import Map from "@/ui/Map";
 import { useCallback } from "react";
 import { View, Pressable, Text } from "react-native";
 import { MapPressEvent } from "react-native-maps";

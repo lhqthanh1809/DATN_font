@@ -9,7 +9,7 @@ import {
 import Animated, {
   SharedValue,
 } from "react-native-reanimated";
-import LoadingAnimation from "./loading_animation";
+import LoadingAnimation from "./LoadingAnimation";
 
 interface Props {
   onPress?: () => void;
@@ -19,10 +19,8 @@ interface Props {
   children?: React.ReactNode;
   loading?: boolean;
   accessibilityLabel?: string;
-  onLayout?:
-    | ((event: LayoutChangeEvent) => void)
-    | SharedValue<((event: LayoutChangeEvent) => void) | undefined>
-    | undefined;
+  classNameLoading?: string;
+  onLayout?: ((event: LayoutChangeEvent) => void) | undefined
 }
 
 function Button({
@@ -33,25 +31,25 @@ function Button({
   children,
   accessibilityLabel,
   loading = false,
-  onLayout,
+  classNameLoading,
+  onLayout
 }: Props) {
-  const AnimatePressable = Animated.createAnimatedComponent(Pressable);
 
   return (
-    <AnimatePressable
+    <Pressable
       disabled={disabled}
       onPress={onPress}
       style={[style]}
+      onLayout={onLayout}
       className={cn(
         "rounded-2xl flex flex-row gap-5 items-center justify-center disabled:opacity-85",
         className
       )}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
-      onLayout={onLayout}
     >
-      {loading ? <LoadingAnimation /> : <>{children}</>}
-    </AnimatePressable>
+      {loading ? <LoadingAnimation className={classNameLoading} /> : <>{children}</>}
+    </Pressable>
   );
 }
 

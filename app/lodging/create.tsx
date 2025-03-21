@@ -1,5 +1,5 @@
-import Button from "@/ui/button";
-import Divide from "@/ui/divide";
+import Button from "@/ui/Button";
+import Divide from "@/ui/Divide";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import * as Location from "expo-location";
@@ -12,11 +12,13 @@ import { useRouter } from "expo-router";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import Layout from "@/ui/layout/layout_create";
+import Layout from "@/ui/layout/Layout";
+import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 
 function CreateLodging() {
   //Initial
   const route = useRouter();
+  const { updateLodging } = useLodgingsStore();
   const [lodgingType, setLodgingType] = useState<LodgingType | null>(null);
   const [province, setProvince] = useState<LocationUnit | null>(null);
   const [district, setDistrict] = useState<LocationUnit | null>(null);
@@ -70,6 +72,8 @@ function CreateLodging() {
     if (!("message" in data)) {
       route.push("/");
     }
+
+    updateLodging(data as ILodging);
     setProcessingCreate(false);
   }, [
     lodgingType,
@@ -239,6 +243,7 @@ function CreateLodging() {
                 loading={processingCreate}
                 onPress={handleNextView}
                 className="flex-1 bg-mineShaft-950 py-4"
+                classNameLoading="text-white-50"
               >
                 <Text className="text-white-50 text-16 font-BeVietnamSemiBold">
                   {viewIndex == view.length - 1 ? "Hoàn thành" : "Tiếp theo"}

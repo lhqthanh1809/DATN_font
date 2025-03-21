@@ -58,6 +58,18 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/BeVietnamPro-Bold.ttf",
+            "./assets/fonts/BeVietnamPro-ExtraBold.ttf",
+            "./assets/fonts/BeVietnamPro-Medium.ttf",
+            "./assets/fonts/BeVietnamPro-Regular.ttf",
+            "./assets/fonts/BeVietnamPro-SemiBold.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {
@@ -66,7 +78,7 @@
     "extra": {
       "AES_IV": "RpvfigpdYX7ErG1aaEesoA==",
       "AES_KEY": "TO33cEhaTkoyJsM2O9npHEK92jLqLYvYVwc6yJ5491s=",
-      "API_URL": "https://datn.ntu257.vpsttt.vn/api",
+      "API_URL": "http://160.30.136.116/api",
       "KEY_TOKEN": "token",
       "TIMEZONE": "Asia/Ho_Chi_Minh",
       "router": {

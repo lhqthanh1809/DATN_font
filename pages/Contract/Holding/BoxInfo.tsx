@@ -1,18 +1,36 @@
-import Box from "@/ui/box";
-import DatePicker from "@/ui/datepicker";
+import Box from "@/ui/Box";
+import DatePicker from "@/ui/Datepicker";
 import { View } from "react-native";
 import { useMemo, useState } from "react";
-import Input from "@/ui/input";
-import Divide from "@/ui/divide";
-import Label from "@/ui/label";
+import Input from "@/ui/Input";
+import Divide from "@/ui/Divide";
+import Label from "@/ui/Label";
 
-const BoxInfo = () => {
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [nameHoldPerson, setNameHoldPerson] = useState<string>("");
-  const [phoneHoldPerson, setPhoneHoldPerson] = useState<string>("");
-  const [quantity, setQuantity] = useState(1);
-  const [time, setTime] = useState(1);
+interface BoxInfoProps {
+  name: string;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+  phone: string;
+  setPhone: React.Dispatch<React.SetStateAction<string>>;
+  quantity: number;
+  setQuantity: React.Dispatch<React.SetStateAction<number>>;
+  time: number;
+  setTime: React.Dispatch<React.SetStateAction<number>>;
+  startDate: Date;
+  setStartDate: React.Dispatch<React.SetStateAction<Date>>;
+}
 
+const BoxInfo = ({
+  name,
+  setName,
+  phone,
+  setPhone,
+  quantity,
+  setQuantity,
+  time,
+  setTime,
+  startDate,
+  setStartDate,
+}: BoxInfoProps) => {
   return (
     <Box
       title="Thông tin cơ bản"
@@ -42,8 +60,8 @@ const BoxInfo = () => {
             required
             label="Tên người cọc"
             placeHolder="Nhập tên người cọc"
-            value={nameHoldPerson}
-            onChange={(value) => setNameHoldPerson(value)}
+            value={name}
+            onChange={(value) => setName(value)}
           />
         </View>
         <View className="flex-1">
@@ -51,8 +69,8 @@ const BoxInfo = () => {
             required
             label="Số điện thoại"
             placeHolder="Số điện thoại"
-            value={phoneHoldPerson}
-            onChange={(value) => setPhoneHoldPerson(value)}
+            value={phone}
+            onChange={(value) => setPhone(value)}
             type="phone"
           />
         </View>

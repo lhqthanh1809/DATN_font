@@ -1,18 +1,18 @@
-import { useGeneral } from "@/hooks/useGeneral";
-import { BoxPaymentTimeBill } from "@/ui/layout/box_payment_time_bill";
-import Layout from "@/ui/layout/layout_create";
+import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
+import Layout from "@/ui/layout/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import Button from "@/ui/button";
+import Button from "@/ui/Button";
 import { formatNumber } from "@/helper/helper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import RoomService from "@/services/Room/RoomService";
 import { constant } from "@/assets/constant";
 import { BoxInfo } from "@/pages/Room/BoxInfo";
 import BoxService from "@/pages/Room/BoxService";
+import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 
 function CreateRoom() {
-  const { lodgings } = useGeneral();
+  const { lodgings } = useLodgingsStore();
   const { lodgingId } = useLocalSearchParams();
   const [paymentDate, setPaymentDate] = useState<number>(5);
   const [lateDays, setLateDays] = useState<number>(5);

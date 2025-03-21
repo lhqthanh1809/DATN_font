@@ -9,7 +9,7 @@ export default class ClientService extends BaseService {
     data?: any
   ): Promise<ILodging[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listLodgingAndRoomByUser,
         authentication_requested: true,
         body: data,

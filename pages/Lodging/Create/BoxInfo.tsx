@@ -1,13 +1,13 @@
 import { apiRouter } from "@/assets/ApiRouter";
-import { useGeneral } from "@/hooks/useGeneral";
 import { LodgingType } from "@/interfaces/LodgingInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { BaseHttpService } from "@/services/BaseHttpService";
-import Box from "@/ui/box";
-import Dropdown from "@/ui/dropdown";
-import Icon from "@/ui/icon";
+import useLodgingTypeStore from "@/store/lodging_type/useLodgingType";
+import Box from "@/ui/Box";
+import Dropdown from "@/ui/Dropdown";
+import Icon from "@/ui/Icon";
 import { Home } from "@/ui/icon/symbol";
-import Input from "@/ui/input";
+import Input from "@/ui/Input";
 import { useEffect, useState } from "react";
 import React from "react";
 
@@ -17,7 +17,7 @@ const BoxInfo: React.FC<{
   name: string;
   setName: (name: string) => void;
 }> = ({ setLodgingType, lodgingType, name, setName }) => {
-  const { lodgingTypes, setLodgingTypes } = useGeneral();
+  const { lodgingTypes, setLodgingTypes } = useLodgingTypeStore();
   const [loading, setLoading] = useState(false);  
   
 
@@ -53,7 +53,7 @@ const BoxInfo: React.FC<{
     <Box
       title="Thông tin nhà cho thuê"
       description="Thông tin cơ bản tên, loại hình,..."
-      icon={<Icon icon={Home} />}
+      icon={Home}
       className="z-10"
     >
       <Dropdown

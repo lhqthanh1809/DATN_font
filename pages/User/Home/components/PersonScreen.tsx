@@ -1,6 +1,6 @@
 import { useGeneral } from "@/hooks/useGeneral";
 import useUserScreenStore from "@/store/useUserScreenStore";
-import Menu from "@/ui/layout/menu";
+import Menu from "@/ui/layout/Menu";
 import { View } from "moti";
 import { useEffect } from "react";
 

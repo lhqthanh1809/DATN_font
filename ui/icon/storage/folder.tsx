@@ -1,5 +1,5 @@
 import React from "react";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 
 const Folder: React.FC<IIcon> = ({ className }) => {
   return (

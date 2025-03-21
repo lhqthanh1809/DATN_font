@@ -23,17 +23,17 @@ export default class RoomService extends BaseService {
 
   public async create(data: IRoom): Promise<IRoom | IError | null> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.createRoom,
         authentication_requested: true,
         method: "POST",
         body: { ...data, lodging_id: this._lodgingId },
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
-      return res.body?.data ?? null;
+      return (res as IResponse).body?.data ?? null;
     } catch (error: any) {
       return this.returnError(error);
     }
@@ -41,14 +41,14 @@ export default class RoomService extends BaseService {
 
   public async detail(id: string): Promise<IRoom | IError | null> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.detailRoom.replace(":id", id),
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
-      return res.body?.data ?? null;
+      return (res as IResponse).body?.data ?? null;
     } catch (error: any) {
       return this.returnError(error);
     }
@@ -56,17 +56,17 @@ export default class RoomService extends BaseService {
 
   public async update(data: IRoom, id: string): Promise<IRoom | IError | null> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.updateRoom,
         authentication_requested: true,
         method: "POST",
         body: { ...data, lodging_id: this._lodgingId, id: id },
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
-      return res.body?.data ?? null;
+      return (res as IResponse).body?.data ?? null;
     } catch (error: any) {
       return this.returnError(error);
     }
@@ -81,7 +81,7 @@ export default class RoomService extends BaseService {
       };
     }
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.listRoomByLodging.replace(
           ":lodging_id",
           this._lodgingId
@@ -89,10 +89,10 @@ export default class RoomService extends BaseService {
         body: body,
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
-      return res.body?.data ?? [];
+      return (res as IResponse).body?.data ?? [];
     } catch (error: any) {
       return this.returnError(error);
     }
@@ -100,16 +100,16 @@ export default class RoomService extends BaseService {
 
   public async filter(data: IRoomFilter): Promise<IRoom[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.filterRoom,
         method: "POST",
         body: data,
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
-      return res.body?.data ?? [];
+      return (res as IResponse).body?.data ?? [];
     } catch (error: any) {
       return this.returnError(error);
     }

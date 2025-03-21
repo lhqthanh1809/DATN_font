@@ -1,5 +1,5 @@
 import Svg, { Path } from "react-native-svg";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 
 const CheckCircle: React.FC<IIcon> = ({
   className,

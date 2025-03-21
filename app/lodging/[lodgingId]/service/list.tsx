@@ -1,13 +1,12 @@
 import { reference } from "@/assets/reference";
-import { useGeneral } from "@/hooks/useGeneral";
 import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import LodgingServiceManagerService from "@/services/LodgingService/LodgingServiceManagerService";
 import ServiceManagerService from "@/services/Service/ServiceManagerService";
 import UnitService from "@/services/Unit/UnitService";
-import Icon from "@/ui/icon";
-import ItemFling from "@/ui/item_fling";
-import ViewHasButtonAdd from "@/ui/layout/add_button";
-import HeaderBack from "@/ui/layout/header";
+import Icon from "@/ui/Icon";
+import ItemFling from "@/ui/ItemFling";
+import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
+import HeaderBack from "@/ui/layout/HeaderBack";
 import {
   Href,
   useFocusEffect,

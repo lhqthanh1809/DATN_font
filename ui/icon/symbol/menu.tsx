@@ -1,5 +1,5 @@
 import Svg, { Path } from "react-native-svg";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 
 import React from "react";
 import { cn } from "@/helper/helper";

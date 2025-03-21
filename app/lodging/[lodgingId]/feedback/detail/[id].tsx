@@ -1,23 +1,16 @@
-import Button from "@/ui/button";
-import ImagePicker from "@/ui/image_picker";
-import Input from "@/ui/input";
-import Layout from "@/ui/layout/layout_create";
-import TextArea from "@/ui/textarea";
-import { AssetInfo } from "expo-media-library";
+import Button from "@/ui/Button";
+import Layout from "@/ui/layout/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
-import * as FileSystem from "expo-file-system";
-import ListModel from "@/ui/list_modal";
-import { IRoom } from "@/interfaces/RoomInterface";
-import { ILodging } from "@/interfaces/LodgingInterface";
+import { ScrollView, Text, View } from "react-native";
 import ClientService from "@/services/Client/ClientService";
 import { router, useLocalSearchParams } from "expo-router";
-import { ICreateFeedback, IFeedback } from "@/interfaces/FeedbackInterface";
+import { IFeedback } from "@/interfaces/FeedbackInterface";
 import FeedbackService from "@/services/Feedback/FeedbackService";
 import { constant } from "@/assets/constant";
 import { cn } from "@/helper/helper";
-import ImageViewBox from "@/ui/image_view_box";
-import LoadingAnimation from "@/ui/loading_animation";
+import ImageViewBox from "@/ui/ImageViewBox";
+import LoadingAnimation from "@/ui/LoadingAnimation";
+import DetailItem from "@/ui/layout/DetailItem";
 
 function Create() {
   const { id, lodgingId } = useLocalSearchParams();
@@ -147,28 +140,5 @@ function Create() {
   );
 }
 
-const DetailItem: React.FC<{
-  title: string;
-  data: any;
-}> = ({ title, data }) => {
-  return (
-    <Button className="flex gap-1 px-4 py-3 border-1 border-mineShaft-100 rounded-2xl bg-white-50 shadow-sm shadow-mineShaft-950/10 flex-col items-start">
-      <Text className="font-BeVietnamRegular text-12 text-white-400">
-        {title}
-      </Text>
-      <View>
-        <View className={cn("flex-row items-center relative w-full")}>
-          <Text
-            className={cn(
-              `flex-1 text-16 font-BeVietnamMedium text-mineShaft-950`
-            )}
-          >
-            {data}
-          </Text>
-        </View>
-      </View>
-    </Button>
-  );
-};
 
 export default Create;

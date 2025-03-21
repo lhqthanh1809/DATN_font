@@ -1,14 +1,15 @@
 import { cn } from "@/helper/helper";
-import { ReactNode, useRef } from "react";
+import React, { ReactNode, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
-import Divide from "./divide";
+import Divide from "./Divide";
 import { useGeneral } from "@/hooks/useGeneral";
+import Icon, { IIcon } from "./Icon";
 
 interface Props {
   className?: string;
   children: ReactNode;
   title?: string;
-  icon?: ReactNode;
+  icon?: React.ElementType<IIcon> | null;
   suffix?: ReactNode;
   description?: string;
 }
@@ -39,7 +40,7 @@ function Box({
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
             <View className="ml-2 flex-row items-center gap-2">
-              {icon}
+              {icon && <Icon icon={icon}/>}
               <View>
                 <Text className={cn("text-mineShaft-950 font-BeVietnamBold")}>
                   {title}

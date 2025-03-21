@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { router } from "expo-router";
-import Icon from "@/ui/icon";
+import Icon from "@/ui/Icon";
 import { ChevronLeft } from "@/ui/icon/symbol";
-import Button from "@/ui/button";
+import Button from "@/ui/Button";
 import eventEmitter from "@/utils/eventEmitter";
 
 const CameraScreen = () => {

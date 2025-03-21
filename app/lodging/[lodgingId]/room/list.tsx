@@ -4,15 +4,15 @@ import { cn } from "@/helper/helper";
 import { useUI } from "@/hooks/useUI";
 import { IRoom } from "@/interfaces/RoomInterface";
 import RoomService from "@/services/Room/RoomService";
-import Button from "@/ui/button";
-import Divide from "@/ui/divide";
-import Icon from "@/ui/icon";
+import Button from "@/ui/Button";
+import Divide from "@/ui/Divide";
+import Icon from "@/ui/Icon";
 import { Edit } from "@/ui/icon/active";
 import { Show } from "@/ui/icon/edit";
 import { CrossMedium, Document, File, FileAdd, Home2 } from "@/ui/icon/symbol";
-import ViewHasButtonAdd from "@/ui/layout/add_button";
-import HeaderBack from "@/ui/layout/header";
-import RoomItem from "@/ui/layout/room_item";
+import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
+import HeaderBack from "@/ui/layout/HeaderBack";
+import RoomItem from "@/ui/layout/RoomItem";
 import {
   Href,
   useFocusEffect,
@@ -20,6 +20,7 @@ import {
   useRouter,
 } from "expo-router";
 import { isArray } from "lodash";
+import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -37,17 +38,17 @@ function ListRoom() {
         {
           title: "Xem thông tin chi tiết phòng",
           icon: Show,
-          url: `/lodging/${lodgingId}/room/detail/${room.id}`,
+          url: `/lodging/${lodgingId}/room/${room.id}/detail`,
         },
         {
           title: "Chỉnh sửa thông tin phòng",
           icon: Edit,
-          url: `/lodging/${lodgingId}/room/edit/${room.id}?router_from=list`,
+          url: `/lodging/${lodgingId}/room/${room.id}/edit?router_from=list`,
         },
         {
           title: "Quản lý hợp đồng",
           icon: File,
-          url: `/lodging/${lodgingId}/room/edit/${room.id}?router_from=list`,
+          url: `/lodging/${lodgingId}/room/${room.id}/contracts?name=${room.room_code}`,
         },
         ...(room.status !== constant.room.status.filled &&
         typeof room.current_tenants == "number" &&
@@ -56,61 +57,53 @@ function ListRoom() {
               {
                 title: "Lập hợp đồng cho thuê mới",
                 icon: FileAdd,
-                url: `/contract/create/${room.id}?name=${room.room_code}&price=${room.price}`,
+                url: `/lodging/${lodgingId}/contract/create/${room.id}?name=${room.room_code}&price=${room.price}`,
               },
             ]
           : []),
       ];
       showModal(
-        <Pressable
-          onPress={() => {}}
-          className="absolute bottom-0 bg-white-50 rounded-xl py-4 gap-4 w-full"
+        <MotiView
+          from={{ opacity: 0, translateY: 100 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 200 }}
+          className="absolute bottom-0 bg-white-50 rounded-xl py-4 w-full"
         >
-          <View className="px-4 flex-row items-center justify-between">
-            <View className="gap-3 flex-row items-center">
-              <View className="bg-lime-500 p-2 rounded-full">
-                <Icon icon={Home2} className="text-white-50" />
+          <Button onPress={() => {}} className="gap-4 flex-col">
+            <View className="px-4 flex-row items-center justify-between w-full">
+              <View className="gap-3 flex-row items-center">
+                <View className="bg-lime-500 p-2 rounded-full">
+                  <Icon icon={Home2} className="text-white-50" />
+                </View>
+                <View className="gap-1">
+                  <Text className="text-mineShaft-950 font-BeVietnamBold text-16">
+                    {room.room_code}
+                  </Text>
+                  <Text className="font-BeVietnamRegular text-mineShaft-600 text-14">
+                    Thao tác phòng
+                  </Text>
+                </View>
               </View>
-              <View className="gap-1">
-                <Text className="text-mineShaft-950 font-BeVietnamBold text-16">
-                  {room.room_code}
-                </Text>
-                <Text className="font-BeVietnamRegular text-mineShaft-600 text-14">
-                  Thao tác phòng
-                </Text>
-              </View>
+              <Button className="bg-mineShaft-400 p-2" onPress={hideModal}>
+                <Icon icon={CrossMedium} className="text-white-50" />
+              </Button>
             </View>
-            <Button className="bg-mineShaft-400 p-2" onPress={hideModal}>
-              <Icon icon={CrossMedium} className="text-white-50" />
-            </Button>
-          </View>
-          <Divide direction="horizontal" className="h-[1]" />
-          {/* Trạng thái */}
-          <View className="px-2">
-            <View
-              className={cn(
-                "rounded-xl py-3",
-                room.status === constant.room.status.filled
-                  ? "bg-white-50"
-                  : room.status === constant.room.status.fixing
-                  ? "bg-yellow-100"
-                  : "bg-red-100"
-              )}
-            >
-              <Text
+            <Divide direction="horizontal" className="h-[1]" />
+            {/* Trạng thái */}
+            <View className="px-2 w-full">
+              <View
                 className={cn(
-                  "font-BeVietnamRegular text-center",
+                  "rounded-xl py-3",
                   room.status === constant.room.status.filled
-                    ? "text-lime-600"
+                    ? "bg-white-50"
                     : room.status === constant.room.status.fixing
-                    ? "text-yellow-600"
-                    : "text-red-600"
+                    ? "bg-yellow-100"
+                    : "bg-red-100"
                 )}
               >
-                {`Trạng thái  `}
                 <Text
                   className={cn(
-                    "font-BeVietnamSemiBold text-center",
+                    "font-BeVietnamRegular text-center",
                     room.status === constant.room.status.filled
                       ? "text-lime-600"
                       : room.status === constant.room.status.fixing
@@ -118,37 +111,49 @@ function ListRoom() {
                       : "text-red-600"
                   )}
                 >
-                  {`"${
-                    room.status
-                      ? (
-                          reference.room.status as {
-                            [key: number]: { name: string };
-                          }
-                        )[room.status]?.name
-                      : reference.undefined.name
-                  }"`}
+                  {`Trạng thái  `}
+                  <Text
+                    className={cn(
+                      "font-BeVietnamSemiBold text-center",
+                      room.status === constant.room.status.filled
+                        ? "text-lime-600"
+                        : room.status === constant.room.status.fixing
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                    )}
+                  >
+                    {`"${
+                      room.status
+                        ? (
+                            reference.room.status as {
+                              [key: number]: { name: string };
+                            }
+                          )[room.status]?.name
+                        : reference.undefined.name
+                    }"`}
+                  </Text>
                 </Text>
-              </Text>
+              </View>
             </View>
-          </View>
-          <View className="w-full px-2 gap-2">
-            {activeRoomSelect.map((item, index) => (
-              <Button
-                className="justify-start border-1 px-4 py-3 rounded-xl border-lime-500 gap-3"
-                key={index}
-                onPress={() => {
-                  route.push(item.url as any);
-                  hideModal();
-                }}
-              >
-                <Icon icon={item.icon} />
-                <Text className="font-BeVietnamMedium text-mineShaft-800 text-14">
-                  {item.title}
-                </Text>
-              </Button>
-            ))}
-          </View>
-        </Pressable>
+            <View className="w-full px-2 gap-2">
+              {activeRoomSelect.map((item, index) => (
+                <Button
+                  className="justify-start border-1 px-4 py-3 rounded-xl border-lime-500 gap-3"
+                  key={index}
+                  onPress={() => {
+                    route.push(item.url as any);
+                    hideModal();
+                  }}
+                >
+                  <Icon icon={item.icon} />
+                  <Text className="font-BeVietnamMedium text-mineShaft-800 text-14">
+                    {item.title}
+                  </Text>
+                </Button>
+              ))}
+            </View>
+          </Button>
+        </MotiView>
       );
     },
     [lodgingId]

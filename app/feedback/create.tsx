@@ -1,13 +1,13 @@
-import Button from "@/ui/button";
-import ImagePicker from "@/ui/image_picker";
-import Input from "@/ui/input";
-import Layout from "@/ui/layout/layout_create";
-import TextArea from "@/ui/textarea";
+import Button from "@/ui/Button";
+import ImagePicker from "@/ui/ImagePicker";
+import Input from "@/ui/Input";
+import Layout from "@/ui/layout/Layout";
+import TextArea from "@/ui/Textarea";
 import { AssetInfo } from "expo-media-library";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import * as FileSystem from "expo-file-system";
-import ListModel from "@/ui/list_modal";
+import ListModel from "@/ui/ListModal";
 import { IRoom } from "@/interfaces/RoomInterface";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import ClientService from "@/services/Client/ClientService";
@@ -25,7 +25,7 @@ function Create() {
   const [lodgings, setLodgings] = useState<ILodging[]>([]);
   const [rooms, setRooms] = useState<IRoom[]>([]);
 
-  const [selectPhotos, setSelectPhotos] = useState<AssetInfo[]>([]);
+  const [selectPhotos, setSelectPhotos] = useState<(AssetInfo | string)[]>([]);
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const clientService = new ClientService();
@@ -47,15 +47,20 @@ function Create() {
     if (!title || !content || !lodging || !room || !room.id || !lodging.id)
       return;
     setProcessing(true);
-    const images = selectPhotos.filter((item) => item.mediaType === "photo");
+    const images = selectPhotos.filter((item) =>
+      typeof item === "string" ? item : item.mediaType === "photo"
+    );
     try {
       const imagesBase64 = await Promise.all(
         images.map(async (item) => {
-          const base64 = await FileSystem.readAsStringAsync(item.uri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          const extension = item.filename.split(".")[1].toLocaleLowerCase();
-          return `data:image/${extension};base64,${base64}`;
+          if (typeof item != "string") {
+            const base64 = await FileSystem.readAsStringAsync(item.uri, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            const extension = item.filename.split(".")[1].toLocaleLowerCase();
+            return `data:image/${extension};base64,${base64}`;
+          }
+          return item;
         })
       );
       let dataReq: ICreateFeedback = {

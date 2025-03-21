@@ -1,11 +1,11 @@
 import { useUI } from "@/hooks/useUI";
-import Button from "@/ui/button";
-import DatePicker from "@/ui/datepicker";
-import Divide from "@/ui/divide";
-import Icon from "@/ui/icon";
+import Button from "@/ui/Button";
+import DatePicker from "@/ui/Datepicker";
+import Divide from "@/ui/Divide";
+import Icon from "@/ui/Icon";
 import { Calender, CrossMedium, FilterSearch, Time } from "@/ui/icon/symbol";
-import Input from "@/ui/input";
-import Label from "@/ui/label";
+import Input from "@/ui/Input";
+import Label from "@/ui/Label";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -123,7 +123,7 @@ const ModalFilter: React.FC<{
       </View>
       <Divide direction="horizontal" className="h-[1]" />
       <View className="px-2 gap-3">
-        <View className="flex-row gap-1">
+        <View className="flex-row gap-2">
           <DatePicker
             label="Ngày dự kiến vào ở"
             value={localStartDate}

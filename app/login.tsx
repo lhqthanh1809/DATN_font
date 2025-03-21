@@ -1,5 +1,5 @@
-import Button from "@/ui/button";
-import Input from "@/ui/input";
+import Button from "@/ui/Button";
+import Input from "@/ui/Input";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -8,7 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import BackView from "@/ui/back_view";
+import BackView from "@/ui/BackView";
 import { useCallback, useEffect, useState } from "react";
 import { env, encrypt, getDeviceID } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
@@ -19,16 +19,21 @@ import { HttpStatusCode } from "axios";
 import { useRouter } from "expo-router";
 import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
-import OAuthLogin from "@/ui/layout/oauth_login";
+import OAuthLogin from "@/ui/layout/OauthLogin";
+import { IUser } from "@/interfaces/UserInterface";
+import { IError } from "@/interfaces/ErrorInterface";
+import useToastStore from "@/store/useToastStore";
+import { constant } from "@/assets/constant";
 
 function LoginScreen() {
-  const httpService = new BaseHttpService();
+  const { addToast } = useToastStore();
   const route = useRouter();
   const { changeUser } = useGeneral();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [activeLogin, setActiveLogin] = useState<Boolean>(false);
   const [loading, setLoading] = useState(false);
+  const userServer = new UserService();
 
   const handleInputPhone = useCallback((text: string) => setPhone(text), []);
   const handleInputPassword = useCallback(
@@ -46,28 +51,28 @@ function LoginScreen() {
     setLoading(true);
     setActiveLogin(false);
     try {
-      const dataLogin: IResponse = await httpService.https({
-        method: "POST",
-        url: apiRouter.loginUser,
-        body: fields,
-      });
+      const dataLogin: IError | string = await userServer.login(fields);
 
-      if (dataLogin && dataLogin.status === HttpStatusCode.Ok) {
-        const token = dataLogin.body?.token || "";
-        await new LocalStorage().setItem(env("KEY_TOKEN"), token);
-        if (token) {
-          const dataUser = await new UserService().info();
-          if (!dataUser) {
-            await new LocalStorage().removeItem(env("KEY_TOKEN"));
-            return;
-          }
+      if (dataLogin.hasOwnProperty("message") || !dataLogin) {
+        addToast(constant.toast.type.error, "Đăng nhập thất bại.");
+        return;
+      }
 
-          changeUser(dataUser);
-          if (dataUser?.is_completed) {
-            route.push("/");
-          } else {
-            route.push("/user/update");
-          }
+      const token = dataLogin as string;
+      await new LocalStorage().setItem(env("KEY_TOKEN"), token);
+      if (token) {
+        const dataUser = await userServer.info();
+        if (!dataUser) {
+          await new LocalStorage().removeItem(env("KEY_TOKEN"));
+          return;
+        }
+
+        changeUser(dataUser as IUser);
+        addToast(constant.toast.type.success, "Đăng nhập thành công!");
+        if ((dataUser as IUser)?.is_completed) {
+          route.push("/");
+        } else {
+          route.push("/user/update");
         }
       }
     } catch (err) {

@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { Bell, Chat, Home2, Document, Notification } from "@/ui/icon/symbol";
 import { constant } from "@/assets/constant";
 import ListLodging from "@pages/User/Lodging/List";
-import ListNotify from "@/ui/layout/view_list_notification";
+import ListNotify from "@/ui/layout/ViewListNotification";
 import ListFeedback from "@/pages/Feedback/User/List";
 
 interface ITab {

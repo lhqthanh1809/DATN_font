@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Pressable,
 } from "react-native";
-import Icon from "./icon";
+import Icon from "./Icon";
 import { Hide, Show } from "./icon/edit";
 import { cn, convertToNumber } from "@/helper/helper";
 

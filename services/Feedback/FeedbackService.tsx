@@ -16,7 +16,7 @@ export default class FeedbackService extends BaseService {
     data: ICreateFeedback
   ): Promise<IFeedback | IError> {
     try {
-      const res = await this._service.https({
+      const res = await this.https({
         url: apiRouter.createFeedback,
         method: "POST",
         body: data,
@@ -36,7 +36,7 @@ export default class FeedbackService extends BaseService {
     data?: IListFeedback
   ): Promise<IFeedback[] | IError> {
     try {
-      const res = await this._service.https({
+      const res = await this.https({
         url: apiRouter.listFeedbackByUser,
         authentication_requested: true,
         cancelToken,
@@ -56,7 +56,7 @@ export default class FeedbackService extends BaseService {
     cancelToken: any
   ): Promise<IFeedback[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         method: "POST",
         url: apiRouter.listFeedback,
         body: data,
@@ -71,7 +71,7 @@ export default class FeedbackService extends BaseService {
 
   public async detail(id: string): Promise<IFeedback | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.detailFeedback.replace(":id", id),
       });
 
@@ -85,7 +85,7 @@ export default class FeedbackService extends BaseService {
     data: IUpdateFeedback
   ): Promise<IFeedback | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.updateStatusFeedback,
         method: "POST",
         authentication_requested: true,

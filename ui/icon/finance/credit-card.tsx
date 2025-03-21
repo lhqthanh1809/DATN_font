@@ -1,5 +1,5 @@
 import React from "react";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 
 const CreditCard: React.FC<IIcon> = ({ className }) => {
   return (

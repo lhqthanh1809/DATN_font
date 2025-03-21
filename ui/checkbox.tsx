@@ -1,6 +1,6 @@
 import { cn } from "@/helper/helper";
 import { View } from "react-native";
-import Icon from "./icon";
+import Icon from "./Icon";
 import { CheckSimple, CheckSimpleMedium, CheckSimpleTiny } from "./icon/symbol";
 import { remapProps } from "nativewind";
 

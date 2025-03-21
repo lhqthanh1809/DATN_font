@@ -1,11 +1,9 @@
-import { useGeneral } from "@/hooks/useGeneral";
-import { BoxPaymentTimeBill } from "@/ui/layout/box_payment_time_bill";
-import Layout from "@/ui/layout/layout_create";
+import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
+import Layout from "@/ui/layout/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { BoxInfo } from "@/pages/Equipment/BoxInfo";
-import Button from "@/ui/button";
-import * as FileSystem from "expo-file-system";
+import Button from "@/ui/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { constant } from "@/assets/constant";
 import { BoxRoom } from "@/pages/Equipment/BoxRoom";
@@ -13,24 +11,26 @@ import { IRoom } from "@/interfaces/RoomInterface";
 import { AssetInfo } from "expo-media-library";
 import { ICreateEquipment } from "@/interfaces/EquipmentInterface";
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
-import useToastStore from "@/store/ToastStore";
+import useToastStore from "@/store/useToastStore";
+import * as FileSystem from "expo-file-system";
+import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 
 function CreateEquipment() {
-  const { lodgings } = useGeneral();
+  const { lodgings } = useLodgingsStore();
   const { lodgingId } = useLocalSearchParams();
   const [rooms, setRooms] = useState<IRoom[]>([]);
   const [selectRooms, setSelectRooms] = useState<IRoom[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
   const [name, setName] = useState<string>("");
   const [type, setType] = useState<number>(constant.equipment.type.private);
-  const [selectPhotos, setSelectPhotos] = useState<AssetInfo[]>([]);
+  const [selectPhotos, setSelectPhotos] = useState<(AssetInfo | string)[]>([]);
 
   const [loading, setLoading] = useState(false);
   const equipmentService = new EquipmentService();
   const { addToast } = useToastStore();
 
   const handleCreateEquipment = useCallback(async () => {
-    const images = selectPhotos.filter((item) => item.mediaType === "photo");
+    const images = selectPhotos.filter((item) => typeof item == "string" || item.mediaType === "photo");
 
     if (images.length <= 0) {
       addToast(constant.toast.type.error, "Ảnh đại diện là bắt buộc");
@@ -56,18 +56,21 @@ function CreateEquipment() {
     }
     setLoading(true);
     try {
-      const base64 = await FileSystem.readAsStringAsync(images[0].uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      const extension = images[0].filename.split(".")[1].toLocaleLowerCase();
-      const imageBase64 = `data:image/${extension};base64,${base64}`;
+        let thumbnail = images[0];
+        if(typeof thumbnail != "string"){
+            const base64 = await FileSystem.readAsStringAsync(thumbnail.uri, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            const extension = thumbnail.filename.split(".")[1].toLocaleLowerCase();
+            thumbnail = `data:image/${extension};base64,${base64}`;
+        }
 
       let dataReq: ICreateEquipment = {
         lodging_id: lodgingId as string,
         name,
         type,
         quantity,
-        thumbnail: imageBase64,
+        thumbnail,
       };
       if (selectRooms.length > 0) {
         dataReq = {

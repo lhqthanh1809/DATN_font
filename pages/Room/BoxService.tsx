@@ -1,12 +1,11 @@
-import { useGeneral } from "@/hooks/useGeneral";
 import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import LodgingServiceManagerService from "@/services/LodgingService/LodgingServiceManagerService";
-import Box from "@/ui/box";
+import Box from "@/ui/Box";
 import { isArray } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import ItemService from "./ItemService";
-import LoadingAnimation from "@/ui/loading_animation";
+import LoadingAnimation from "@/ui/LoadingAnimation";
 
 const BoxService: React.FC<{
   serviceSelects: Array<{
@@ -87,7 +86,7 @@ const BoxService: React.FC<{
           </Text>
         ) : (
           <ScrollView className="max-h-96">
-            <View className=" gap-1">
+            <View className=" gap-2">
               {services.map((service, index) => (
                 <ItemService
                   key={index}

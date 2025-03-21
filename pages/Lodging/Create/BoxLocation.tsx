@@ -1,18 +1,18 @@
-import Box from "@/ui/box";
-import Button from "@/ui/button";
-import Divide from "@/ui/divide";
-import Dropdown from "@/ui/dropdown";
-import Icon from "@/ui/icon";
+import Box from "@/ui/Box";
+import Button from "@/ui/Button";
+import Divide from "@/ui/Divide";
+import Dropdown from "@/ui/Dropdown";
+import Icon from "@/ui/Icon";
 import { Edit } from "@/ui/icon/active";
 import { Pin, PinCircle } from "@/ui/icon/travel";
-import Input from "@/ui/input";
-import Map from "@/ui/map";
+import Input from "@/ui/Input";
+import Map from "@/ui/Map";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Text, View } from "react-native";
 import ILocation from "@/interfaces/LocationInterface";
-import { useGeneral } from "@/hooks/useGeneral";
 import { debounce, isArray } from "lodash";
 import GeneralService from "@/services/GeneralService";
+import useLocationStore from "@/store/useLocationStore";
 
 const BoxLocation: React.FC<
   ILocation & {
@@ -31,8 +31,8 @@ const BoxLocation: React.FC<
   location,
 }) => {
   const service = new GeneralService();
-  const { provinces, districts, wards, setLocations, setLocationsWithParent } =
-    useGeneral();
+  const { provinces, districts, wards, setWards, setDistricts, setProvinces } =
+    useLocationStore();
   const [loadingProvince, setLoadingProvince] = useState(false);
   const [loadingDistrict, setLoadingDistrict] = useState(false);
   const [loadingWard, setLoadingWard] = useState(false);
@@ -49,13 +49,17 @@ const BoxLocation: React.FC<
       const data = await (type === "district"
         ? service.listDistrict(parentId)
         : service.listWard(parentId));
+
+      const set = type === "district"
+        ? setDistricts
+        : setWards;
       if (isArray(data)) {
-        setLocationsWithParent(type, data, parentId);
+        set(parentId, data );
       }
 
       setLoading(false);
     },
-    [setLocationsWithParent]
+    [setDistricts, setWards]
   );
 
   // Dùng useRef để giữ debounce function ổn định
@@ -69,7 +73,7 @@ const BoxLocation: React.FC<
       setLoadingProvince(true);
       const data = await service.listProvince();
       if (isArray(data)) {
-        setLocations(data);
+        setProvinces(data);
       }
       setLoadingProvince(false);
     };
@@ -96,7 +100,7 @@ const BoxLocation: React.FC<
   }, [district, fetchLocationData]);
 
   return (
-    <Box title="Địa chỉ & vị trí" icon={<Icon icon={Pin} />}>
+    <Box title="Địa chỉ & vị trí" icon={Pin}>
       <Dropdown
         className="max-h-44"
         onChange={setProvince}
@@ -153,7 +157,9 @@ const BoxLocation: React.FC<
 
         <Button
           onPress={() => setOpenMap(true)}
-          className={`flex-1 bg-mineShaft-950 py-4 ${location ? "gap-2" : "gap-3"}`}
+          className={`flex-1 bg-mineShaft-950 py-4 ${
+            location ? "gap-2" : "gap-3"
+          }`}
         >
           <Icon icon={location ? Edit : PinCircle} className="text-white-50" />
           <Text className="text-white-50 text-14 font-BeVietnamSemiBold">

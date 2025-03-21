@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
-import Button from "../button";
-import Icon, { IIcon } from "../icon";
+import Button from "../Button";
+import Icon, { IIcon } from "../Icon";
 import { Bell, Home, Home2, Notification } from "../icon/symbol";
 import { Setting } from "../icon/active";
 import React, { useEffect } from "react";
@@ -34,7 +34,7 @@ const Menu: React.FC<{
             <MotiView
               key={index}
               style={{
-                backgroundColor: active.name === item.name ? "#FDFDFD" : "#2A2A2A",
+                backgroundColor: active.name === item.name ? "#FDFDFD" : "#0D0F10",
                 borderRadius: 99999,
               }}
               layout={LinearTransition.springify().damping(80).stiffness(300)}

@@ -1,5 +1,7 @@
 import { DatePickerState, UIContextValue } from "@/interfaces/UIInterface";
-import Button from "@/ui/button";
+import Button from "@/ui/Button";
+import Calendar from "@/ui/date/Calendar";
+import { weekdays } from "moment";
 import React, { createContext, ReactNode, useState } from "react";
 import {
   Text,
@@ -77,31 +79,34 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
                     //   date={selectedDate}
                     locale="vi-VN"
                     date={idPicker ? selectedDates[idPicker] : undefined}
-                    onChange={({ date }) =>
-                      setDate(openDatePicker, date as Date)
-                    }
+                    onChange={({ date }) =>{
+                      setDate(openDatePicker, new Date(date as Date))
+                    }}
+                    showOutsideDays={true}
+                    navigationPosition={"right"}
+                    weekdaysFormat="short"
+                    weekdaysHeight={36}
                     styles={{
                       month_selector_label: { textTransform: "capitalize" },
                     }}
+                    components={Calendar}
                     classNames={{
                       ...getDefaultClassNames,
-                      selected: "rounded-full bg-lime-500",
+                      selected: "rounded-xl bg-lime-500",
                       selected_label: "font-BeVietnamSemiBold text-lime-50",
                       day: "",
                       day_label: "font-BeVietnamRegular",
                       day_cell: "p-1",
                       today_label: "font-BeVietnamSemiBold text-lime-500",
-                      month_label: " font-BeVietnamRegular",
-                      weekday_label: "font-BeVietnamSemiBold text-lime-800",
+                      month_label: " font-BeVietnamRegular capitalize",
                       year_label: "font-BeVietnamRegular",
-                      year_selector_label: "font-BeVietnamMedium",
-                      month_selector_label: "font-BeVietnamMedium",
+                      year_selector_label: "font-BeVietnamSemiBold text-16",
+                      month_selector_label: "font-BeVietnamSemiBold text-16",
                       time_selector_label: "bg-black",
-                      button_next: "bg-lime-600 rounded-full",
-                      button_prev: "bg-lime-600 rounded-full",
-                      weekdays: "border-b-1",
-                      outside: "bg-black",
-                      outside_label: "text-black",
+                      button_next: "bg-lime-600 rounded-lg",
+                      button_prev: "bg-lime-600 rounded-lg",
+                      weekdays: "bg-lime-100 rounded-full",
+                      outside_label: "text-mineShaft-100",
                     }}
                   />
                   {/* <Button>

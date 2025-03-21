@@ -1,17 +1,12 @@
 import { cn } from "@/helper/helper";
 import { IRoom } from "@/interfaces/RoomInterface";
 import RoomService from "@/services/Room/RoomService";
-import Box from "@/ui/box";
-import Button from "@/ui/button";
-import CheckBox from "@/ui/checkbox";
-import Dropdown from "@/ui/dropdown";
-import ImagePicker from "@/ui/image_picker";
-import Input from "@/ui/input";
-import Label from "@/ui/label";
-import ListModel from "@/ui/list_modal";
-import LoadingAnimation from "@/ui/loading_animation";
+import Box from "@/ui/Box";
+import Button from "@/ui/Button";
+import CheckBox from "@/ui/Checkbox";
+import LoadingAnimation from "@/ui/LoadingAnimation";
 import { isArray } from "lodash";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const BoxRoom: React.FC<{
@@ -87,7 +82,7 @@ const BoxRoom: React.FC<{
         </View>
       ) : (
         <ScrollView className="flex">
-          <View className="flex-row gap-1 flex-wrap max-h-96">
+          <View className="flex-row gap-2 flex-wrap max-h-96">
             {rooms.map((room, index) => {
               const checked = selectRooms.some((item) => item.id === room.id);
               return (

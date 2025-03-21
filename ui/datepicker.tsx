@@ -1,16 +1,27 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Keyboard, Pressable, StyleProp, Text, View, ViewStyle } from "react-native";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Keyboard,
+  Pressable,
+  StyleProp,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
 import moment from "moment-timezone";
-import { useContext } from "react";
-import { UIContext } from "@/providers/UIProvider";
 import { cn, getTimezone } from "@/helper/helper";
 import { useUI } from "@/hooks/useUI";
-import { useGeneral } from "@/hooks/useGeneral";
 import uuid from "react-native-uuid";
 
 interface Props {
   label?: string;
-  onChange: (date: Date) => void;
+  onChange?: (date: Date) => void;
   style?: StyleProp<ViewStyle>;
   className?: string;
   icon?: ReactNode;
@@ -31,28 +42,27 @@ function DatePicker({
   placeHolder = "",
   disabled = false,
   required,
-  prefix
+  prefix,
 }: Props) {
-  const { clickRef } = useGeneral();
-  const { openDatePicker, selectedDates, setDatePicker, setDate } = useUI();
+  const { selectedDates, setDatePicker, setDate } = useUI();
+  const [date, setDateLocal] = useState<Date | null>(value);
   const id = useMemo(() => {
     return uuid.v4();
   }, []);
 
-  const handleOutsideClick = useCallback(() => {
-    // setShowDropdown(false);
-  }, []);
-
+  useEffect(() => {
+    if (!date) return;
+    onChange && onChange(date);
+  }, [date]);
 
   useEffect(() => {
-    if (value && selectedDates[id] !== value) {
-      setDate(id, value);
-    }
+    if (!value) return;
+    setDate(id, value);
   }, [value]);
-  
+
   useEffect(() => {
-    if (selectedDates[id] && selectedDates[id] !== value) {
-      onChange(selectedDates[id]);
+    if (selectedDates[id] && selectedDates[id] !== date) {
+      setDateLocal(selectedDates[id]);
     }
   }, [selectedDates[id]]);
 
@@ -74,18 +84,17 @@ function DatePicker({
         disabled={disabled}
         className="z-10 relative flex-1"
         onPress={() => {
-          Keyboard.dismiss()
+          Keyboard.dismiss();
           setDatePicker(id);
         }}
       >
-
         <View
           className={cn(
             "border-1 border-mineShaft-200 px-3 h-[3rem] rounded-xl flex-row items-center gap-2 relative w-full",
             disabled && "bg-mineShaft-50"
           )}
         >
-        {prefix}
+          {prefix}
           <Text
             className={cn(
               `py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-600 ${className}`,
@@ -103,4 +112,3 @@ function DatePicker({
 }
 
 export default DatePicker;
-

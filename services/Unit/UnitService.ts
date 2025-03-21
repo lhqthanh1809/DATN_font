@@ -10,7 +10,7 @@ import { reference } from "@/assets/reference";
 export default class UnitService extends BaseService {
   public async listUnit(): Promise<IUnit[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listUnit,
       });
       return res.body?.data || [];
@@ -23,18 +23,18 @@ export default class UnitService extends BaseService {
     serviceId: number
   ): Promise<IUnit[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse | IError = await this.https({
         url: apiRouter.listUnitByService,
         body: {
           service_id: serviceId,
         },
       });
 
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
       }
 
-      return res.body?.data || [];
+      return (res as IResponse).body?.data || [];
     } catch (error: any) {
       return this.returnError(error);
     }

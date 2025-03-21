@@ -6,11 +6,12 @@ import { IDataRealtime } from "@/interfaces/GeneralInterface";
 import { INotification } from "@/interfaces/NotificationInterface";
 import FeedbackService from "@/services/Feedback/FeedbackService";
 import useFeedbackStore from "@/store/feedback/useFeedbackStore";
-import Button from "@/ui/button";
-import Icon from "@/ui/icon";
+import Button from "@/ui/Button";
+import Icon from "@/ui/Icon";
 import { Search } from "@/ui/icon/active";
 import { ChevronRight, Home2, Plus, PlusTiny } from "@/ui/icon/symbol";
-import Input from "@/ui/input";
+import Input from "@/ui/Input";
+import SearchAndStatus from "@/ui/layout/SearchAndStatus";
 import { initializeEcho } from "@/utils/echo";
 import { Channel } from "@ably/laravel-echo";
 import axios from "axios";
@@ -102,52 +103,19 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
       <Text className="font-BeVietnamBold text-20 text-mineShaft-950 px-3 pb-5 pt-3">
         Phản hồi/ Đóng góp ý kiến
       </Text>
-      <View className="px-3 gap-2 flex-1">
-        <View className="gap-2">
-          <View className="flex-row gap-2">
-            <View className="flex-1">
-              <Input
-                placeHolder="Tìm kiếm phản hồi/đóng góp ý kiến..."
-                value={search}
-                onChange={(text) => setSearch(text)}
-                suffix={<Icon icon={Search} />}
-              />
-            </View>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row gap-2">
-              <Button
-                onPress={() => setStatusActive(null)}
-                className={cn(
-                  "border-1 rounded-full px-4 py-2 border-lime-300",
-                  !statusActive && "bg-lime-200"
-                )}
-              >
-                <Text className="font-BeVietnamRegular">Tất cả</Text>
-              </Button>
-              {Object.entries(reference.feedback.status).map(
-                ([key, status]) => (
-                  <Button
-                    onPress={() => setStatusActive(parseInt(key))}
-                    key={key}
-                    className={cn(
-                      "border-1 rounded-full px-4 py-2 border-lime-300",
-                      statusActive == parseInt(key) && "bg-lime-200"
-                    )}
-                  >
-                    <Text className="font-BeVietnamRegular">{status.name}</Text>
-                  </Button>
-                )
-              )}
-            </View>
-          </ScrollView>
-        </View>
+      <View className="gap-2 flex-1">
+        <SearchAndStatus
+          dataObject={reference.feedback.status}
+          onChangeSearch={(search) => setSearch(search)}
+          onChangeStatus={(status) => setStatusActive(status)}
+          placeHolder="Tìm kiếm phản hồi/đóng góp ý kiến..."
+        />
         {loading ? (
           <ScrollView
             contentContainerStyle={{
               paddingBottom: 76,
             }}
-            className="flex-1"
+            className="flex-1 px-3 "
           >
             <View className="gap-2 w-full">
               {Array(3)
@@ -173,7 +141,7 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
             </View>
           </ScrollView>
         ) : feedbacks.length <= 0 ? (
-          <View className="flex-1 items-center justify-center">
+          <View className="flex-1 items-center justify-center px-3 ">
             <Text className="font-BeVietnamRegular text-mineShaft-200">
               Không có kết quả
             </Text>
@@ -183,7 +151,7 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
             contentContainerStyle={{
               paddingBottom: 76,
             }}
-            className="flex-1"
+            className="flex-1 px-3 "
           >
             <View className="gap-2 w-full h-full">
               {feedbacks.map((feedback, index) => {
@@ -229,36 +197,12 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
                     </View>
                     <View
                       className={cn(
-                        "px-4 py-2 rounded-full",
-                        feedback.status === constant.feedback.status.submitted
-                          ? "bg-blue-500"
-                          : feedback.status ===
-                            constant.feedback.status.received
-                          ? "bg-yellow-500"
-                          : feedback.status ===
-                            constant.feedback.status.in_progress
-                          ? "bg-orange-500"
-                          : feedback.status ===
-                            constant.feedback.status.resolved
-                          ? "bg-lime-500"
-                          : "bg-gray-500"
+                        "px-4 py-2 rounded-full", status.bg
                       )}
                     >
                       <Text
                         className={cn(
-                          "font-BeVietnamRegular text-12",
-                          feedback.status === constant.feedback.status.submitted
-                            ? "text-blue-50"
-                            : feedback.status ===
-                              constant.feedback.status.received
-                            ? "text-yellow-50"
-                            : feedback.status ===
-                              constant.feedback.status.in_progress
-                            ? "text-orange-50"
-                            : feedback.status ===
-                              constant.feedback.status.resolved
-                            ? "text-lime-50"
-                            : "text-gray-50"
+                          "font-BeVietnamRegular text-12", status.text
                         )}
                       >
                         {status?.name}

@@ -1,5 +1,5 @@
 import { constant } from "@/assets/constant";
-import { cn, getStatusBarHeight } from "@/helper/helper";
+import { cn, getDimensionsDevice, getStatusBarHeight } from "@/helper/helper";
 import {
   ComponentRef,
   GeneralContextValue,
@@ -8,9 +8,10 @@ import {
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { IPermission } from "@/interfaces/Permission";
-import useToastStore from "@/store/ToastStore";
-import Button from "@/ui/button";
-import Icon from "@/ui/icon";
+import { IUser } from "@/interfaces/UserInterface";
+import useToastStore from "@/store/useToastStore";
+import Button from "@/ui/Button";
+import Icon from "@/ui/Icon";
 import { CheckCircle, CrossSmall, Error } from "@/ui/icon/symbol";
 import { AnimatePresence, MotiView } from "moti";
 import React, {
@@ -31,36 +32,8 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
   children,
 }) => {
   const [refCurrent, setRefCurrent] = useState<ComponentRef | null>(null);
-  const [user, setUser] = useState<Record<any, any> | null>(initialUser);
-  const [lodgingTypes, setLodgingTypes] = useState<LodgingType[]>([]);
-  const [provinces, setProvinces] = useState<Array<LocationUnit>>([]);
-  const [districts, setDistricts] = useState<Record<number, LocationUnit[]>>(
-    {}
-  );
-  const [wards, setWards] = useState<Record<number, LocationUnit[]>>({});
-  const [permissions, setPermissions] = useState<Record<string, IPermission[]>>(
-    {}
-  );
-
+  const [user, setUser] = useState<IUser | null>(initialUser);
   const { toasts, removeToast } = useToastStore();
-
-  const setLocations = useCallback((data: Array<LocationUnit>): void => {
-    setProvinces(data);
-  }, []);
-
-  const [lodgings, setLodgings] = useState<ILodging[]>([]);
-
-  const setLocationsWithParent = useCallback(
-    (
-      type: "district" | "ward",
-      data: Array<LocationUnit>,
-      parentId: number
-    ): void => {
-      const setData = type === "district" ? setDistricts : setWards;
-      setData((prev) => ({ ...prev, [parentId]: data }));
-    },
-    []
-  );
 
   const clickRef = useCallback(
     (ref: MutableRefObject<any>, callback: () => void) => {
@@ -72,16 +45,10 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
     [refCurrent]
   );
 
-  const changeUser = useCallback((user: JSON) => {
+  const changeUser = useCallback((user: IUser) => {
     setUser(user);
   }, []);
 
-  const setPermissionsForLodging = useCallback(
-    (parentId: string, permission: IPermission[]) => {
-      setPermissions((prev) => ({ ...prev, [parentId]: permission }));
-    },
-    [permissions]
-  );
 
   return (
     <GeneralContext.Provider
@@ -89,26 +56,11 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
         clickRef,
         user,
         changeUser,
-
-        provinces,
-        districts,
-        wards,
-        setLocations,
-        setLocationsWithParent,
-
-        lodgingTypes,
-        setLodgingTypes,
-
-        lodgings,
-        setLodgings,
-
-        permissions,
-        setPermissionsForLodging,
       }}
     >
       {children}
       <View
-        className="absolute left-1/2 -translate-x-1/2 gap-1"
+        className="absolute left-1/2 -translate-x-1/2 gap-1 items-center px-3"
         style={{
           top: getStatusBarHeight() + 10,
         }}
@@ -122,6 +74,9 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
               exit={{ translateX: 300, opacity: 0 }}
               transition={{ type: "timing", duration: 500 }}
               key={toast.id}
+              style={{
+                maxWidth: getDimensionsDevice().width,
+              }}
             >
               <View className="flex-row items-center gap-3">
                 <Icon
@@ -137,10 +92,7 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
                   )}
                 />
 
-                <Text
-                  numberOfLines={1}
-                  className=" truncate text-white-50 font-BeVietnamMedium text-12"
-                >
+                <Text className="text-white-50 font-BeVietnamMedium text-12 max-w-64">
                   {toast.message}
                 </Text>
               </View>

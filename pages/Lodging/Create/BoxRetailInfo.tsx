@@ -1,8 +1,8 @@
 
-import Box from "@/ui/box";
-import Dropdown from "@/ui/dropdown";
-import Input from "@/ui/input";
-import Label from "@/ui/label";
+import Box from "@/ui/Box";
+import Dropdown from "@/ui/Dropdown";
+import Input from "@/ui/Input";
+import Label from "@/ui/Label";
 import { useState } from "react";
 import { Text } from "react-native";
 

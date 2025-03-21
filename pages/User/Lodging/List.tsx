@@ -2,15 +2,16 @@ import { cn, convertToNumber, getTimezone } from "@/helper/helper";
 import { IContract } from "@/interfaces/ContractInterface";
 import { useEffect, useCallback, useMemo } from "react";
 import { ScrollView, Text, View } from "react-native";
-import Button from "@/ui/button";
-import Divide from "@/ui/divide";
-import Icon from "@/ui/icon";
+import Button from "@/ui/Button";
+import Divide from "@/ui/Divide";
+import Icon from "@/ui/Icon";
 import { Search } from "@/ui/icon/active";
 import { PinSmall } from "@/ui/icon/travel";
-import Input from "@/ui/input";
+import Input from "@/ui/Input";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import useLodgingStore from "@/store/lodging/user/useLodgingStore";
+import TabsLine from "@/ui/layout/TabsLine";
 
 function ListLodging() {
   const { lodgings, loading, fetchLodgings, toggleShowContracts, search } =
@@ -57,8 +58,10 @@ function ListLodging() {
     return { endDate, daysRemaining, statusContract };
   }, []);
 
+
   return (
     <View className="px-3 gap-2 flex-1">
+
       <View className="gap-2">
         <View className="flex-row gap-2">
           <View className="flex-1">
@@ -129,7 +132,7 @@ function ListLodging() {
                       </Text>
                     </Button>
                     {lodging.showContracts && (
-                      <View className="bg-lime-50 w-full rounded p-3 gap-3">
+                      <View className="w-full gap-2">
                         {lodging.rooms?.map((room) =>
                           room.contracts?.map((contract, index) => {
                             const { daysRemaining, endDate, statusContract } =
@@ -137,11 +140,11 @@ function ListLodging() {
                             return (
                               <View
                                 key={index}
-                                className="flex-row justify-between items-start"
+                                className="flex-row justify-between items-start bg-lime-100 p-3 rounded-lg"
                               >
                                 <View className="gap-2">
-                                  <Text className="font-BeVietnamRegular text-14 text-mineShaft-900">
-                                    Phòng {room.room_code}
+                                  <Text className="font-BeVietnamMedium text-14 text-mineShaft-900">
+                                     #{contract.code} - Phòng {room.room_code}
                                   </Text>
                                   <Text className="font-BeVietnamRegular text-12 text-mineShaft-900">
                                     Giá:{" "}
@@ -161,7 +164,7 @@ function ListLodging() {
                                 </View>
                                 <View
                                   className={cn(
-                                    "rounded-full py-1 px-2",
+                                    "rounded-full py-2 px-4",
                                     statusContractDefault[statusContract].bg
                                   )}
                                 >

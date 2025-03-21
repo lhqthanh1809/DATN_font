@@ -1,4 +1,4 @@
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 import Svg, { Path } from "react-native-svg";
 
 const Chat: React.FC<IIcon> = ({ className, currentColor, strokeWidth = 1.5 }) => {

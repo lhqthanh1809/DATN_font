@@ -10,7 +10,7 @@ import { reference } from "@/assets/reference";
 export default class ServiceManagerService extends BaseService {
   public async listService(): Promise<IService[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listService,
       });
       return res.body?.data || [];

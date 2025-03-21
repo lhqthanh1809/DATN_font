@@ -3,10 +3,10 @@ import { cn } from "@/helper/helper";
 import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import ServiceManagerService from "@/services/Service/ServiceManagerService";
 import UnitService from "@/services/Unit/UnitService";
-import Button from "@/ui/button";
-import CheckBox from "@/ui/checkbox";
+import Button from "@/ui/Button";
+import CheckBox from "@/ui/Checkbox";
 import Service from "@/ui/icon/private/service";
-import Input from "@/ui/input";
+import Input from "@/ui/Input";
 import { View } from "moti";
 import React, { useRef, useEffect } from "react";
 import { Pressable, Text } from "react-native";
@@ -22,7 +22,7 @@ const ItemService: React.FC<{
   const serviceManagerService = new ServiceManagerService();
 
   return (
-    <Pressable
+    <Button
       onPress={() => onPress(service)}
       className={cn(
         "w-full flex-col items-start p-3 gap-2 border-1 rounded-lg",
@@ -60,7 +60,7 @@ const ItemService: React.FC<{
           placeHolder="Nhập chỉ số hiện tại (Mặc định: 0)"
         />
       )}
-    </Pressable>
+    </Button>
   );
 };
 

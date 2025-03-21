@@ -1,5 +1,5 @@
-import Button from "@/ui/button";
-import Icon, { IIcon } from "@/ui/icon";
+import Button from "@/ui/Button";
+import Icon, { IIcon } from "@/ui/Icon";
 import { Building } from "@/ui/icon/general";
 import { Fingerprint } from "@/ui/icon/security";
 import { Text, View } from "react-native";

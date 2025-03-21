@@ -1,8 +1,8 @@
 import { useCameraPermissions } from "expo-camera";
-import Button from "./button";
+import Button from "./Button";
 import { Text } from "react-native";
 import { router } from "expo-router";
-import Icon from "./icon";
+import Icon from "./Icon";
 import { Home, QR } from "./icon/symbol";
 import { useEffect, useState } from "react";
 import eventEmitter from "@/utils/eventEmitter";

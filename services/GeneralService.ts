@@ -7,7 +7,7 @@ import BaseService from "./BaseService";
 export default class GeneralService extends BaseService {
   public async listProvince(): Promise<LocationUnit[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listProvince,
       });
       return res.body?.data || [];
@@ -20,7 +20,7 @@ export default class GeneralService extends BaseService {
     provinceId: number
   ): Promise<LocationUnit[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listDistrict,
         body: { province_id: provinceId },
       });
@@ -32,7 +32,7 @@ export default class GeneralService extends BaseService {
 
   public async listWard(districtId: number): Promise<LocationUnit[] | IError> {
     try {
-      const res: IResponse = await this._service.https({
+      const res: IResponse = await this.https({
         url: apiRouter.listWard,
         body: { district_id: districtId },
       });

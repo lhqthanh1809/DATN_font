@@ -6,7 +6,8 @@ module.exports = {
     "./ui/*.{js,jsx,ts,tsx}",
     "./ui/**/*.{js,jsx,ts,tsx}",
     "./pages/**/*.{js,jsx,ts,tsx}",
-    "./providers/*.{js,jsx,ts,tsx}"
+    "./providers/*.{js,jsx,ts,tsx}",
+    "./assets/*.{js,jsx,ts,tsx}"
   ],
 
   presets: [require("nativewind/preset")],
@@ -24,7 +25,7 @@ module.exports = {
           700: "#4f4f4f",
           800: "#454545",
           900: "#3d3d3d",
-          950: "#2a2a2a",
+          950: "#0D0F10",
         },
         white: {
           50: "#fdfdfd",
@@ -64,6 +65,7 @@ module.exports = {
         },
         redPower: {
           100: "#FBECEC",
+          300: "#F07A79",
           600: "#D0302F",
           900: "#2F0F0E",
         },
@@ -89,9 +91,14 @@ module.exports = {
         30: ["30", "2.6rem"],
       },
       spacing: {
+        0.25: "1",
+        0.5: "0.125rem",
         10: "10",
         12: "12",
         14: 14,
+      },
+      boxShadow: {
+        "soft-md": "2px 4px 6px rgba(0,0,0,0.1)",
       },
     },
   },

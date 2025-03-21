@@ -1,7 +1,8 @@
-import { create } from "lodash";
+import { create, update } from "lodash";
 
 export const apiRouter = {
   //User
+  refreshUser: "/user/refresh",
   registerUser: "/user/register",
   loginUser: "/user/login",
   infoUser: "/user/info",
@@ -12,6 +13,10 @@ export const apiRouter = {
   listTypeLodging: "/lodging_type/list",
   listLodgingByUser: "/lodging/list_by_user",
   createLodging: "/lodging/create",
+  overviewLodging: "lodging/overview",
+  detailLodging: "/lodging/detail/:id",
+  updateLodging: "/lodging/update",
+  deleteLodging: "/lodging/delete/:id",
 
   //General
   listProvince: "/general/provinces",
@@ -43,6 +48,9 @@ export const apiRouter = {
 
   //CreateContract
   createContract: "/contract/create",
+  listContract: "/contract/list",
+  detailContract: "/contract/detail/:id",
+  update: "/contract/update",
 
   //Feedback
   createFeedback: "/feedback/create",
@@ -56,5 +64,17 @@ export const apiRouter = {
 
   //Equipment
   listEquipment: "/equipment/list",
-  createEquipment: "/equipment/create"
+  createEquipment: "/equipment/create",
+  detailEquipment: "/equipment/detail/:id",
+  updateEquipment: "/equipment/update",
+
+  //RentalHistory
+  listRentalHistory: "/rental_history/list",
+
+  //RoomUsage
+  listRoomUsageNeedClose: "/room_usage/list_need_close",
+  closeRoomUsage: "/room_usage/close_room_usage",
+
+  //ServicePayment
+  listServicePayment: "/service_payment/list"
 };

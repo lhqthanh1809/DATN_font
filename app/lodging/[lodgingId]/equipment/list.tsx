@@ -1,11 +1,11 @@
 import { IEquipment } from "@/interfaces/EquipmentInterface";
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
-import Button from "@/ui/button";
-import Icon from "@/ui/icon";
+import Button from "@/ui/Button";
+import Icon from "@/ui/Icon";
 import { Lock } from "@/ui/icon/security";
 import { Globe } from "@/ui/icon/symbol";
-import ViewHasButtonAdd from "@/ui/layout/add_button";
-import HeaderBack from "@/ui/layout/header";
+import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
+import HeaderBack from "@/ui/layout/HeaderBack";
 import { router, useLocalSearchParams } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
@@ -81,6 +81,9 @@ function ListEquipment() {
                   <Button
                     className="flex-1 basis-1/3 h-20 max-h-52 aspect-square bg-black overflow-hidden relative border-1 border-white-100"
                     key={equipment.id}
+                    onPress={() => {
+                      router.push(`/lodging/${lodgingId}/equipment/edit/${equipment.id}`)
+                    }}
                   >
                     <Image
                       className="w-full h-full object-cover"
@@ -99,7 +102,7 @@ function ListEquipment() {
                         </View>
                         <View className="bg-lime-500 p-1 rounded-full">
                           <Icon
-                            className="text-white-50"
+                            className="text-white-50 "
                             icon={equipment.type % 2 != 0 ? Lock : Globe}
                           />
                         </View>

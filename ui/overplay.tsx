@@ -7,7 +7,7 @@ import {
   Path,
 } from "@shopify/react-native-skia";
 import { Dimensions, Platform, StyleSheet } from "react-native";
-import Button from "./button";
+import Button from "./Button";
 
 const { width, height } = Dimensions.get("window");
 

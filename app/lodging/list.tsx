@@ -1,21 +1,20 @@
-import { reference } from "@/assets/reference";
-import { useGeneral } from "@/hooks/useGeneral";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import Icon from "@/ui/icon";
+import Icon from "@/ui/Icon";
 import { Building } from "@/ui/icon/general";
-import ItemFling from "@/ui/item_fling";
-import ViewHasButtonAdd from "@/ui/layout/add_button";
-import HeaderBack from "@/ui/layout/header";
+import ItemFling from "@/ui/ItemFling";
+import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
+import HeaderBack from "@/ui/layout/HeaderBack";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 
 function List() {
   const route = useRouter();
-  const { lodgings, setLodgings } = useGeneral();
+  const { lodgings, setLodgings } = useLodgingsStore();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -68,7 +67,7 @@ function List() {
                   ))
               : lodgings.map((lodging, index) => (
                   <ItemFling<ILodging>
-                    className="flex-row items-center justify-start gap-4 px-4 py-4 bg-mineShaft-950 border-0"
+                    className="flex-row items-center justify-start gap-4 px-4 py-4 border"
                     item={lodging}
                     onPress={() => handlePressLodging(lodging)}
                     key={index}
@@ -76,13 +75,13 @@ function List() {
                     <View className="bg-lime-500 p-2 rounded-full">
                       <Icon icon={Building} className="text-white-50" />
                     </View>
-                    <View className="gap-1">
-                      <Text className="font-BeVietnamSemiBold text-16 text-white-50">
+                    <View className="gap-2">
+                      <Text className="font-BeVietnamSemiBold text-16 text-mineShaft-950">
                         {lodging.name}
                       </Text>
                       <Text
                         numberOfLines={1}
-                        className="font-BeVietnamMedium text-12 text-white-50 truncate w-3/4"
+                        className="font-BeVietnamMedium text-12 truncate w-3/4 text-mineShaft-950"
                       >
                         {[
                           lodging.address,

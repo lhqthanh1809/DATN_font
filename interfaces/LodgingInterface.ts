@@ -7,6 +7,30 @@ export interface LodgingType {
   description?: string;
 }
 
+export interface IOverviewLodging {
+  section: "statistical" | "room";
+  lodging_id: string;
+  month?: number | null;
+  year?: null | number;
+}
+
+export interface IOverviewRoom {
+  total: number;
+  unpaid: number;
+  renting: number;
+  empty: number;
+}
+
+export interface IOverviewStatistical {
+    total_payment: string;
+    total_paid: string;
+}
+
+export interface ILodgingStatistical {
+  room: IOverviewStatistical,
+  service: IOverviewStatistical
+}
+
 export interface ILodging {
   id?: string;
   name: string;
@@ -30,7 +54,7 @@ export interface ILodging {
   };
   rooms?: IRoom[];
   type?: {
-    id: number,
-    name: string
-  }
+    id: number;
+    name: string;
+  };
 }

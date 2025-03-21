@@ -10,6 +10,8 @@ import {
   QuarterCircleInsideTRight
 } from "./shape/quarter_circle";
 
+import { Cube } from "./shape/cube";
+
 export {
   Square,
   Circle,
@@ -19,5 +21,6 @@ export {
   QuarterCircleInsideBLeft,
   QuarterCircleInsideBRight,
   QuarterCircleInsideTLeft,
-  QuarterCircleInsideTRight
+  QuarterCircleInsideTRight,
+  Cube
 };

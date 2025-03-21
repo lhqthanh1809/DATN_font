@@ -1,10 +1,10 @@
 import { constant } from "@/assets/constant";
-import Box from "@/ui/box";
-import Dropdown from "@/ui/dropdown";
-import ImagePicker from "@/ui/image_picker";
-import Input from "@/ui/input";
-import Label from "@/ui/label";
-import ListModel from "@/ui/list_modal";
+import Box from "@/ui/Box";
+import Dropdown from "@/ui/Dropdown";
+import ImagePicker from "@/ui/ImagePicker";
+import Input from "@/ui/Input";
+import Label from "@/ui/Label";
+import ListModel from "@/ui/ListModal";
 import { AssetInfo } from "expo-media-library";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
@@ -27,8 +27,8 @@ const BoxInfo: React.FC<{
   type: number;
   setType: (type: number) => void;
 
-  photo: AssetInfo[];
-  setPhoto: React.Dispatch<React.SetStateAction<AssetInfo[]>>;
+  photo: (AssetInfo | string)[];
+  setPhoto: (photo: (string | AssetInfo)[]) => void;
 
   disabled?: boolean;
 }> = React.memo(
@@ -49,7 +49,7 @@ const BoxInfo: React.FC<{
     );
 
     const handleImageChange = useCallback(
-      (value: AssetInfo[]) => setPhoto(value),
+      (value: (AssetInfo | string)[]) => setPhoto(value),
       [setPhoto]
     );
 

@@ -1,5 +1,5 @@
-import Button from "@/ui/button";
-import Input from "@/ui/input";
+import Button from "@/ui/Button";
+import Input from "@/ui/Input";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,13 +7,13 @@ import {
   Text,
   View,
 } from "react-native";
-import BackView from "@/ui/back_view";
+import BackView from "@/ui/BackView";
 import { useCallback, useState } from "react";
 import { encrypt } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
 import { apiRouter } from "@/assets/ApiRouter";
 import { useRouter } from "expo-router";
-import OAuthLogin from "@/ui/layout/oauth_login";
+import OAuthLogin from "@/ui/layout/OauthLogin";
 
 function RegisterScreen() {
   const httpService = new BaseHttpService();

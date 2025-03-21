@@ -9,11 +9,11 @@ import {
   Text,
   View,
 } from "react-native";
-import { Overlay } from "@/ui/overplay";
+import { Overlay } from "@/ui/Overplay";
 import { router } from "expo-router";
 import { useCallback } from "react";
 import eventEmitter from "@/utils/eventEmitter";
-import Button from "@/ui/button";
+import Button from "@/ui/Button";
 
 
 const { width, height } = Dimensions.get("window");

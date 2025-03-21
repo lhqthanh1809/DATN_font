@@ -14,7 +14,7 @@ import {
 // import { ArrowRight } from "./symbol/arrow";
 import { Chat } from "./symbol/chat";
 // import Users from "./symbol/users";
-// import { User } from "./symbol/users";
+import { User } from "./symbol/users";
 // import { PadLock } from "./symbol/lock";
 import {
   ChevronDown,
@@ -27,7 +27,7 @@ import {
 import { Bell } from "./symbol/bell";
 // import { DownloadMedium } from "./symbol/download";
 // import { Save } from "./symbol/save";
-// import Warning from "./symbol/warning";
+import Warning from "./symbol/warning";
 import Error from "./symbol/error";
 import { Trash } from "./symbol/trash";
 import Home, { Home2 } from "./symbol/home";
@@ -42,7 +42,7 @@ import { QR } from "./symbol/qr";
 import Document from "./symbol/document";
 import { FilterSearch } from "./symbol/filter";
 import { Calender } from "./symbol/calender";
-import { Time } from "./symbol/time";
+import { Time, TimeSmall } from "./symbol/time";
 import { ImageAdd } from "./symbol/image";
 import { File, FileAdd } from "./symbol/file";
 
@@ -54,17 +54,17 @@ export {
   //   Dots,
   //   PaperPlane,
   Cross,
-    Globe,
+  Globe,
   //   Link,
   CheckCircle,
   CheckSimpleTiny,
   CheckSimple,
   CheckSimpleMedium,
   //   ArrowRight,
-    Chat,
+  Chat,
   //   Users,
   //   PadLock,
-  //   User,
+    User,
   ChevronDown,
   ChevronRight,
   //   InfoCircle,
@@ -76,8 +76,8 @@ export {
   ChevronDownSmall,
   ChevronLeft,
   ChevronUp,
-  //   Warning,
-    Error,
+  Warning,
+  Error,
   Trash,
   Home,
   Menu,
@@ -92,6 +92,9 @@ export {
   FilterSearch,
   Calender,
   Time,
+  TimeSmall,
+
   ImageAdd,
-  File, FileAdd
+  File,
+  FileAdd,
 };

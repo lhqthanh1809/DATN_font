@@ -1,6 +1,6 @@
 import { reference } from "@/assets/reference";
 import { IPermission } from "@/interfaces/Permission";
-import BoxItem from "@/ui/box_item";
+import BoxItem from "@/ui/BoxItem";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 

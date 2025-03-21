@@ -1,4 +1,4 @@
-import { IIcon } from "@/ui/icon";
+import { IIcon } from "@/ui/Icon";
 import React from "react";
 import Svg, { Path } from "react-native-svg";
 

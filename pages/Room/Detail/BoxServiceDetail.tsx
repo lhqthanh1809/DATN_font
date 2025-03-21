@@ -3,8 +3,8 @@ import { convertToNumber } from "@/helper/helper";
 import { IRoom } from "@/interfaces/RoomInterface";
 import ServiceManagerService from "@/services/Service/ServiceManagerService";
 import UnitService from "@/services/Unit/UnitService";
-import Box from "@/ui/box";
-import Icon from "@/ui/icon";
+import Box from "@/ui/Box";
+import Icon from "@/ui/Icon";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 
@@ -21,7 +21,7 @@ const BoxServiceDetail: React.FC<{
           services.map((service, index) => (
             <View
               key={index}
-              className="w-full border-1 border-lime-500 rounded-xl px-4 py-1 flex-row items-center justify-between"
+              className="w-full border-1 border-lime-500 rounded-xl px-4 py-2 flex-row items-center justify-between"
             >
               <View className="flex-row gap-3 py-1 items-center">
                 <View className="bg-lime-500 rounded-full p-2">

@@ -1,5 +1,5 @@
 import React from "react";
-import { IIcon } from "../../icon";
+import { IIcon } from "../../Icon";
 import Svg, { Path } from "react-native-svg";
 
 const Time: React.FC<IIcon> = ({
@@ -33,4 +33,37 @@ const Time: React.FC<IIcon> = ({
   );
 };
 
-export { Time };
+const TimeSmall: React.FC<IIcon> = ({
+  className,
+  currentColor,
+  strokeWidth = 1.5,
+}) => {
+  return (
+    <Svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+      className={className}
+    >
+      <Path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M14.9373 8C14.9373 11.831 11.8316 14.9375 7.99985 14.9375C4.16885 14.9375 1.06235 11.831 1.06235 8C1.06235 4.16825 4.16885 1.0625 7.99985 1.0625C11.8316 1.0625 14.9373 4.16825 14.9373 8Z"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M11.143 8.57527L7.74552 8.51977V4.88452"
+        stroke={currentColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+};
+
+export { Time, TimeSmall };

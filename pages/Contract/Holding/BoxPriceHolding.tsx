@@ -1,16 +1,17 @@
-import Box from "@/ui/box";
-import DatePicker from "@/ui/datepicker";
+import Box from "@/ui/Box";
+import DatePicker from "@/ui/Datepicker";
 import { Text, View } from "react-native";
 import React, { useMemo, useState } from "react";
-import Input from "@/ui/input";
-import Divide from "@/ui/divide";
-import Label from "@/ui/label";
+import Input from "@/ui/Input";
+import Divide from "@/ui/Divide";
+import Label from "@/ui/Label";
 import { convertToNumber } from "@/helper/helper";
 
 const BoxPriceHolding: React.FC<{
   priceRoom: string;
-}> = ({ priceRoom }) => {
-  const [price, setPrice] = useState<string>(priceRoom);
+  depositAmount: string;
+  setDepositAmount: (amount: string) => void;
+}> = ({ priceRoom, depositAmount, setDepositAmount }) => {
 
   return (
     <Box
@@ -19,8 +20,8 @@ const BoxPriceHolding: React.FC<{
     >
       <Input
         required
-        value={price}
-        onChange={(price) => setPrice(price)}
+        value={depositAmount}
+        onChange={(price) => setDepositAmount(price)}
         label="Số tiền cọc giữ chỗ"
         type="number"
         suffix={<Label label="đồng" />}

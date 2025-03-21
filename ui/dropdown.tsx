@@ -11,17 +11,17 @@ import {
   TouchableWithoutFeedback,
   FlatList,
 } from "react-native";
-import Icon from "./icon";
+import Icon from "./Icon";
 import { Hide, Show } from "./icon/edit";
-import Input from "./input";
+import Input from "./Input";
 import { cn } from "@/helper/helper";
 import { useGeneral } from "@/hooks/useGeneral";
 import { ChevronDown, ChevronUp } from "./icon/symbol";
-import LoadingAnimation from "./loading_animation";
+import LoadingAnimation from "./LoadingAnimation";
 
 interface Props {
   label?: string;
-  onChange: (options: any) => void;
+  onChange?: (options: any) => void;
   style?: StyleProp<ViewStyle>;
   className?: string;
   type?: string;
@@ -126,7 +126,9 @@ function Dropdown({
               {value
                 ? typeof value !== "object"
                   ? value
-                  : renderOption ? renderOption(value) : value[optionKey]
+                  : renderOption
+                  ? renderOption(value)
+                  : value[optionKey]
                 : placeHolder}
             </Text>
             {loading ? (
@@ -164,7 +166,7 @@ function Dropdown({
                         option == value && "bg-lime-200/70"
                       )}
                       onPress={() => {
-                        onChange(option);
+                        onChange && onChange(option);
                         setShowDropdown(false);
                       }}
                     >

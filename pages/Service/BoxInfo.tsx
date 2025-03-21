@@ -4,10 +4,10 @@ import { IUnit } from "@/interfaces/UnitInterface";
 import ServiceManagerService from "@/services/Service/ServiceManagerService";
 import UnitService from "@/services/Unit/UnitService";
 
-import Box from "@/ui/box";
-import Dropdown from "@/ui/dropdown";
-import Input from "@/ui/input";
-import Label from "@/ui/label";
+import Box from "@/ui/Box";
+import Dropdown from "@/ui/Dropdown";
+import Input from "@/ui/Input";
+import Label from "@/ui/Label";
 import { isArray } from "lodash";
 import {
   forwardRef,

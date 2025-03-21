@@ -1,22 +1,22 @@
-import { useGeneral } from "@/hooks/useGeneral";
-import { BoxPaymentTimeBill } from "@/ui/layout/box_payment_time_bill";
-import Layout from "@/ui/layout/layout_create";
+import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
+import Layout from "@/ui/layout/Layout";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import BoxInfo from "@/pages/Service/BoxInfo";
 import { IService } from "@/interfaces/ServiceInterface";
 import { IUnit } from "@/interfaces/UnitInterface";
-import Button from "@/ui/button";
+import Button from "@/ui/Button";
 import LodgingServiceManagerService from "@/services/LodgingService/LodgingServiceManagerService";
 import { formatNumber } from "@/helper/helper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import { IError } from "@/interfaces/ErrorInterface";
-import LoadingAnimation from "@/ui/loading_animation";
+import LoadingAnimation from "@/ui/LoadingAnimation";
+import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 
 function Update() {
   const { id, lodgingId } = useLocalSearchParams();
-  const { lodgings } = useGeneral();
+  const { lodgings } = useLodgingsStore();
   const [paymentDate, setPaymentDate] = useState<number>(5);
   const [lateDays, setLateDays] = useState<number>(5);
   const [service, setService] = useState<IService | null>(null);
