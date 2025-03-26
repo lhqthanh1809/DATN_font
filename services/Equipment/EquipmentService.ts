@@ -1,4 +1,8 @@
-import { ICreateEquipment, IEquipment, IUpdateEquipment } from "@/interfaces/EquipmentInterface";
+import {
+  ICreateEquipment,
+  IEquipment,
+  IUpdateEquipment,
+} from "@/interfaces/EquipmentInterface";
 import BaseService from "../BaseService";
 import { apiRouter } from "@/assets/ApiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
@@ -56,7 +60,6 @@ export class EquipmentService extends BaseService {
     }
   }
 
-
   public async detailEquipment(
     equipmentId: string
   ): Promise<IEquipment | IError> {
@@ -75,9 +78,30 @@ export class EquipmentService extends BaseService {
     }
   }
 
-  public async updateEquipment(
-    data: FormData
-  ): Promise<IEquipment | IError> {
+  public async delete(id: string): Promise<any | IError> {
+    if (!this._lodgingId) {
+      return {
+        message: "Lỗi không xác định được nhà trọ",
+      };
+    }
+    try {
+      const res: IResponse | IError = await this.https({
+        url: apiRouter.deleteEquipment,
+        authentication_requested: true,
+        method: "DELETE",
+        body: { equipment_id: id, lodging_id: this._lodgingId },
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+      return (res as IResponse).body ?? null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+  public async updateEquipment(data: FormData): Promise<IEquipment | IError> {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.updateEquipment,

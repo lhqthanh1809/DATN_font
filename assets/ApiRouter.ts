@@ -38,6 +38,7 @@ export const apiRouter = {
   listLodgingService: "/lodging_service/list/:lodging_id",
   detailLodgingService: "/lodging_service/detail/:id",
   updateLodgingService: "/lodging_service/update",
+  deleteLodgingService: "/lodging_service/delete",
 
   //Room
   createRoom: "/room/create",
@@ -45,6 +46,7 @@ export const apiRouter = {
   detailRoom: "/room/detail/:id",
   updateRoom: "/room/update",
   filterRoom: "/room/filter",
+  deleteRoom: "/room/delete",
 
   //CreateContract
   createContract: "/contract/create",
@@ -67,6 +69,7 @@ export const apiRouter = {
   createEquipment: "/equipment/create",
   detailEquipment: "/equipment/detail/:id",
   updateEquipment: "/equipment/update",
+  deleteEquipment: "/equipment/delete",
 
   //RentalHistory
   listRentalHistory: "/rental_history/list",
