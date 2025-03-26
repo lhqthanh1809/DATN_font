@@ -5,6 +5,7 @@ import { constant } from "@/assets/constant";
 import ListLodging from "@pages/User/Lodging/List";
 import ListNotify from "@/ui/layout/ViewListNotification";
 import ListFeedback from "@/pages/Feedback/User/List";
+import ListChannels from "@/pages/Chanel/list";
 
 interface ITab {
   name: string;
@@ -35,7 +36,7 @@ const useUserScreenStore = create<UserScreenStore>((set, get) => ({
       {
         name: "Trò chuyện",
         icon: Chat,
-        view: <></>,
+        view: <ListChannels memberId={user.id ?? ""} memberType={constant.object.type.user}/>,
       },
       {
         name: "Hợp đồng",

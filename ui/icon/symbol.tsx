@@ -1,7 +1,7 @@
 import { Plus, PlusCircle, PlusTiny } from "./symbol/plus";
 // import Star from "./symbol/star";
 // import Dots from "./symbol/dots";
-// import PaperPlane from "./symbol/paper-plane";
+import PaperPlane from "./symbol/paper-plane";
 import Cross, { CrossSmall, CrossMedium } from "./symbol/cross";
 import Globe from "./symbol/globe";
 // import Link, {LinkShape} from "./symbol/link";
@@ -12,7 +12,7 @@ import {
   CheckSimpleMedium,
 } from "./symbol/check";
 // import { ArrowRight } from "./symbol/arrow";
-import { Chat } from "./symbol/chat";
+import { Chat, Chats } from "./symbol/chat";
 // import Users from "./symbol/users";
 import { User } from "./symbol/users";
 // import { PadLock } from "./symbol/lock";
@@ -52,7 +52,7 @@ export {
   PlusTiny,
   //   Star,
   //   Dots,
-  //   PaperPlane,
+  PaperPlane,
   Cross,
   Globe,
   //   Link,
@@ -62,9 +62,10 @@ export {
   CheckSimpleMedium,
   //   ArrowRight,
   Chat,
+  Chats,
   //   Users,
   //   PadLock,
-    User,
+  User,
   ChevronDown,
   ChevronRight,
   //   InfoCircle,
@@ -93,7 +94,6 @@ export {
   Calender,
   Time,
   TimeSmall,
-
   ImageAdd,
   File,
   FileAdd,

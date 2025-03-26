@@ -19,11 +19,13 @@ export default class BaseService {
         const originalRequest = error.config as any;
 
         const errData = error.response?.data as IResponse;
+
         if (
-          (error.response?.status === 401 ||
+          (error.response?.status === HttpStatusCode.Unauthorized ||
             errData.errors?.[0]?.message === "Token has expired") &&
           !originalRequest._retry
         ) {
+          
           originalRequest._retry = true;
           const localStorage = new LocalStorage();
           try {
@@ -36,6 +38,10 @@ export default class BaseService {
               },
             });
 
+            if (refreshRes.status < 200 || refreshRes.status >= 300) {
+              throw new Error(`Refresh token failed with status: ${refreshRes.status}`);
+            }
+
             const newToken = refreshRes.data.body.access_token;
             await localStorage.setItem(env("KEY_TOKEN"), newToken);
 
@@ -45,7 +51,6 @@ export default class BaseService {
             // Retry request cũ
             return this._api(originalRequest);
           } catch (e) {
-            // Nếu refresh fail
             await localStorage.removeItem(env("KEY_TOKEN"));
             router.dismissAll();
             router.replace("/login");
@@ -65,7 +70,7 @@ export default class BaseService {
     cancelToken,
     authentication_requested = false,
   }: {
-    method?: "POST" | "PUT" | "GET";
+    method?: "POST" | "PUT" | "GET" | "DELETE";
     url: string;
     body?: any;
     cancelToken?: any;

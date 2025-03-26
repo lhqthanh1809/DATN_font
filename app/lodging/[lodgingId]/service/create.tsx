@@ -2,7 +2,7 @@ import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
 import Layout from "@/ui/layout/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import  BoxInfo from "@/pages/Service/BoxInfo";
+import BoxInfo from "@/pages/Service/BoxInfo";
 import { IService } from "@/interfaces/ServiceInterface";
 import { IUnit } from "@/interfaces/UnitInterface";
 import Button from "@/ui/Button";
@@ -10,20 +10,24 @@ import LodgingServiceManagerService from "@/services/LodgingService/LodgingServi
 import { formatNumber } from "@/helper/helper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import { IRoom } from "@/interfaces/RoomInterface";
+import { BoxRoom } from "@/ui/layout/BoxRoom";
 
 function CreateService() {
   const { lodgings } = useLodgingsStore();
-    const { lodgingId } = useLocalSearchParams();
+  const { lodgingId } = useLocalSearchParams();
   const [paymentDate, setPaymentDate] = useState<number>(5);
   const [lateDays, setLateDays] = useState<number>(5);
   const [service, setService] = useState<IService | null>(null);
   const [unit, setUnit] = useState<IUnit | null>(null);
   const [name, setName] = useState<string>("");
-  const [price, setPrice] = useState<string>("");
+  const [price, setPrice] = useState<string>("0");
+  const [rooms, setRooms] = useState<IRoom[]>([]);
+  const [selectRooms, setSelectRooms] = useState<IRoom[]>([]);
   const [loading, setLoading] = useState(false);
   const route = useRouter();
 
-    const lodging = useMemo(() => {
+  const lodging = useMemo(() => {
     return lodgings?.find((item) => item.id == lodgingId) || null;
   }, [lodgings, lodgingId]);
 
@@ -31,7 +35,6 @@ function CreateService() {
     if (lodging) {
       setPaymentDate(lodging.payment_date ?? paymentDate);
       setLateDays(lodging.late_days ?? lateDays);
-      setPrice(lodging.price_room_default?.toString() || price);
     }
   }, [lodging]);
 
@@ -39,7 +42,9 @@ function CreateService() {
     const pricePerUnit = formatNumber(price, "float");
     if (!pricePerUnit || !unit) return;
     setLoading(true);
-    const serviceLodgingService = new LodgingServiceManagerService(lodgingId as string);
+    const serviceLodgingService = new LodgingServiceManagerService(
+      lodgingId as string
+    );
     const data = await serviceLodgingService.create({
       late_days: lateDays,
       payment_date: paymentDate,
@@ -47,6 +52,7 @@ function CreateService() {
       service_id: service?.id || null,
       name: service?.id ? null : name || null,
       unit_id: unit.id,
+      ...(selectRooms.length > 0 && { room_ids: selectRooms.map(item => item.id ?? "") })
     });
     setLoading(false);
     if (!("message" in data)) {
@@ -73,6 +79,15 @@ function CreateService() {
             />
             <BoxPaymentTimeBill
               {...{ lateDays, paymentDate, setLateDays, setPaymentDate }}
+            />
+            <BoxRoom
+              {...{
+                rooms,
+                selectRooms,
+                setRooms,
+                setSelectRooms,
+                lodgingId: lodgingId as string,
+              }}
             />
           </View>
         </ScrollView>

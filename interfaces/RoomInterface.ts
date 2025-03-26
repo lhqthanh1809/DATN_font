@@ -1,5 +1,6 @@
 import { IContract } from "./ContractInterface";
 import { PaymentDate } from "./GeneralInterface";
+import { ILodging } from "./LodgingInterface";
 import { ILodgingService } from "./LodgingServiceInterface";
 import { constant } from "@/assets/constant";
 
@@ -30,4 +31,5 @@ export interface IRoom extends PaymentDate {
     lodging_service: ILodgingService;
   }[];
   contracts?: IContract[]
+  lodging?: ILodging
 }

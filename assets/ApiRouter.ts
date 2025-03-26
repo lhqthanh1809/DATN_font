@@ -76,5 +76,13 @@ export const apiRouter = {
   closeRoomUsage: "/room_usage/close_room_usage",
 
   //ServicePayment
-  listServicePayment: "/service_payment/list"
+  listServicePayment: "/service_payment/list",
+
+
+  //List channel
+  listChannel: "channel/list",
+
+  //Chat
+  createChat: "chat/create",
+  listChat: "chat/list"
 };

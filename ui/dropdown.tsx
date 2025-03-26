@@ -57,6 +57,11 @@ function Dropdown({
   const [searchValue, setSearchValue] = useState("");
   const [resultSearch, setResultSearch] = useState(options);
 
+  // useEffect(() => {
+  //   console.log("Option:", options);
+  //   console.log("Value:", value);
+  // }, [value, options])
+
   const dropdownRef = useRef<View>(null);
 
   useEffect(() => {

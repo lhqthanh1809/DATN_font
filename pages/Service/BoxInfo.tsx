@@ -14,6 +14,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import React from "react";
@@ -53,8 +54,10 @@ const BoxInfo = forwardRef<
     const [loadingUnits, setLoadingUnits] = useState(false);
     const [loadingMaps, setLoadingMap] = useState(false);
 
+
     const unitService = new UnitService();
     const serviceManagerService = new ServiceManagerService();
+
 
     useImperativeHandle(ref, () => ({
       isLoading: loadingServices || loadingUnits,
@@ -85,7 +88,13 @@ const BoxInfo = forwardRef<
         setLoadingServices(false);
         setLoadingUnits(false);
       }
+    }, [service, isUpdate]);
+
+    // Fetch initial data
+    useEffect(() => {
+      fetchData();
     }, []);
+
 
     // Fetch unit map for the selected service
     const fetchUnitMap = useCallback(
@@ -113,11 +122,6 @@ const BoxInfo = forwardRef<
       [units]
     );
 
-    // Fetch initial data
-    useEffect(() => {
-      fetchData();
-    }, []);
-
     // Fetch unit map when a service is selected
     useEffect(() => {
       if (typeof service?.id === "number" && !unitMap[service?.id]) {
@@ -134,7 +138,6 @@ const BoxInfo = forwardRef<
           )
         : setUnit(unit ? { ...unit } : null);
     }, [service, unitMap]);
-
 
     useEffect(() => {
       if (!service) {

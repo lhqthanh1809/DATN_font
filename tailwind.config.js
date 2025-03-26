@@ -3,7 +3,6 @@ module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
-    "./ui/*.{js,jsx,ts,tsx}",
     "./ui/**/*.{js,jsx,ts,tsx}",
     "./pages/**/*.{js,jsx,ts,tsx}",
     "./providers/*.{js,jsx,ts,tsx}",

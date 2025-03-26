@@ -46,7 +46,7 @@ function TextArea({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View className="gap-2 relative h-full">
+    <View className="gap-2 relative h-full flex-1">
       {label && (
         <View className="flex-row">
           <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
@@ -61,7 +61,7 @@ function TextArea({
       )}
       <View
         className={cn(
-          "border-1 border-mineShaft-200 bg-white-50 px-3 py-3 rounded-xl flex-row items-center gap-2 flex-1",
+          "border-1 border-mineShaft-200 bg-white-50 px-3 py-3 rounded-xl flex-row items-center gap-2",
           disabled && "bg-mineShaft-50",
           className
         )}
@@ -76,7 +76,7 @@ function TextArea({
               ? onChange && onChange(text.replace(/[^0-9,]/g, ""))
               : onChange && onChange(text)
           }
-          className={`h-full py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-600 caret-mineShaft-700 ${classNameInput}`}
+          className={`h-full flex-1 text-14 font-BeVietnamRegular text-mineShaft-600 caret-mineShaft-700 ${classNameInput}`}
           secureTextEntry={type === "password" && !showPassword}
           textContentType="none"
           keyboardType={

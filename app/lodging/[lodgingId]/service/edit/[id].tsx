@@ -13,6 +13,8 @@ import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import { IError } from "@/interfaces/ErrorInterface";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import { IRoom } from "@/interfaces/RoomInterface";
+import { BoxRoom } from "@/ui/layout/BoxRoom";
 
 function Update() {
   const { id, lodgingId } = useLocalSearchParams();
@@ -23,14 +25,15 @@ function Update() {
   const [unit, setUnit] = useState<IUnit | null>(null);
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<string>("");
+  const [rooms, setRooms] = useState<IRoom[]>([]);
+  const [selectRooms, setSelectRooms] = useState<IRoom[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const boxInfoRef = useRef<{ isLoading: boolean } | null>(null);
   const route = useRouter();
   const serviceLodgingService = new LodgingServiceManagerService(null);
 
-
-    const lodging = useMemo(() => {
+  const lodging = useMemo(() => {
     return lodgings?.find((item) => item.id == lodgingId) || null;
   }, [lodgings, lodgingId]);
 
@@ -41,7 +44,6 @@ function Update() {
       setPrice(lodging.price_room_default?.toString() || price);
     }
   }, [lodging]);
-
 
   const fetchService = useCallback(async () => {
     setLoadingData(true);
@@ -59,6 +61,7 @@ function Update() {
     data.unit && setUnit(data.unit);
     data.price_per_unit && setPrice(data.price_per_unit.toString());
     data.service && setService(data.service);
+    data.room_services && setSelectRooms(data.room_services.map((item) => item.room ?? null).filter((item) => item !== null));
   }, [id]);
 
   const handleUpdateLodgingService = useCallback(async () => {
@@ -74,12 +77,13 @@ function Update() {
       service_id: service?.id || null,
       name: service?.id ? null : name || null,
       unit_id: unit.id,
+        room_ids: selectRooms.map((item) => item.id ?? ""),
     });
     setLoading(false);
     if (!("message" in data)) {
       route.back();
     }
-  }, [lodgingId, paymentDate, lateDays, service, unit, name, price]);
+  }, [lodgingId, paymentDate, lateDays, service, unit, name, price,selectRooms]);
 
   useEffect(() => {
     fetchService();
@@ -112,6 +116,15 @@ function Update() {
             <BoxPaymentTimeBill
               disabled={false}
               {...{ lateDays, paymentDate, setLateDays, setPaymentDate }}
+            />
+            <BoxRoom
+              {...{
+                rooms,
+                selectRooms,
+                setRooms,
+                setSelectRooms,
+                lodgingId: lodgingId as string,
+              }}
             />
           </View>
         </ScrollView>

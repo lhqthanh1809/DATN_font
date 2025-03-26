@@ -173,3 +173,19 @@ export const getDimensionsDevice = () => {
     height: windowHeight,
   };
 };
+
+
+export const formatTime = (dateString: string) =>  {
+  const now = moment();
+  const date = moment(dateString);
+
+  if (now.isSame(date, 'day')) {
+      return date.format("HH:mm"); // Trong ngày
+  } else if (now.isSame(date, 'week')) {
+      return date.format("dddd HH:mm"); // Trong cùng tuần
+  } else if (now.isSame(date, 'year')) {
+      return date.format("DD/MM HH:mm"); // Trong cùng năm nhưng khác tuần
+  } else {
+      return date.format("HH:mm DD/MM/YYYY"); // Khác năm
+  }
+}

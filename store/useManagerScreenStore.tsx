@@ -7,6 +7,7 @@ import ListFeedback from "@/pages/Feedback/Management/List";
 import HomeScreen from "@/pages/Lodging/Main/screen";
 import { Setting } from "@/ui/icon/active";
 import SettingScreen from "@/pages/Lodging/Setting/Setting";
+import ListChannels from "@/pages/Chanel/list";
 
 interface ITab {
   name: string;
@@ -40,7 +41,7 @@ const useManagerScreenStore = create<ManagerScreenStore>((set, get) => ({
         name: "Trò chuyện",
         slug: "chat",
         icon: Chat,
-        view: <></>,
+        view: <ListChannels hasTitle memberId={lodgingId} memberType={constant.object.type.lodging}/>,
       },
       {
         name: "Phản hồi",

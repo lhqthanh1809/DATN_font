@@ -6,7 +6,7 @@ import { BoxInfo } from "@/pages/Equipment/BoxInfo";
 import Button from "@/ui/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { constant } from "@/assets/constant";
-import { BoxRoom } from "@/pages/Equipment/BoxRoom";
+import { BoxRoom } from "@/ui/layout/BoxRoom";
 import { IRoom } from "@/interfaces/RoomInterface";
 import { AssetInfo } from "expo-media-library";
 import { ICreateEquipment } from "@/interfaces/EquipmentInterface";

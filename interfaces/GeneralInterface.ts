@@ -30,3 +30,8 @@ export interface PaymentDate {
 export interface IDataRealtime<T> {
   data: T;
 }
+
+export interface IListResponse<T>{
+  total: number,
+  data: T[]
+}

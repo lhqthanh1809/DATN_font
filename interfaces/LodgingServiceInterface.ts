@@ -1,4 +1,5 @@
 import { PaymentDate } from "./GeneralInterface";
+import { IRoomService } from "./RoomServiceInterface";
 import { IService } from "./ServiceInterface";
 import { IUnit } from "./UnitInterface";
 
@@ -13,6 +14,8 @@ export interface ILodgingService extends PaymentDate {
   late_days?: number;
   payment_date?: number;
   service?: IService | null;
+  room_services?: IRoomService[];
+  room_ids?: string[];
   rooms?: {
     id: string;
     room_code: string;
