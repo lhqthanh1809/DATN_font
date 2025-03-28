@@ -1,6 +1,6 @@
+import { create } from "zustand";
 import { IFeedback } from "@/interfaces/FeedbackInterface";
 import moment from "moment";
-import { create } from "zustand";
 
 interface IFeedbackStore {
   feedbacks: IFeedback[];

@@ -6,7 +6,7 @@ import { Lock } from "@/ui/icon/security";
 import { Globe } from "@/ui/icon/symbol";
 import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
 import HeaderBack from "@/ui/layout/HeaderBack";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useState } from "react";
@@ -31,9 +31,11 @@ function ListEquipment() {
     setLoading(false);
   }, [lodgingId]);
 
-  useEffect(() => {
-    fetchList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchList();
+    }, [])
+  );
 
   return (
     <View className="flex-1">

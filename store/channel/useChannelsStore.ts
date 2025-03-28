@@ -1,9 +1,9 @@
+import { create } from "zustand";
 import { constant } from "@/assets/constant";
 import { IChannel, IListChannel } from "@/interfaces/ChannelInterface";
 import { IError } from "@/interfaces/ErrorInterface";
 import ChannelService from "@/services/Channel/ChannelService";
-import { create } from "zustand";
-import useToastStore from "../useToastStore";
+import useToastStore from "../toast/useToastStore";
 import { IListResponse } from "@/interfaces/GeneralInterface";
 import { IChatHistory } from "@/interfaces/ChatInterface";
 
@@ -123,4 +123,4 @@ const useChannelsStore = create<IChannelsStore>((set, get) => {
 });
 
 
-export default useChannelsStore
+export default useChannelsStore;

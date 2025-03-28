@@ -2,7 +2,7 @@ import { apiRouter } from "@/assets/ApiRouter";
 import { LodgingType } from "@/interfaces/LodgingInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { BaseHttpService } from "@/services/BaseHttpService";
-import useLodgingTypeStore from "@/store/lodging_type/useLodgingType";
+import useLodgingTypeStore from "@/store/lodging/lodgingType/useLodgingTypeStore";
 import Box from "@/ui/Box";
 import Dropdown from "@/ui/Dropdown";
 import Icon from "@/ui/Icon";

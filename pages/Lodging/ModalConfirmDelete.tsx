@@ -3,10 +3,11 @@ import { useUI } from "@/hooks/useUI";
 import { IError } from "@/interfaces/ErrorInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { Cross, CrossMedium } from "@/ui/icon/symbol";
+import ModalDelete from "@/ui/layout/ModalDelete";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
@@ -41,55 +42,10 @@ const ModelConfirmDelete: React.FC<{
   }, [lodgingId]);
 
   return (
-    <View className="h-full w-full items-center justify-center">
-      <View className="w-full px-6">
-        <Button className="bg-white-50 flex-col px-3 py-7" onPress={() => {}}>
-          <Button
-            disabled={loading}
-            onPress={() => {
-              hideModal();
-            }}
-            className="absolute right-3 top-3"
-          >
-            <Icon icon={CrossMedium} />
-          </Button>
-
-          <View className="gap-1">
-            <Text className="font-BeVietnamSemiBold text-16 text-center">
-              Xoá nhà cho thuê
-            </Text>
-            <Text className="font-BeVietnamMedium text-center text-mineShaft-500">
-              Bạn có chắc chắn muốn xoá nhà cho thuê này?
-            </Text>
-          </View>
-
-          <View className="w-full gap-2">
-            <Button
-              disabled={loading}
-              loading={loading}
-              onPress={deleteLodging}
-              className="bg-redPower-300 py-3"
-            >
-              <Text className="text-mineShaft-950 font-BeVietnamMedium">
-                Xác nhận
-              </Text>
-            </Button>
-            <Button
-              disabled={loading}
-              onPress={() => {
-                hideModal();
-              }}
-              className="bg-mineShaft-500 py-3"
-            >
-              <Text className="text-mineShaft-100 font-BeVietnamMedium">
-                Huỷ bỏ
-              </Text>
-            </Button>
-          </View>
-        </Button>
-      </View>
-    </View>
+    <ModalDelete handleConfirmDelete={deleteLodging} title="Xoá nhà cho thuê" subTitle="Bạn có chắc chắn muốn xoá nhà cho thuê này?" />
   );
 };
+
+
 
 export default ModelConfirmDelete;

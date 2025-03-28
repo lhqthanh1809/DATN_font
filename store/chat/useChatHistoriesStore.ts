@@ -1,12 +1,11 @@
+import { create } from "zustand";
 import { constant } from "@/assets/constant";
 import { IChannel, IListChannel } from "@/interfaces/ChannelInterface";
 import { IError } from "@/interfaces/ErrorInterface";
-import ChannelService from "@/services/Channel/ChannelService";
-import { create } from "zustand";
-import useToastStore from "../useToastStore";
 import { IListResponse } from "@/interfaces/GeneralInterface";
 import { IChatHistory, ICreateChat, IListChat } from "@/interfaces/ChatInterface";
 import ChatService from "@/services/Chat/ChatService";
+import useToastStore from "../toast/useToastStore";
 import uuid from "react-native-uuid";
 import moment from "moment";
 
@@ -154,4 +153,4 @@ const useChatHistoriesStore = create<IChatHistoriesStore>((set, get) => {
 });
 
 
-export default useChatHistoriesStore
+export default useChatHistoriesStore;

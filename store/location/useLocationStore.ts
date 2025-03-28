@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { LocationUnit } from '@/interfaces/LocationInterface';
+import { create } from "zustand";
+import { LocationUnit } from "@/interfaces/LocationInterface";
 
 interface LocationState {
   provinces: LocationUnit[];
@@ -19,7 +19,6 @@ const useLocationStore = create<LocationState>((set) => ({
     set((state) => ({
       districts: { ...state.districts, [parentId]: data },
     })),
-    
   setWards: (parentId, data) =>
     set((state) => ({
       wards: { ...state.wards, [parentId]: data },

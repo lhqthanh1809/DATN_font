@@ -11,7 +11,7 @@ import { IRoom } from "@/interfaces/RoomInterface";
 import { AssetInfo } from "expo-media-library";
 import { ICreateEquipment } from "@/interfaces/EquipmentInterface";
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import * as FileSystem from "expo-file-system";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 

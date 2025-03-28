@@ -12,7 +12,7 @@ import { Text, View } from "react-native";
 import ILocation from "@/interfaces/LocationInterface";
 import { debounce, isArray } from "lodash";
 import GeneralService from "@/services/GeneralService";
-import useLocationStore from "@/store/useLocationStore";
+import useLocationStore from "@/store/location/useLocationStore";
 
 const BoxLocation: React.FC<
   ILocation & {

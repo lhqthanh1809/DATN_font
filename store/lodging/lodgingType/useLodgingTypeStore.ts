@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { LodgingType } from '@/interfaces/LodgingInterface';
+import { create } from "zustand";
+import { LodgingType } from "@/interfaces/LodgingInterface";
 
 interface LodgingTypeState {
   lodgingTypes: LodgingType[];

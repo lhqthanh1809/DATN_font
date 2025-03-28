@@ -15,11 +15,14 @@ import {
   IUpdateEquipment,
 } from "@/interfaces/EquipmentInterface";
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import { IError } from "@/interfaces/ErrorInterface";
 import { BlurView } from "expo-blur";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import { useEquipmentStore } from "@/store/equipment/useEquipmentStore";
+import LodgingService from "@/services/Lodging/LodgingService";
+import { useUI } from "@/hooks/useUI";
+import ModalDelete from "@/ui/layout/ModalDelete";
 
 function UpdateEquipment() {
   const { lodgingId, id } = useLocalSearchParams();
@@ -42,10 +45,46 @@ function UpdateEquipment() {
     setType,
     type,
   } = useEquipmentStore();
+  const { addToast } = useToastStore();
+  const { hideModal, showModal } = useUI();
+
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const deleteEquipment = useCallback(async () => {
+    setLoadingDelete(true);
+
+    try {
+      const result = await new EquipmentService(lodgingId as string).delete(
+        id as string
+      );
+
+      if (result.hasOwnProperty("message")) {
+        addToast(constant.toast.type.error, "Xoá trang thiết bị thất bại.");
+        return;
+      }
+
+      addToast(constant.toast.type.success, "Xoá trang thiết bị thành công!");
+
+      hideModal();
+      router.back();
+    } catch (err) {
+    } finally {
+      setLoadingDelete(false);
+    }
+  }, [lodgingId, id]);
 
   useEffect(() => {
     fetchEquipment(id as string);
   }, [id]);
+
+  const handleOpenConfirmDelete = useCallback(() => {
+    showModal(
+      <ModalDelete
+        handleConfirmDelete={deleteEquipment}
+        title="Xoá trang thiết bị"
+        subTitle={`Bạn có chắc chắn muốn xoá trang thiết bị "${equipment?.name}" này?`}
+      />
+    );
+  }, [deleteEquipment, lodgingId, id, equipment, loadingDelete]);
 
   return (
     <View className="flex-1">
@@ -94,6 +133,7 @@ function UpdateEquipment() {
           <View className="flex-row gap-2">
             <Button
               disabled={loadingProcess}
+              onPress={handleOpenConfirmDelete}
               className="flex-1 bg-red-600 py-4"
             >
               <Text className="text-white-50 text-16 font-BeVietnamSemiBold">

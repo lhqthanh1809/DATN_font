@@ -16,11 +16,13 @@ import { cn } from "@/helper/helper";
 const ItemFling = <T,>({
   children,
   onPress,
+  onDelete,
   item,
   className
 }: {
   children: ReactNode;
   onPress: (item: T) => void;
+  onDelete?: (item: T) => void;
   item: T;
   className?: string
 }) => {
@@ -73,6 +75,7 @@ const ItemFling = <T,>({
         <Button
           className="h-full absolute w-full rounded-md bg-red-600 -z-10 justify-end"
           disabled={removeDisabled}
+          onPress={() => {onDelete && onDelete(item)}}
         >
           <View className="w-[50] items-center ">
             <Icon icon={Trash} className="text-red-100" />

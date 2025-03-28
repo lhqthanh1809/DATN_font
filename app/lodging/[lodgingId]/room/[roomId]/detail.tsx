@@ -3,7 +3,7 @@ import Layout from "@/ui/layout/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import Button from "@/ui/Button";
-import { Href, useLocalSearchParams, useRouter } from "expo-router";
+import { Href, router, useLocalSearchParams, useRouter } from "expo-router";
 import RoomService from "@/services/Room/RoomService";
 import { constant } from "@/assets/constant";
 import { BoxInfo } from "@/pages/Room/BoxInfo";
@@ -11,6 +11,9 @@ import LoadingAnimation from "@/ui/LoadingAnimation";
 import { IRoom } from "@/interfaces/RoomInterface";
 import BoxServiceDetail from "@/pages/Room/Detail/BoxServiceDetail";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import { useUI } from "@/hooks/useUI";
+import useToastStore from "@/store/toast/useToastStore";
+import ModalDelete from "@/ui/layout/ModalDelete";
 
 function Detail() {
   const { lodgings } = useLodgingsStore();
@@ -25,7 +28,8 @@ function Detail() {
   );
   const [services, setServices] = useState<IRoom["room_services"]>([]);
   const [loading, setLoading] = useState(false);
-  const route = useRouter();
+  const { hideModal, showModal } = useUI();
+  const { addToast } = useToastStore();
   const roomService = new RoomService();
 
   const lodging = useMemo(() => {
@@ -45,7 +49,7 @@ function Detail() {
     setLoading(true);
     const data = await roomService.detail(roomId as string);
     if (!data || "message" in data) {
-      route.back();
+      router.back();
       return;
     }
 
@@ -59,6 +63,37 @@ function Detail() {
     setMaxTenants(data.max_tenants);
     setLoading(false);
   }, [roomId]);
+
+
+    const deleteRoom = useCallback(async () => {
+      try {
+        roomService.lodgingId = lodgingId as string;
+        const result = await roomService.delete(
+          roomId as string
+        );
+  
+        if (result.hasOwnProperty("message")) {
+          addToast(constant.toast.type.error, "Xoá phòng thất bại.");
+          return;
+        }
+  
+        addToast(constant.toast.type.success, "Xoá phòng thành công!");
+  
+        hideModal();
+        router.back();
+      } catch (err) {
+      }
+    }, [lodgingId, roomId]);
+
+    const handleOpenConfirmDelete = useCallback(() => {
+      showModal(
+        <ModalDelete
+          handleConfirmDelete={deleteRoom}
+          title="Xoá phòng"
+          subTitle={`Bạn có chắc chắn muốn xoá phòng "${name}" này?`}
+        />
+      );
+    }, [deleteRoom, lodgingId, roomId, name]);
 
   useEffect(() => {
     fetchDetailRoom();
@@ -97,7 +132,7 @@ function Detail() {
         <View className="p-3 flex bg-white-50">
           <View className="flex-row gap-2">
             <Button
-              // onPress={handleCreateRoom}
+              onPress={handleOpenConfirmDelete}
               className="flex-1 bg-red-600 py-4"
             >
               <Text className="text-white-50 text-16 font-BeVietnamSemiBold">
@@ -106,7 +141,7 @@ function Detail() {
             </Button>
             <Button
               onPress={() =>
-                route.push(`lodging/${lodgingId}/room/${roomId}/edit` as Href)
+                router.push(`lodging/${lodgingId}/room/${roomId}/edit` as Href)
               }
               className="flex-1 bg-lime-400 py-4"
             >

@@ -2,14 +2,14 @@ import { create } from "zustand";
 import { ReactNode } from "react";
 import { Bell, Chat, Home2, Document, Notification } from "@/ui/icon/symbol";
 import { constant } from "@/assets/constant";
-import ListLodging from "@pages/User/Lodging/List";
+import ListLodging from "@/pages/User/Lodging/List";
 import ListNotify from "@/ui/layout/ViewListNotification";
 import ListFeedback from "@/pages/Feedback/User/List";
-import ListChannels from "@/pages/Chanel/list";
+import ListChannels from "@/pages/Channel/List";
 
 interface ITab {
   name: string;
-  view: React.ReactNode
+  view: React.ReactNode;
   icon: React.ElementType;
 }
 
@@ -31,12 +31,17 @@ const useUserScreenStore = create<UserScreenStore>((set, get) => ({
       {
         name: "Thuê trọ",
         icon: Home2,
-        view: <ListLodging/>
+        view: <ListLodging />,
       },
       {
         name: "Trò chuyện",
         icon: Chat,
-        view: <ListChannels memberId={user.id ?? ""} memberType={constant.object.type.user}/>,
+        view: (
+          <ListChannels
+            memberId={user.id ?? ""}
+            memberType={constant.object.type.user}
+          />
+        ),
       },
       {
         name: "Hợp đồng",
@@ -46,7 +51,12 @@ const useUserScreenStore = create<UserScreenStore>((set, get) => ({
       {
         name: "Thông báo",
         icon: Bell,
-        view: <ListNotify id={user?.id ?? ""} type={constant.object.type.user}/>,
+        view: (
+          <ListNotify
+            id={user?.id ?? ""}
+            type={constant.object.type.user}
+          />
+        ),
       },
       {
         name: "Phản hồi",
@@ -62,7 +72,6 @@ const useUserScreenStore = create<UserScreenStore>((set, get) => ({
       set({ tab: newTabs[0] });
     }
   },
-
 }));
 
 export default useUserScreenStore;

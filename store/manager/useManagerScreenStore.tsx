@@ -7,7 +7,7 @@ import ListFeedback from "@/pages/Feedback/Management/List";
 import HomeScreen from "@/pages/Lodging/Main/screen";
 import { Setting } from "@/ui/icon/active";
 import SettingScreen from "@/pages/Lodging/Setting/Setting";
-import ListChannels from "@/pages/Chanel/list";
+import ListChannels from "@/pages/Channel/List";
 
 interface ITab {
   name: string;

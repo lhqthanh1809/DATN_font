@@ -1,14 +1,12 @@
 // stores/useEquipmentStore.ts
 import { create } from "zustand";
-
 import { AssetInfo } from "expo-media-library";
 import { constant } from "@/assets/constant";
-import * as FileSystem from "expo-file-system";
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
 import { router } from "expo-router";
 import { IEquipment, IUpdateEquipment } from "@/interfaces/EquipmentInterface";
 import { IRoom } from "@/interfaces/RoomInterface";
-import useToastStore from "../useToastStore";
+import useToastStore from "../toast/useToastStore";
 import { IError } from "@/interfaces/ErrorInterface";
 
 interface EquipmentState {
@@ -126,18 +124,17 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => {
         const formData = new FormData();
         let thumbnail = images[0];
 
-
         if (typeof thumbnail !== "string") {
           const response = await fetch(thumbnail.uri);
           const blob = await response.blob();
-   
-          formData.append('thumbnail', {
+
+          formData.append("thumbnail", {
             uri: thumbnail.uri,
             type: blob.type,
-            name: thumbnail.filename
+            name: thumbnail.filename,
           } as any);
         } else {
-          formData.append('thumbnail', thumbnail); 
+          formData.append("thumbnail", thumbnail);
         }
 
         const roomIds =
@@ -148,13 +145,13 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => {
             : [];
 
         // Step 3: Create FormData
-        formData.append('id', equipment.id)
+        formData.append("id", equipment.id);
         formData.append("lodging_id", lodgingId);
         formData.append("name", name);
         formData.append("type", type.toString());
         formData.append("quantity", quantity.toString());
         roomIds.forEach((roomId) => {
-          formData.append('room_ids[]', roomId as string);
+          formData.append("room_ids[]", roomId as string);
         });
 
         const result = await equipmentService.updateEquipment(formData);

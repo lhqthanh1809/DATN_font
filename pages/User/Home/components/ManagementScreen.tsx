@@ -1,6 +1,8 @@
+import { useUI } from "@/hooks/useUI";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import useLodgingStore from "@/store/lodging/user/useLodgingStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { Plus, PlusTiny, Trash } from "@/ui/icon/symbol";
@@ -88,8 +90,15 @@ const LodgingItem: React.FC<{
   item: ILodging;
   onPress?: (item: ILodging) => void;
 }> = ({ item, onPress = () => {} }) => {
+  const { deleteLodging } = useLodgingStore();
+  const { showModal } = useUI();
+
   return (
-    <ItemFling<ILodging> item={item} onPress={onPress}>
+    <ItemFling<ILodging>
+      item={item}
+      onPress={onPress}
+      onDelete={() => deleteLodging(item.id ?? "", showModal)}
+    >
       <Text className="font-BeVietnamSemiBold text-16 text-mineShaft-900">
         {item.name}
       </Text>

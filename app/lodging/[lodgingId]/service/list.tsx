@@ -9,6 +9,7 @@ import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
 import HeaderBack from "@/ui/layout/HeaderBack";
 import {
   Href,
+  router,
   useFocusEffect,
   useLocalSearchParams,
   useRouter,
@@ -17,9 +18,16 @@ import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { constant } from "@/assets/constant";
+import { useUI } from "@/hooks/useUI";
+import useToastStore from "@/store/toast/useToastStore";
+import ModalDelete from "@/ui/layout/ModalDelete";
+import { IService } from "@/interfaces/ServiceInterface";
 
 function ListService() {
   const { lodgingId } = useLocalSearchParams();
+  const { hideModal, showModal } = useUI();
+  const { addToast } = useToastStore();
   const [services, setServices] = useState<ILodgingService[]>([]);
   const [loading, setLoading] = useState(false);
   const route = useRouter();
@@ -35,6 +43,44 @@ function ListService() {
     }
     setLoading(false);
   }, [lodgingId]);
+
+  const deleteService = useCallback(
+    async (id: string) => {
+      if (!id) return;
+      try {
+        const result = await new LodgingServiceManagerService(
+          lodgingId as string
+        ).delete(id as string);
+
+        if (result.hasOwnProperty("message")) {
+          addToast(constant.toast.type.error, "Xoá dịch vụ thất bại.");
+          return;
+        }
+
+        addToast(constant.toast.type.success, "Xoá dịch vụ thành công!");
+        setServices((prev) => prev.filter((item) => item.id !== id));
+        hideModal();
+      } catch (err) {}
+    },
+    [lodgingId]
+  );
+
+  const handleOpenConfirmDelete = useCallback(
+    (service: ILodgingService) => {
+      showModal(
+        <ModalDelete
+          handleConfirmDelete={() => deleteService(service.id ?? "")}
+          title="Xoá dịch vụ"
+          subTitle={`Bạn có chắc chắn muốn xoá dịch vụ "${
+            service.service
+              ? serviceManagerService.getReferenceService(service.service).name
+              : service.name
+          }" này?`}
+        />
+      );
+    },
+    [deleteService, lodgingId]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -78,8 +124,13 @@ function ListService() {
                   <ItemFling<ILodgingService>
                     item={service}
                     onPress={() => {
-                      route.push(`/lodging/${lodgingId}/service/edit/${service.id}` as any);
+                      route.push(
+                        `/lodging/${lodgingId}/service/edit/${service.id}` as any
+                      );
                     }}
+
+                    onDelete={() => handleOpenConfirmDelete(service)}
+                    
                     key={index}
                   >
                     <View className="flex-row gap-4 py-1 items-center">

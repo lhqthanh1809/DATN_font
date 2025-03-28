@@ -8,7 +8,7 @@ import HomeScreen from "@/pages/Lodging/Main/screen";
 import ListNotify from "@/ui/layout/ViewListNotification";
 import { useLocalSearchParams } from "expo-router";
 import ListFeedback from "@/pages/Feedback/Management/List";
-import useManagerScreenStore from "@/store/useManagerScreenStore";
+import useManagerScreenStore from "@/store/manager/useManagerScreenStore";
 
 const HomeLodging = () => {
   const { lodgingId, slugTab } = useLocalSearchParams();

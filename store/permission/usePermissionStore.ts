@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { IPermission } from '@/interfaces/Permission';
+import { create } from "zustand";
+import { IPermission } from "@/interfaces/Permission";
 
 interface PermissionState {
   permissions: Record<string, IPermission[]>;

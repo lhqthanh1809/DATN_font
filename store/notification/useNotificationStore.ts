@@ -1,9 +1,9 @@
+import { create } from "zustand";
 import { env, getTimezone } from "@/helper/helper";
 import { INotification } from "@/interfaces/NotificationInterface";
 import NotificationService from "@/services/Notification/NotificationService";
 import { isArray } from "lodash";
 import moment from "moment-timezone";
-import { create } from "zustand";
 
 interface NotificationStore {
   loading: boolean

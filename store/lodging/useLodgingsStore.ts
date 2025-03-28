@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { ILodging } from '@/interfaces/LodgingInterface';
+import { create } from "zustand";
+import { ILodging } from "@/interfaces/LodgingInterface";
 
 interface LodgingState {
   lodgings: ILodging[];

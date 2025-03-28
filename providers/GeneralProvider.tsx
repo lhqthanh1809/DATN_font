@@ -9,7 +9,7 @@ import { LocationUnit } from "@/interfaces/LocationInterface";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { IPermission } from "@/interfaces/Permission";
 import { IUser } from "@/interfaces/UserInterface";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { CheckCircle, CrossSmall, Error } from "@/ui/icon/symbol";
@@ -60,7 +60,7 @@ export const GeneralProvider: React.FC<GeneralProviderProps> = ({
     >
       {children}
       <View
-        className="absolute left-1/2 -translate-x-1/2 gap-1 items-center px-3"
+        className="absolute left-1/2 -translate-x-1/2 gap-1 items-center px-3 z-50"
         style={{
           top: getStatusBarHeight() + 10,
         }}

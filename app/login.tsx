@@ -22,7 +22,7 @@ import UserService from "@/services/User/UserService";
 import OAuthLogin from "@/ui/layout/OauthLogin";
 import { IUser } from "@/interfaces/UserInterface";
 import { IError } from "@/interfaces/ErrorInterface";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
 
 function LoginScreen() {

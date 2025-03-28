@@ -13,7 +13,7 @@ import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
 import Layout from "@/ui/layout/Layout";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
 import { IError } from "@/interfaces/ErrorInterface";
 import { BlurView } from "expo-blur";

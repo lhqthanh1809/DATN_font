@@ -5,7 +5,7 @@ import BoxInfo from "@/pages/Contract/BoxInfo";
 import BoxPrice from "@/pages/Contract/Create/BoxPrice";
 import ContractService from "@/services/Contract/ContractService";
 import useContractStore from "@/store/contract/useContractStore";
-import useToastStore from "@/store/useToastStore";
+import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import DetailItem from "@/ui/layout/DetailItem";
 import Layout from "@/ui/layout/Layout";
