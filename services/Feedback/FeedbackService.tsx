@@ -6,7 +6,7 @@ import {
 } from "@/interfaces/FeedbackInterface";
 import BaseService from "../BaseService";
 import { IError } from "@/interfaces/ErrorInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 import { reference } from "@/assets/reference";
 import { IResponse } from "@/interfaces/ResponseInterface";

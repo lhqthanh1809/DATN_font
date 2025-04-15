@@ -1,5 +1,5 @@
 import ListContract from "@/pages/Contract/ListContract";
-import HeaderBack from "@/ui/layout/HeaderBack";
+import HeaderBack from "@/ui/components/HeaderBack";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 

@@ -5,6 +5,7 @@ import CryptoJS from "crypto-js";
 import moment from "moment";
 import * as Application from "expo-application";
 import { Platform, StatusBar, Dimensions } from "react-native";
+import { envData } from "@/assets/env";
 
 // Gộp và làm sạch class tailwind
 export function cn(...inputs: ClassValue[]) {
@@ -21,9 +22,10 @@ export function encrypt(data: string) {
 }
 
 // Lấy giá tri trong app
-export function env(data: string) {
-  return Constants.expoConfig?.extra?.[data];
+export function env(data: keyof typeof envData) {
+  return envData[data as keyof typeof envData];
 }
+
 
 // Chuyển số chuyển về dạng số
 export function formatNumber(number: string, type: "int" | "float" = "int") {
@@ -174,18 +176,145 @@ export const getDimensionsDevice = () => {
   };
 };
 
-
-export const formatTime = (dateString: string) =>  {
+export const formatTime = (dateString: string) => {
   const now = moment();
   const date = moment(dateString);
 
-  if (now.isSame(date, 'day')) {
-      return date.format("HH:mm"); // Trong ngày
-  } else if (now.isSame(date, 'week')) {
-      return date.format("dddd HH:mm"); // Trong cùng tuần
-  } else if (now.isSame(date, 'year')) {
-      return date.format("DD/MM HH:mm"); // Trong cùng năm nhưng khác tuần
+  if (now.isSame(date, "day")) {
+    return date.format("HH:mm"); // Trong ngày
+  } else if (now.isSame(date, "week")) {
+    return date.format("dddd HH:mm"); // Trong cùng tuần
+  } else if (now.isSame(date, "year")) {
+    return date.format("DD/MM HH:mm"); // Trong cùng năm nhưng khác tuần
   } else {
-      return date.format("HH:mm DD/MM/YYYY"); // Khác năm
+    return date.format("HH:mm DD/MM/YYYY"); // Khác năm
+  }
+};
+
+
+// Tính khoảng thời gian giữa 2 điểm
+export const calculateDuration = (fromDate: Date, toDate: Date) => {
+  const fromMoment = moment(fromDate);
+  const toMoment = moment(toDate);
+
+  if (fromMoment.isSame(toMoment, "day")) {
+    const cutoffTime = fromMoment.clone().hour(8).minute(0).second(0);
+    return fromMoment.isBefore(cutoffTime)
+      ? { months: 1, days: 0 }
+      : { months: 0, days: 1 };
+  }
+
+  const months =
+    (toMoment.year() - fromMoment.year()) * 12 +
+    (toMoment.month() - fromMoment.month());
+
+  // Tính số ngày
+  let days = toMoment.date() - fromMoment.date();
+  if (days < 0) {
+    const lastMonthDays = fromMoment
+      .clone()
+      .subtract(1, "months")
+      .daysInMonth();
+    days += lastMonthDays;
+    return { months: months - 1, days }; // Giảm 1 tháng nếu phải cộng ngày
+  }
+
+  return { months, days };
+};
+
+export const getFromDate = (day: number) => {
+  const todayServer = moment().tz(env("TIMEZONE")); // Ngày hiện tại theo TIMEZONE
+
+  const paymentDayThisMonth = todayServer.clone().date(day);
+  const paymentDayLastMonth = todayServer
+    .clone()
+    .subtract(1, "months")
+    .date(day);
+
+  if (todayServer.date() < day) {
+    return paymentDayLastMonth.tz(getTimezone()).toDate();
+  }
+
+  // Nếu hôm nay đúng ngày thanh toán, kiểm tra giờ
+  if (todayServer.date() === day) {
+    const cutoffTime = paymentDayThisMonth
+      .clone()
+      .hour(8)
+      .minute(0)
+      .second(0);
+    if (todayServer.isBefore(cutoffTime)) {
+      return paymentDayLastMonth.tz(getTimezone()).toDate();
+    }
+  }
+
+  // Mặc định lấy ngày thanh toán của tháng này
+  return paymentDayThisMonth.tz(getTimezone()).toDate();
+}
+
+
+export const getJWTPayload = (token : string) => {
+  try {
+      const base64Url = token.split('.')[1]; // Lấy phần payload
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Chuyển về định dạng Base64 chuẩn
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''));
+
+      return JSON.parse(jsonPayload); 
+  } catch (error) {
+      console.error("Invalid token", error);
+      return null;
   }
 }
+
+/**
+ * Format phone number according to specified rules
+ * If starts with +: +{country code} {area code/network prefix} {subscriber number}
+ * Otherwise: 0{area code/network prefix} {subscriber number}
+ * Example: 093-582-5194
+ * @param phone - Phone number to format
+ * @returns Formatted phone number
+ */
+export const formatPhone = (phone: string): string => {
+  if (!phone) return "";
+  
+  // Remove all non-digit characters except +
+  let cleaned = phone.replace(/[^\d+]/g, "");
+  
+  // If starts with +, keep the + and country code
+  if (cleaned.startsWith("+")) {
+    const countryCode = cleaned.slice(1, 3); // Assuming 2-digit country code
+    const remaining = cleaned.slice(3);
+    
+    // Format remaining numbers in groups of 3-3-4
+    const formatted = remaining.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    
+    return `+${countryCode} ${formatted}`;
+  }
+  
+  // If starts with 0, format as 0{area code} {subscriber number}
+  if (cleaned.startsWith("0")) {
+    const areaCode = cleaned.slice(0, 3); // First 3 digits as area code
+    const subscriber = cleaned.slice(3);
+    
+    // Format subscriber number in groups of 3-4
+    const formatted = subscriber.replace(/(\d{3})(\d{4})/, "$1-$2");
+    
+    return `${areaCode}-${formatted}`;
+  }
+  
+  // If no special prefix, add 0 and format
+  const formatted = cleaned.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+  return `0${formatted}`;
+};
+
+/**
+ * Calculate the percentage of a part relative to a total.
+ * @param part - The part value to calculate the percentage for.
+ * @param total - The total value to compare against.
+ * @returns The percentage of the part relative to the total.
+ */
+export const calcularPers = (part: number, total: number): number => {
+  if (total === 0) return 0; // Avoid division by zero
+  return (part / total) * 100;
+};

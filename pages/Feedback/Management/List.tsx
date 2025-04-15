@@ -11,7 +11,7 @@ import Icon from "@/ui/Icon";
 import { Search } from "@/ui/icon/active";
 import { ChevronRight, Home2, Plus, PlusTiny } from "@/ui/icon/symbol";
 import Input from "@/ui/Input";
-import SearchAndStatus from "@/ui/layout/SearchAndStatus";
+import SearchAndSegmentedControl from "@/ui/components/SearchAndSearchAndSegmentedControl";
 import { initializeEcho } from "@/utils/echo";
 import { Channel } from "@ably/laravel-echo";
 import axios from "axios";
@@ -104,7 +104,7 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
         Phản hồi/ Đóng góp ý kiến
       </Text>
       <View className="gap-2 flex-1">
-        <SearchAndStatus
+        <SearchAndSegmentedControl
           dataObject={reference.feedback.status}
           onChangeSearch={(search) => setSearch(search)}
           onChangeStatus={(status) => setStatusActive(status)}

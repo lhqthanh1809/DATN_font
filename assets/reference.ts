@@ -1,5 +1,6 @@
 import Icon from "@/ui/Icon";
-import { Bulb, Car, Home, TagLine, Trash, Water, Wifi } from "@/ui/icon/symbol";
+import { Money } from "@/ui/icon/finance";
+import { ArrowDownCircle, ArrowExportCircle, ArrowImportCircle, ArrowUpCircle, Bulb, Car, Home, TagLine, Trash, Water, Wifi } from "@/ui/icon/symbol";
 
 export const reference = {
   permission: {
@@ -40,22 +41,27 @@ export const reference = {
     water: {
       name: "Tiền nước",
       icon: Water,
+      text: "text-curiousBlue-400",
     },
     wifi: {
       name: "Tiền wifi",
       icon: Wifi,
+      text: "text-purplePlum-400",
     },
     electricity: {
       name: "Tiền điện",
       icon: Bulb,
+      text: "text-buttercup-300",
     },
     garbage: {
       name: "Tiền rác",
       icon: Trash,
+      text: "text-lime-600",
     },
     parking: {
       name: "Tiền đổ xe",
       icon: Car,
+      text: "text-pickledBlueWood-400",
     },
   },
   unit: {
@@ -90,12 +96,15 @@ export const reference = {
     status: {
       1: {
         name: "Còn trống",
+        bg: "bg-lime-600",
       },
       2: {
         name: "Bảo trì/Sửa chữa",
+        bg: "bg-happyOrange-600",
       },
       3: {
         name: "Đã đủ",
+        bg: "bg-redPower-600",
       },
     },
   },
@@ -112,17 +121,57 @@ export const reference = {
 
   contract: {
     status: {
-      1: { name: "Sắp chuyển vào", bg: "bg-yellow-400", text: "text-yellow-100" },
+      1: {
+        name: "Sắp chuyển vào",
+        bg: "bg-yellow-400",
+        text: "text-yellow-100",
+      },
       2: { name: "Đang thuê", bg: "bg-lime-500", text: "text-lime-100" },
-      3: { name: "Đã kết thúc", bg: "bg-blue-400", text: "text-lime-100" },
-      4: { name: "Đã huỷ", bg: "bg-blue-400", text: "text-blue-100" },
-      5: { name: "Quá hạn", bg: "bg-blue-400", text: "text-lime-100" },
+      3: { name: "Đã kết thúc", bg: "bg-blue-400", text: "text-blue-100" },
+      4: { name: "Đã huỷ", bg: "bg-gray-400", text: "text-gray-100" },
+      5: { name: "Quá hạn", bg: "bg-redPower-600", text: "text-redPower-100" },
+    },
+  },
+  transaction: {
+    type: {
+      deposit: {
+        name: "Nạp tiền",
+        bg: "bg-lime-100",
+        text: "text-lime-400",
+        icon: ArrowDownCircle,
+      },
+      withdraw: {
+        name: "Rút tiền",
+        bg: "text-redPower-600",
+        text: "text-redPower-100",
+        icon: ArrowUpCircle,
+      },
+      transfer_in: {
+        name: "Chuyển vào",
+        bg: "bg-blue-100",
+        text: "text-blue-400",
+        icon: ArrowImportCircle,
+      },
+      transfer_out: {
+        name: "Chuyển ra",
+        bg: "bg-blue-100",
+        text: "text-blue-400",
+        icon: ArrowExportCircle,
+      },
+      payment: {
+        name: "Thanh toán",
+        bg: "bg-yellow-100",
+        text: "text-yellow-400",
+        icon: Money,
+      },
     },
   },
 
   other: {
     name: "Khác",
     icon: TagLine,
+    text: "text-cascade-600",
+    bg: "bg-cascade-100",
   },
   undefined: {
     name: "Không xác định",

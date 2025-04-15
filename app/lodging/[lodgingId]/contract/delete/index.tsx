@@ -9,8 +9,14 @@ import Divide from "@/ui/Divide";
 import Icon from "@/ui/Icon";
 import { Money } from "@/ui/icon/finance";
 import { CheckCircle, Error, Warning } from "@/ui/icon/symbol";
-import HeaderBack from "@/ui/layout/HeaderBack";
-import { Href, router, useLocalSearchParams, usePathname } from "expo-router";
+import HeaderBack from "@/ui/components/HeaderBack";
+import {
+  Href,
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  usePathname,
+} from "expo-router";
 import { isArray } from "lodash";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
@@ -46,9 +52,11 @@ function Delete() {
     setLoading(false);
   }, [lodgingId]);
 
-  useEffect(() => {
-    fetchContract();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchContract();
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-white-50">

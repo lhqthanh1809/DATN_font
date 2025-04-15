@@ -1,15 +1,17 @@
 import { constant } from "@/assets/constant";
 import { reference } from "@/assets/reference";
 import { cn, convertToNumber } from "@/helper/helper";
+import { useUI } from "@/hooks/useUI";
 import { IContract, IListContract } from "@/interfaces/ContractInterface";
 import ContractService from "@/services/Contract/ContractService";
+import usePaymentStore from "@/store/payment/usePaymentStore";
 import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import Divide from "@/ui/Divide";
 import Icon from "@/ui/Icon";
 import { Money } from "@/ui/icon/finance";
 import { CheckCircle, Error, Warning } from "@/ui/icon/symbol";
-import SearchAndStatus from "@/ui/layout/SearchAndStatus";
+import SearchAndSegmentedControl from "@/ui/components/SearchAndSearchAndSegmentedControl";
 import { router } from "expo-router";
 import { isArray } from "lodash";
 import moment from "moment";
@@ -53,7 +55,7 @@ const ListContract: React.FC<{
   }, [statusActive]);
   return (
     <View className="flex-1 pt-3 gap-2">
-      <SearchAndStatus
+      <SearchAndSegmentedControl
         dataObject={reference.contract.status}
         onChangeSearch={(search) => setSearch(search)}
         onChangeStatus={(status) => setStatusActive(status)}
@@ -155,8 +157,11 @@ const ContractItem: React.FC<{
   contract: IContract;
   roomId: string;
   lodgingId: string;
-}> = ({ contract, roomId, lodgingId }) => {
+}> = ({ contract: initial, roomId, lodgingId }) => {
   const contractService = new ContractService();
+  const { showModal } = useUI();
+  const { openPaymentModal, setAmountToBePaid } = usePaymentStore();
+  const [contract, setContract] = useState<IContract>(initial);
   const startDate = moment(contract.start_date);
   const endDate = contract.end_date
     ? moment(contract.end_date)
@@ -167,34 +172,47 @@ const ContractItem: React.FC<{
 
   const status = contractService.getReferenceToStatus(contract.status);
 
+  const handleWhenPaymentSuccess = useCallback(
+    (amount: number) => {
+      const totalDue = Math.max((contract?.total_due ?? 0) - amount, 0);
+
+      setContract({
+        ...contract,
+        total_due: totalDue,
+        due_months: totalDue > 0 ? contract.due_months : 0,
+      })
+
+    },
+    [contract]
+  );
+
+  const handleOpenPayment = useCallback(() => {
+    setAmountToBePaid(contract.total_due ?? 0);
+    openPaymentModal("", contract.id, "rent", showModal, handleWhenPaymentSuccess, "full");
+  }, [showModal, openPaymentModal, contract, handleWhenPaymentSuccess]);
+
   const statusSub = useCallback(() => {
-    if (contract.status == constant.contract.status.pending) {
-      const daysDiff = moment(startDate).diff(moment(), "days");
-      const diffInHours = moment(startDate).diff(moment(), "hours");
-      return `Sắp chuyển vào (${daysDiff} ngày)`;
-    }
-
-    if (contract.status == constant.contract.status.finished) {
-      return "Hợp đồng đã kết thúc";
-    }
-
-    if (contract.status == constant.contract.status.cancel) {
-      return "Đã huỷ giữ chỗ";
-    }
-
-    if (contract.due_months) {
-      if (contract.due_months == 1) {
-        return `Còn nợ ${convertToNumber(
-          (contract.total_due ?? 0).toString()
-        )} đ`;
+    switch (contract.status) {
+      case constant.contract.status.pending: {
+        const daysDiff = moment(startDate).diff(moment(), "days");
+        return `Sắp chuyển vào (${daysDiff} ngày)`;
       }
-
-      return `Nợ ${contract.due_months} tháng (${convertToNumber(
-        (contract.total_due ?? 0).toString()
-      )} đ)`;
+      case constant.contract.status.finished:
+        return "Hợp đồng đã kết thúc";
+      case constant.contract.status.cancel:
+        return "Đã huỷ giữ chỗ";
+      default: {
+        if (contract.due_months) {
+          const totalDue = convertToNumber(
+            (contract.total_due ?? 0).toString()
+          );
+          return contract.due_months === 1
+            ? `Còn nợ ${totalDue} đ`
+            : `Nợ ${contract.due_months} tháng (${totalDue} đ)`;
+        }
+        return "Đã thanh toán tháng này";
+      }
     }
-
-    return "Đã thanh toán tháng này";
   }, [contract, startDate]);
 
   return (
@@ -293,17 +311,18 @@ const ContractItem: React.FC<{
           <ButtonCancelContract />
         ) : contract.status === constant.contract.status.cancel ||
           contract.status === constant.contract.status.finished ? null : (
-            !!contract.due_months && <ButtonPayment />
+          !!contract.due_months && <ButtonPayment onPress={handleOpenPayment}/>
         )}
-
       </View>
     </Button>
   );
 };
 
-const ButtonPayment = () => {
+const ButtonPayment:React.FC<{
+  onPress?: () => void;
+}> = ({ onPress }) =>  {
   return (
-    <Button className="flex-1 bg-lime-300 px-4 py-2">
+    <Button onPress={() => onPress && onPress()} className="flex-1 bg-lime-300 px-4 py-2">
       <Text className="font-BeVietnamMedium text-mineShaft-950">
         Thanh toán
       </Text>

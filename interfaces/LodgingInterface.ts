@@ -1,5 +1,6 @@
 import { LocationUnit } from "./LocationInterface";
 import { IRoom } from "./RoomInterface";
+import { IWallet } from "./WalletInterface";
 
 export interface LodgingType {
   id: number;
@@ -57,4 +58,5 @@ export interface ILodging {
     id: number;
     name: string;
   };
+  wallet?: IWallet
 }

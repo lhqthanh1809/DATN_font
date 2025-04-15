@@ -14,6 +14,8 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import eventEmitter from "@/utils/eventEmitter";
 import Button from "@/ui/Button";
+import Icon from "@/ui/Icon";
+import { Cross, CrossMedium } from "@/ui/icon/symbol";
 
 
 const { width, height } = Dimensions.get("window");
@@ -45,19 +47,13 @@ const QRScan = () => {
     <SafeAreaView style={StyleSheet.absoluteFillObject}>
       <StatusBar hidden />
       {/* Nút Back trên cùng */}
-      <View className="absolute z-10 items-center w-full" style={{
-        bottom: 50
-      }}>
+      <View className="absolute z-10 top-6 left-6">
         <Button
-          className="bg-white-50"
+          className="bg-white-600 p-3 rounded-full"
           onPress={() => router.back()}
-          style={{
-            paddingHorizontal: 50,
-            paddingVertical: 8,
-            borderRadius: 10,
-          }}
+
         >
-          <Text className="font-BeVietnamSemiBold text-mineShaft-950" style={{ fontSize: 16 }}>Đóng</Text>
+          <Icon icon={CrossMedium} className="text-white-50"/>
         </Button>
       </View>
       <CameraView

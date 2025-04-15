@@ -1,9 +1,8 @@
-import DetailContract from "@/pages/Contract/Detail/screen";
+import DetailContract from "@/pages/Contract/Detail/Owner/screen";
 import ListRentalHistory from "@/pages/RentalHistory/list";
 import ListServicePayment from "@/pages/ServicePayment/list";
-import BackView from "@/ui/BackView";
-import HeaderBack from "@/ui/layout/HeaderBack";
-import TabsLine from "@/ui/layout/TabsLine";
+import HeaderBack from "@/ui/components/HeaderBack";
+import TabsLine from "@/ui/components/TabsLine";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { View } from "react-native";

@@ -4,7 +4,7 @@ import {
   IUpdateEquipment,
 } from "@/interfaces/EquipmentInterface";
 import BaseService from "../BaseService";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { HttpStatusCode } from "axios";
 import { IError } from "@/interfaces/ErrorInterface";

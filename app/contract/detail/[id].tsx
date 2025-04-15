@@ -1,7 +1,9 @@
+import DetailContract from "@/pages/Contract/Detail/User/screen";
 import ListRentalHistory from "@/pages/RentalHistory/list";
+import ListServicePayment from "@/pages/ServicePayment/list";
 import BackView from "@/ui/BackView";
-import HeaderBack from "@/ui/layout/HeaderBack";
-import TabsLine from "@/ui/layout/TabsLine";
+import HeaderBack from "@/ui/components/HeaderBack";
+import TabsLine from "@/ui/components/TabsLine";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
@@ -12,18 +14,26 @@ function Detail() {
     () => [
       {
         name: "Chi tiết",
-        view: <></>,
+        view: <DetailContract id={id as string}/>,
       },
       {
-        name: "Lịch sử thanh toán",
+        name: "Thanh toán tiền thuê",
         view: (
           <ListRentalHistory
             contractId={id as string}
           />
         ),
       },
+      {
+        name: "Thanh toán dịch vụ",
+        view: (
+          <ListServicePayment
+            contractId={id as string}
+          />
+        ),
+      },
     ],
-    [ id]
+    [id]
   );
 
   const [active, setActive] = useState(tabs[0]);

@@ -73,10 +73,18 @@ const BoxInfo = forwardRef<
           unitService.listUnit(),
         ]);
         if (isArray(dataServices)) {
-          setServices([...dataServices, { id: 0, name: "other" }]);
+          const otherService: IService = {
+            id: 0,
+            name: "other",
+            getDisplayValue: () => ({
+              displayValue: "Other Service",
+              price: 0,
+            }),
+          };
+          setServices([...dataServices, otherService]);
           !isUpdate
             ? setService(dataServices[0])
-            : setService(service ? { ...service } : { id: 0, name: "other" });
+            : setService(service ? { ...service } : otherService);
         }
 
         if (isArray(dataUnits)) {
@@ -130,10 +138,10 @@ const BoxInfo = forwardRef<
     }, [service, fetchUnitMap, unitMap]);
 
     useEffect(() => {
-      if (!service || !unitMap[service.id]) return;
+      if (!service || service.id === undefined || !unitMap[service.id]) return;
       !isUpdate
         ? setUnit(
-            units.filter((item) => unitMap[service.id].includes(item.id))[0] ??
+            units.filter((item) => unitMap[service?.id!]?.includes(item.id))[0] ??
               null
           )
         : setUnit(unit ? { ...unit } : null);
@@ -161,6 +169,7 @@ const BoxInfo = forwardRef<
           renderOption={(option) => {
             return serviceManagerService.getReferenceService(option).name;
           }}
+          compareKey="id"
           placeHolder="Chọn dịch vụ"
           label="Dịch vụ"
           onChange={(option) => setService(option)}
@@ -182,9 +191,10 @@ const BoxInfo = forwardRef<
             !service?.id
               ? units
               : unitMap[service.id] && unitMap[service.id].length > 0
-              ? units.filter((item) => unitMap[service.id]?.includes(item.id))
+              ? units.filter((item) => service.id !== undefined && unitMap[service.id]?.includes(item.id))
               : units
           }
+          compareKey="id"
           hasSearch={false}
           value={unit}
           optionKey="name"

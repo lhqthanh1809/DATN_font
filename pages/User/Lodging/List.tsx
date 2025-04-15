@@ -11,7 +11,8 @@ import Input from "@/ui/Input";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import useLodgingStore from "@/store/lodging/user/useLodgingStore";
-import TabsLine from "@/ui/layout/TabsLine";
+import TabsLine from "@/ui/components/TabsLine";
+import { Href, router } from "expo-router";
 
 function ListLodging() {
   const { lodgings, loading, fetchLodgings, toggleShowContracts, search } =
@@ -138,7 +139,8 @@ function ListLodging() {
                             const { daysRemaining, endDate, statusContract } =
                               calculateStatusContract(contract);
                             return (
-                              <View
+                              <Button
+                                onPress={() => {router.push(`/contract/detail/${contract.id}` as Href)}}
                                 key={index}
                                 className="flex-row justify-between items-start bg-lime-100 p-3 rounded-lg"
                               >
@@ -181,7 +183,7 @@ function ListLodging() {
                                       `(${daysRemaining} ngày)`}
                                   </Text>
                                 </View>
-                              </View>
+                              </Button>
                             );
                           })
                         )}

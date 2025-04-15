@@ -1,12 +1,13 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, RefObject, useState, forwardRef } from "react";
 import {
   StyleProp,
   Text,
   TextInput,
   View,
   ViewStyle,
-  StyleSheet,
   Pressable,
+  TextInputKeyPressEventData,
+  NativeSyntheticEvent,
 } from "react-native";
 import Icon from "./Icon";
 import { Hide, Show } from "./icon/edit";
@@ -22,13 +23,16 @@ interface Props {
   type?: "password" | "number" | "text" | "phone" | "code";
   prefix?: ReactNode;
   suffix?: ReactNode;
+  suffixTitle?: ReactNode;
   value: string;
   placeHolder?: string;
   onBlur?: () => void;
   disabled?: boolean;
+  maxLength?: number;
+  onKeyPress?: (event: NativeSyntheticEvent<TextInputKeyPressEventData>) => void;
 }
 
-function Input({
+const Input = forwardRef<TextInput, Props>(({
   label,
   onChange,
   style,
@@ -37,37 +41,44 @@ function Input({
   type = "text",
   prefix,
   suffix,
+  suffixTitle,
   value,
   placeHolder,
   onBlur,
   required,
   disabled,
-}: Props) {
+  maxLength,
+  onKeyPress,
+}, ref) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <View className="gap-2 relative">
       {label && (
-        <View className="flex-row">
-          <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
-            {label}
-          </Text>
-          {required && (
-            <Text className="font-BeVietnamRegular text-14 text-red-600 ml-2">
-              *
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row">
+            <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
+              {label}
             </Text>
-          )}
+            {required && (
+              <Text className="font-BeVietnamRegular text-14 text-red-600 ml-2">
+                *
+              </Text>
+            )}
+          </View>
+          {suffixTitle}
         </View>
       )}
       <View
         className={cn(
           "border-1 border-mineShaft-200 bg-white-50 px-3 h-[3rem] rounded-xl flex-row items-center gap-2",
-          (disabled) && "bg-mineShaft-50",
+          disabled && "bg-mineShaft-50",
           className
         )}
       >
         {prefix}
         <TextInput
+          maxLength={maxLength}
           readOnly={disabled}
           value={type === "number" ? convertToNumber(value) : value}
           onChangeText={(text) =>
@@ -86,6 +97,8 @@ function Input({
           placeholder={placeHolder}
           placeholderTextColor={"#B0B0B0"}
           onBlur={onBlur}
+          onKeyPress={(event) => onKeyPress && onKeyPress(event)}
+          ref={ref}
         />
         {suffix}
         {type === "password" && (
@@ -96,6 +109,6 @@ function Input({
       </View>
     </View>
   );
-}
+})
 
 export default Input;

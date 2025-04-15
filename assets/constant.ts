@@ -56,6 +56,16 @@ export const constant = {
     },
   },
 
+  transaction: {
+    type: {
+      payment: "payment",
+      transfer_out: "transfer_out",
+      transfer_in: "transfer_in",
+      withdraw: "withdraw",
+      deposit: "deposit",
+    },
+  },
+
   object: {
     type: {
       lodging: "lodging",

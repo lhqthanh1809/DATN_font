@@ -21,6 +21,6 @@ export {
   // Phone,
   Camera,
   // CameraOff,
-  // Logout,
+  Logout,
   // MicrophoneOff
 };

@@ -1,5 +1,5 @@
-import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
-import Layout from "@/ui/layout/Layout";
+import { BoxPaymentTimeBill } from "@/ui/components/BoxPaymentTimeBill";
+import Layout from "@/ui/components/Layout";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import BoxInfo from "@/pages/Service/BoxInfo";
@@ -14,7 +14,7 @@ import { IError } from "@/interfaces/ErrorInterface";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 import { IRoom } from "@/interfaces/RoomInterface";
-import { BoxRoom } from "@/ui/layout/BoxRoom";
+import { BoxRoom } from "@/ui/components/BoxRoom";
 
 function Update() {
   const { id, lodgingId } = useLocalSearchParams();

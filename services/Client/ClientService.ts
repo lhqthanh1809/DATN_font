@@ -1,4 +1,4 @@
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { IError } from "@/interfaces/ErrorInterface";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";

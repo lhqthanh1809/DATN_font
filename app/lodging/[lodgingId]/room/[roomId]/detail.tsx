@@ -1,5 +1,5 @@
-import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
-import Layout from "@/ui/layout/Layout";
+import { BoxPaymentTimeBill } from "@/ui/components/BoxPaymentTimeBill";
+import Layout from "@/ui/components/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import Button from "@/ui/Button";
@@ -13,7 +13,7 @@ import BoxServiceDetail from "@/pages/Room/Detail/BoxServiceDetail";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 import { useUI } from "@/hooks/useUI";
 import useToastStore from "@/store/toast/useToastStore";
-import ModalDelete from "@/ui/layout/ModalDelete";
+import ModalDelete from "@/ui/components/ModalDelete";
 
 function Detail() {
   const { lodgings } = useLodgingsStore();

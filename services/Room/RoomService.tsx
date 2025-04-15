@@ -2,7 +2,7 @@ import { IRoom, IRoomFilter } from "@/interfaces/RoomInterface";
 import BaseService from "../BaseService";
 import { IError } from "@/interfaces/ErrorInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 
 export default class RoomService extends BaseService {

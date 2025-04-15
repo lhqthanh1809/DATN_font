@@ -7,7 +7,7 @@ import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { Cross, CrossMedium } from "@/ui/icon/symbol";
-import ModalDelete from "@/ui/layout/ModalDelete";
+import ModalDelete from "@/ui/components/ModalDelete";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";

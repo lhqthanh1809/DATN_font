@@ -46,5 +46,30 @@ export interface IContract {
   relatives: number;
   total_due?: number;
   due_months?: number;
-  room?: IRoom
+  room?: IRoom,
+  has_been_billed: boolean
+}
+
+export interface ICreateFinalBill {
+  contract_id: string;
+  room_id: string;
+  deposit_amount_refund: number;
+  end_date: string;
+  is_monthly_billing?: boolean;
+  services?: {
+    id: string;
+    value?: number;
+  }[]
+}
+
+export interface IEndContract {
+  contract_id: string;
+  skip?: ("payment"|"bill")[],
+  end_date?: string;
+}
+
+export interface IPayAmountByContract {
+  type: "refund" | "payment_more";
+  contract_id: string;
+  amount: number;
 }

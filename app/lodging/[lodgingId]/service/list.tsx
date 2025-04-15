@@ -5,8 +5,8 @@ import ServiceManagerService from "@/services/Service/ServiceManagerService";
 import UnitService from "@/services/Unit/UnitService";
 import Icon from "@/ui/Icon";
 import ItemFling from "@/ui/ItemFling";
-import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
-import HeaderBack from "@/ui/layout/HeaderBack";
+import ViewHasButtonAdd from "@/ui/layouts/ViewHasButtonAdd";
+import HeaderBack from "@/ui/components/HeaderBack";
 import {
   Href,
   router,
@@ -21,7 +21,7 @@ import { ScrollView, Text, View } from "react-native";
 import { constant } from "@/assets/constant";
 import { useUI } from "@/hooks/useUI";
 import useToastStore from "@/store/toast/useToastStore";
-import ModalDelete from "@/ui/layout/ModalDelete";
+import ModalDelete from "@/ui/components/ModalDelete";
 import { IService } from "@/interfaces/ServiceInterface";
 
 function ListService() {

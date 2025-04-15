@@ -1,14 +1,14 @@
 import { IError } from "@/interfaces/ErrorInterface";
 import BaseService from "../BaseService";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { ILodgingService } from "@/interfaces/LodgingServiceInterface";
 import { HttpStatusCode } from "axios";
 
 export default class LodgingServiceManagerService extends BaseService {
   private _lodgingId: string | null;
 
-  public constructor(lodgingId: string | null) {
+  public constructor(lodgingId: string | null = null) {
     super();
     this._lodgingId = lodgingId;
   }
@@ -126,6 +126,24 @@ export default class LodgingServiceManagerService extends BaseService {
         return res as IError;
       }
       return (res as IResponse).body ?? null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+  public async listByRoom(
+    roomId: string,
+  ): Promise<ILodgingService[] | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        url: apiRouter.listLodgingServiceByRoom,
+        body: { room_id: roomId },
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+      return (res as IResponse).body?.data ?? null;
     } catch (error: any) {
       return this.returnError(error);
     }

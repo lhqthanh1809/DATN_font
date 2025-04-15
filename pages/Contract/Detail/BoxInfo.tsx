@@ -19,6 +19,7 @@ interface BoxInfoProps {
   identityCard: string;
   endDate: Date;
   status: number;
+  phone?: string;
   gender: { name: string; value: boolean } | null | undefined;
 }
 
@@ -31,6 +32,7 @@ const BoxInfo = ({
   address,
   identityCard,
   endDate,
+  phone,
   status,
   gender,
 }: BoxInfoProps) => {
@@ -86,6 +88,9 @@ const BoxInfo = ({
           />
         </View>
       </View>
+
+      {phone && <Input disabled value={phone} label="Số điện thoại" />}
+
       {gender && <Input disabled value={gender.name} label="Giới tính" />}
 
       {!isNaN(birthDay.getTime()) && (

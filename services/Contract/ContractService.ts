@@ -1,11 +1,14 @@
 import {
   IContract,
   ICreateContract,
+  ICreateFinalBill,
+  IEndContract,
   IListContract,
+  IPayAmountByContract,
 } from "@/interfaces/ContractInterface";
 import BaseService from "../BaseService";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 import { IError } from "@/interfaces/ErrorInterface";
 import { reference } from "@/assets/reference";
@@ -69,6 +72,25 @@ export default class ContractService extends BaseService {
     }
   }
 
+  public async debt(contractId: string): Promise<{
+    room: number,
+    service: number
+  } | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        url: apiRouter.debtContract.replace(":id", contractId),
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+
+      return (res as IResponse).body?.data || null;
+    } catch (err: any) {
+      return this.returnError(err);
+    }
+  }
+
   public async update(
     data: IContract & {
       lodging_id: string;
@@ -79,7 +101,7 @@ export default class ContractService extends BaseService {
       const res: IResponse | IError = await this.https({
         authentication_requested: true,
         method: "POST",
-        url: apiRouter.update,
+        url: apiRouter.updateContract,
         body: data,
       });
 
@@ -99,5 +121,65 @@ export default class ContractService extends BaseService {
           status as keyof typeof reference.contract.status
         ]
       : reference.undefined;
+  }
+
+  public async createFinalBill(
+    data: ICreateFinalBill
+  ): Promise<string | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        method: "POST",
+        url: apiRouter.createFinalBill,
+        body: data,
+        authentication_requested: true,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+      return (res as IResponse).body?.data ?? null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+  public async endContract(
+    data: IEndContract
+  ): Promise<string | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        method: "POST",
+        url: apiRouter.endContract,
+        body: data,
+        authentication_requested: true,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+      return (res as IResponse).body?.data ?? null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+  public async payAmountByContract(
+    data: IPayAmountByContract
+  ): Promise<string | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        method: "POST",
+        url: apiRouter.payAmountByContract,
+        body: data,
+        authentication_requested: true,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+      return (res as IResponse).body?.data ?? null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
   }
 }

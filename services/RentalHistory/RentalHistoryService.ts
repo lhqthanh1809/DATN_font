@@ -1,7 +1,7 @@
 import { IListRental, IRentalHistory } from "@/interfaces/RentalInterface";
 import BaseService from "../BaseService";
 import { IError } from "@/interfaces/ErrorInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
 
 export default class RentalHistory extends BaseService {

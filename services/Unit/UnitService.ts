@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
 import BaseService from "../BaseService";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { IError } from "@/interfaces/ErrorInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { IUnit } from "@/interfaces/UnitInterface";

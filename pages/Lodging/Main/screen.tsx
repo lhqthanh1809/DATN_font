@@ -11,7 +11,7 @@ import { ScrollView, Text } from "react-native";
 import LoadPermission from "./components/LoadPermission";
 import MenuFunctionBox from "./components/MenuFunctionBox";
 import { ILodging } from "@/interfaces/LodgingInterface";
-import TabsBlock from "@/ui/layout/TabsBlock";
+import TabsBlock from "@/ui/components/TabsBlock";
 import ManagerScreen from "./components/ManagerScreen";
 import StatisticalScreen from "./components/StatisticalScreen";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";

@@ -1,6 +1,7 @@
 import Button from "@/ui/Button";
 import Input from "@/ui/Input";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,18 +13,19 @@ import BackView from "@/ui/BackView";
 import { useCallback, useEffect, useState } from "react";
 import { env, encrypt, getDeviceID } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { LocalStorage } from "@/services/LocalStorageService";
 import { HttpStatusCode } from "axios";
 import { useRouter } from "expo-router";
 import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
-import OAuthLogin from "@/ui/layout/OauthLogin";
+import OAuthLogin from "@/ui/components/OauthLogin";
 import { IUser } from "@/interfaces/UserInterface";
 import { IError } from "@/interfaces/ErrorInterface";
 import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
+import AuthService from "@/services/Auth/AuthService";
 
 function LoginScreen() {
   const { addToast } = useToastStore();
@@ -51,7 +53,7 @@ function LoginScreen() {
     setLoading(true);
     setActiveLogin(false);
     try {
-      const dataLogin: IError | string = await userServer.login(fields);
+      const dataLogin: IError | string = await new AuthService().login(fields);
 
       if (dataLogin.hasOwnProperty("message") || !dataLogin) {
         addToast(constant.toast.type.error, "Đăng nhập thất bại.");
@@ -72,7 +74,7 @@ function LoginScreen() {
         if ((dataUser as IUser)?.is_completed) {
           route.push("/");
         } else {
-          route.push("/user/update");
+          route.push("/user/update?required=true");
         }
       }
     } catch (err) {
@@ -120,9 +122,11 @@ function LoginScreen() {
             />
           </View>
           <View className="flex items-end pr-5 mb-4">
-            <Text className="font-BeVietnamRegular text-14 text-mineShaft-950">
-              Quên mật khẩu?
-            </Text>
+            <Button onPress={() => {route.push("/auth/request_otp")}}>
+              <Text className="font-BeVietnamRegular text-14 text-mineShaft-950">
+                Quên mật khẩu?
+              </Text>
+            </Button>
           </View>
           <Button
             disabled={!activeLogin}

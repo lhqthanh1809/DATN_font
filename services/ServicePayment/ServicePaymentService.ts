@@ -2,7 +2,7 @@ import { IListServicePayment, IServicePayment } from "@/interfaces/ServicePaymen
 import BaseService from "../BaseService";
 import { IError } from "@/interfaces/ErrorInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 
 export default class ServicePaymentService extends BaseService{
       public async list(data: IListServicePayment, cancelToken?: any): Promise<IServicePayment[] | IError> {

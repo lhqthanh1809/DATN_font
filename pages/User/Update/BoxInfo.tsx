@@ -9,6 +9,7 @@ import Dropdown from "@/ui/Dropdown";
 import Scan from "@/ui/Scan";
 import { convertStringToDate } from "@/helper/helper";
 import { User } from "@/ui/icon/symbol";
+import useUserStore from "@/store/user/useUserStore";
 
 interface BoxInfoProps {
   name: string;
@@ -21,7 +22,6 @@ interface BoxInfoProps {
   setAddress: React.Dispatch<React.SetStateAction<string>>;
   identityCard: string;
   setIdentityCard: React.Dispatch<React.SetStateAction<string>>;
-  genders: { name: string; value: boolean }[];
   gender: { name: string; value: boolean };
   setGender: React.Dispatch<
     React.SetStateAction<{ name: string; value: boolean }>
@@ -47,7 +47,6 @@ const BoxInfo = ({
   birthDay,
   address,
   identityCard,
-  genders,
   gender,
   email,
 
@@ -60,6 +59,8 @@ const BoxInfo = ({
   setEmail,
   disabled = [],
 }: BoxInfoProps) => {
+
+  const {genders} = useUserStore()
   const handleDataScanner = useCallback((dataScanner: string) => {
     if (dataScanner) {
       const data = dataScanner.split("|");

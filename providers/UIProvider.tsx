@@ -24,12 +24,20 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [openDatePicker, setOpenDatePicker] = useState<string | null>(null);
   const [selectedDates, setSelectedDates] = useState<DatePickerState>({});
   const [idPicker, setIdPicker] = useState<string | null>(null);
-  const [modalContent, setModalContent] = useState<ReactNode | null>(null);
+  const [modals, setModals] = useState<ReactNode[]>([]);
 
-  const showModal = (content: ReactNode) => setModalContent(content);
-  const hideModal = (callback?: () => void) => {
-    setModalContent(null);
-    callback;
+  const showModal = (content: ReactNode) => {
+    setModals((prev) => [...prev, content]);
+  };
+
+  const hideModal = (index?: number, callback?: () => void) => {
+    setModals((prev) => {
+      if (typeof index === "number") {
+        return prev.filter((_, i) => i !== index);
+      }
+      // Nếu không truyền index, đóng modal cuối cùng
+      return prev.slice(0, -1);
+    });
   };
 
   const setDatePicker = (id: string) => {
@@ -79,8 +87,8 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
                     //   date={selectedDate}
                     locale="vi-VN"
                     date={idPicker ? selectedDates[idPicker] : undefined}
-                    onChange={({ date }) =>{
-                      setDate(openDatePicker, new Date(date as Date))
+                    onChange={({ date }) => {
+                      setDate(openDatePicker, new Date(date as Date));
                     }}
                     showOutsideDays={true}
                     navigationPosition={"right"}
@@ -125,17 +133,16 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
       )}
-
-      {modalContent && (
-        <TouchableWithoutFeedback onPress={() => hideModal()}>
+      {modals.map((modal, index) => (
+        <TouchableWithoutFeedback key={index} onPress={() => hideModal(index)}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             className="absolute w-screen h-screen bg-black/50 z-30 top-0"
           >
-            <View className="flex-1 h-full w-full">{modalContent}</View>
+            <View className="flex-1 h-full w-full">{modal}</View>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
-      )}
+      ))}
     </UIContext.Provider>
   );
 };

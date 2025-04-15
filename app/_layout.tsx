@@ -25,6 +25,7 @@ import registerNNPushToken, {
 import { UIProvider } from "@/providers/UIProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IUser } from "@/interfaces/UserInterface";
+import { Image } from "react-native";
 
 export default function RootLayout() {
   const [user, setUser] = useState<IUser | null>(null);
@@ -73,7 +74,11 @@ export default function RootLayout() {
       }
 
       const token = await getDeviceID();
-      registerIndieID(token, 27513, "QLJhpcwxfBIPqKDS9rC8sd");
+      registerIndieID(
+        token,
+        parseInt(env("APP_NOTI_ID")),
+        env("APP_NOTI_TOKEN")
+      );
     } catch (error) {}
   }, []);
 
@@ -106,10 +111,12 @@ export default function RootLayout() {
           setPage("/login");
           return;
         }
-        
+
         setUser(data as IUser);
 
-        setPage((data as IUser)?.is_completed ? "/" : "/user/update");
+        setPage(
+          (data as IUser)?.is_completed ? "/" : "/user/update?required=true"
+        );
       } catch (error) {
         setPage("/login");
       } finally {
@@ -121,7 +128,6 @@ export default function RootLayout() {
     fetchUserData();
     registerNotify();
   }, []);
-
 
   //Push notification
   useEffect(() => {
@@ -156,8 +162,15 @@ export default function RootLayout() {
   // Hiển thị màn hình chờ khi chưa load xong
   if (!fontsLoaded || loading || !page) {
     return (
-      <View className="flex-1 bg-lime-300 items-center justify-center">
-        {/* <Text className="font-BeVietnamMedium text-16 text-mineShaft-900">Get ready...</Text> */}
+      <View className="flex-1 bg-white-50 items-center justify-center gap-4">
+        <Image
+          style={{ width: 150, height: 150 }}
+          source={require("../assets/images/icon512.png")}
+        />
+
+        <Text className="font-BeVietnamBold text-5xl text-mineShaft-950">
+          Nestify
+        </Text>
       </View>
     );
   }
@@ -186,7 +199,7 @@ const Container = () => {
       }}
     >
       <View className="flex-1 bg-white-50 relative" ref={containerRef}>
-        <StatusBar barStyle="dark-content" translucent />
+        <StatusBar barStyle="dark-content" />
         <Stack
           screenOptions={{
             headerShown: false,

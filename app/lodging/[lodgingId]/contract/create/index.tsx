@@ -1,8 +1,8 @@
 import { constant } from "@/assets/constant";
 import { IRoom } from "@/interfaces/RoomInterface";
 import RoomService from "@/services/Room/RoomService";
-import HeaderBack from "@/ui/layout/HeaderBack";
-import RoomItem from "@/ui/layout/RoomItem";
+import HeaderBack from "@/ui/components/HeaderBack";
+import RoomItem from "@/ui/components/RoomItem";
 import { router, useLocalSearchParams } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";

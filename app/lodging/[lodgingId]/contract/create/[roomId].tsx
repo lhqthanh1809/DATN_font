@@ -3,14 +3,16 @@ import { env, formatDateForRequest, formatNumber } from "@/helper/helper";
 import BoxInfo from "@/pages/Contract/BoxInfo";
 import BoxPrice from "@/pages/Contract/Create/BoxPrice";
 import ContractService from "@/services/Contract/ContractService";
+import useUserStore from "@/store/user/useUserStore";
 import Button from "@/ui/Button";
-import Layout from "@/ui/layout/Layout";
+import Layout from "@/ui/components/Layout";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 function CreateContract() {
   const { roomId, name, price } = useLocalSearchParams();
+  const {genders} = useUserStore()
   const [loading, setLoading] = useState(false);
   const [nameCustom, setNameCustom] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -23,18 +25,6 @@ function CreateContract() {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [depositAmount, setDepositAmount] = useState<string>(price as string);
 
-  const genders = useMemo(() => {
-    return [
-      {
-        name: "Nam",
-        value: false,
-      },
-      {
-        name: "Nữ",
-        value: true,
-      },
-    ];
-  }, []);
   const [gender, setGender] = useState(genders[0]);
 
   const handleCreateContract = useCallback(async () => {
@@ -85,7 +75,6 @@ function CreateContract() {
                 birthDay,
                 endDate,
                 gender,
-                genders,
                 identityCard,
                 phone,
                 quantity,

@@ -1,12 +1,12 @@
-import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
-import Layout from "@/ui/layout/Layout";
+import { BoxPaymentTimeBill } from "@/ui/components/BoxPaymentTimeBill";
+import Layout from "@/ui/components/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { BoxInfo } from "@/pages/Equipment/BoxInfo";
 import Button from "@/ui/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { constant } from "@/assets/constant";
-import { BoxRoom } from "@/ui/layout/BoxRoom";
+import { BoxRoom } from "@/ui/components/BoxRoom";
 import { IRoom } from "@/interfaces/RoomInterface";
 import { AssetInfo } from "expo-media-library";
 import { ICreateEquipment } from "@/interfaces/EquipmentInterface";

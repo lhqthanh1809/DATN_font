@@ -12,7 +12,7 @@ import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import Layout from "@/ui/layout/Layout";
+import Layout from "@/ui/components/Layout";
 import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
 import { IError } from "@/interfaces/ErrorInterface";

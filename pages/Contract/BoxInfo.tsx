@@ -8,6 +8,7 @@ import Label from "@/ui/Label";
 import Dropdown from "@/ui/Dropdown";
 import Scan from "@/ui/Scan";
 import { convertStringToDate } from "@/helper/helper";
+import useUserStore from "@/store/user/useUserStore";
 
 interface BoxInfoProps {
   name: string;
@@ -28,7 +29,6 @@ interface BoxInfoProps {
   setIdentityCard: React.Dispatch<React.SetStateAction<string>>;
   endDate: Date;
   setEndDate: React.Dispatch<React.SetStateAction<Date>>;
-  genders: { name: string; value: boolean }[];
   gender: { name: string; value: boolean };
   setGender: React.Dispatch<
     React.SetStateAction<{ name: string; value: boolean }>
@@ -66,11 +66,12 @@ const BoxInfo = ({
   setIdentityCard,
   endDate,
   setEndDate,
-  genders,
   gender,
   setGender,
   disabled = [],
 }: BoxInfoProps) => {
+
+  const {genders} = useUserStore()
 
   useEffect(() => {
     if (startDate) {

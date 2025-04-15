@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "@/ui/Button";
-import Layout from "@/ui/layout/Layout";
+import Layout from "@/ui/components/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import ClientService from "@/services/Client/ClientService";
@@ -11,7 +11,7 @@ import { constant } from "@/assets/constant";
 import { cn } from "@/helper/helper";
 import ImageViewBox from "@/ui/ImageViewBox";
 import LoadingAnimation from "@/ui/LoadingAnimation";
-import DetailItem from "@/ui/layout/DetailItem";
+import DetailItem from "@/ui/components/DetailItem";
 
 function Create() {
   const { id, lodgingId } = useLocalSearchParams();

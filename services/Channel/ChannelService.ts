@@ -2,7 +2,7 @@ import { IError } from "@/interfaces/ErrorInterface";
 import BaseService from "../BaseService";
 import { IChannel, IListChannel } from "@/interfaces/ChannelInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { IListResponse } from "@/interfaces/GeneralInterface";
 
 export default class ChannelService extends BaseService{

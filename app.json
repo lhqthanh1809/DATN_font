@@ -1,15 +1,17 @@
 {
   "expo": {
-    "name": "DoAnTotNghiep",
-    "slug": "DoAnTotNghiep",
+    "name": "Nestify",
+    "slug": "nestify",
+    "owner": "thanh18092003",
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["ios", "android", "web"],
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/images/icon512.png",
+    "scheme": "nestify",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.thanh18092003.DoAnTotNghiep",
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location to know where you are."
@@ -75,12 +77,8 @@
     "experiments": {
       "typedRoutes": true
     },
+    
     "extra": {
-      "AES_IV": "RpvfigpdYX7ErG1aaEesoA==",
-      "AES_KEY": "TO33cEhaTkoyJsM2O9npHEK92jLqLYvYVwc6yJ5491s=",
-      "API_URL": "http://160.30.136.116/api",
-      "KEY_TOKEN": "token",
-      "TIMEZONE": "Asia/Ho_Chi_Minh",
       "router": {
         "origin": false
       },

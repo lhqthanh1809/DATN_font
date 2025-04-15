@@ -3,7 +3,7 @@ import axios, { HttpStatusCode, AxiosError } from "axios";
 import { LocalStorage } from "./LocalStorageService";
 import { IError } from "@/interfaces/ErrorInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { router } from "expo-router";
 
 export default class BaseService {
@@ -30,13 +30,15 @@ export default class BaseService {
           const localStorage = new LocalStorage();
           try {
             // Gọi API refresh
-            const refreshRes = await this._api.get(apiRouter.refreshUser, {
+            const refreshRes = await this._api.request({
+              method: "GET",
+              url: apiRouter.refreshToken,
               headers: {
-                Authorization: `Bearer ${await localStorage.getItem(
-                  env("KEY_TOKEN")
-                )}`,
-              },
-            });
+                Authorization: `Bearer ${await localStorage.getItem(env("KEY_TOKEN"))}`,
+                "Content-Type": "application/json",
+              }
+            })
+            console.log("refreshRes: ", refreshRes);
 
             if (refreshRes.status < 200 || refreshRes.status >= 300) {
               throw new Error(`Refresh token failed with status: ${refreshRes.status}`);
@@ -52,7 +54,9 @@ export default class BaseService {
             return this._api(originalRequest);
           } catch (e) {
             await localStorage.removeItem(env("KEY_TOKEN"));
-            router.dismissAll();
+            if (router.canDismiss()) {
+              router.dismissAll();
+            }
             router.replace("/login");
             return Promise.reject(e);
           }

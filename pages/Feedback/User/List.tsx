@@ -10,8 +10,8 @@ import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { Building } from "@/ui/icon/general";
 import { ChevronRight, Home2, Plus, PlusTiny } from "@/ui/icon/symbol";
-import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
-import SearchAndStatus from "@/ui/layout/SearchAndStatus";
+import ViewHasButtonAdd from "@/ui/layouts/ViewHasButtonAdd";
+import SearchAndSegmentedControl from "@/ui/components/SearchAndSearchAndSegmentedControl";
 import { initializeEcho } from "@/utils/echo";
 import { Channel } from "@ably/laravel-echo";
 import axios from "axios";
@@ -100,7 +100,7 @@ function ListFeedback() {
       onPressAdd={() => router.push("/feedback/create")}
       className="gap-2 flex-1"
     >
-      <SearchAndStatus
+      <SearchAndSegmentedControl
         dataObject={reference.feedback.status}
         onChangeSearch={(search) => setSearch(search)}
         onChangeStatus={(status) => setStatusActive(status)}

@@ -1,7 +1,11 @@
 import { IIcon } from "@/ui/Icon";
 import Svg, { Path } from "react-native-svg";
 
-const Users: React.FC<IIcon> = ({ className, currentColor, strokeWidth }) => {
+const Users: React.FC<IIcon> = ({
+  className,
+  currentColor,
+  strokeWidth = 1.5,
+}) => {
   return (
     <Svg
       width="24"
@@ -37,7 +41,7 @@ const User: React.FC<IIcon> = ({
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M7.84455 20.6618C4.15273 20.6618 1 20.0873 1 17.7865C1 15.4858 4.13273 13.3618 7.84455 13.3618C11.5364 13.3618 14.6891 15.4652 14.6891 17.766C14.6891 20.0658 11.5564 20.6618 7.84455 20.6618Z"
+        d="M12.1601 10.87C12.0601 10.86 11.9401 10.86 11.8301 10.87C9.45006 10.79 7.56006 8.84 7.56006 6.44C7.56006 3.99 9.54006 2 12.0001 2C14.4501 2 16.4401 3.99 16.4401 6.44C16.4301 8.84 14.5401 10.79 12.1601 10.87Z"
         stroke={currentColor}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
@@ -46,7 +50,7 @@ const User: React.FC<IIcon> = ({
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M7.83731 10.1735C10.26 10.1735 12.2237 8.2099 12.2237 5.78718C12.2237 3.36445 10.26 1.3999 7.83731 1.3999C5.41458 1.3999 3.45004 3.36445 3.45004 5.78718C3.44186 8.20172 5.39186 10.1654 7.8064 10.1735C7.81731 10.1735 7.82731 10.1735 7.83731 10.1735Z"
+        d="M7.15997 14.56C4.73997 16.18 4.73997 18.82 7.15997 20.43C9.90997 22.27 14.42 22.27 17.17 20.43C19.59 18.81 19.59 16.17 17.17 14.56C14.43 12.73 9.91997 12.73 7.15997 14.56Z"
         stroke={currentColor}
         strokeWidth={strokeWidth}
         strokeLinecap="round"

@@ -1,4 +1,4 @@
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import BaseService from "../BaseService";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { IError } from "@/interfaces/ErrorInterface";

@@ -1,31 +1,31 @@
 import { constant } from "@/assets/constant";
-import { formatDateForRequest } from "@/helper/helper";
+import { env, formatDateForRequest, getDeviceID } from "@/helper/helper";
 import { useGeneral } from "@/hooks/useGeneral";
 import { IError } from "@/interfaces/ErrorInterface";
 import { IUser } from "@/interfaces/UserInterface";
 import BoxInfo from "@/pages/User/Update/BoxInfo";
+import AuthService from "@/services/Auth/AuthService";
+import { LocalStorage } from "@/services/LocalStorageService";
 import UserService from "@/services/User/UserService";
 import useToastStore from "@/store/toast/useToastStore";
+import useUserStore from "@/store/user/useUserStore";
 import Button from "@/ui/Button";
-import HeaderBack from "@/ui/layout/HeaderBack";
-import { useCallback, useEffect, useState } from "react";
+import Icon from "@/ui/Icon";
+import { Logout } from "@/ui/icon/active";
+import HeaderBack from "@/ui/components/HeaderBack";
+import LoadingAnimation from "@/ui/LoadingAnimation";
+import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import * as Yup from "yup";
 
-const genders = [
-  {
-    name: "Nam",
-    value: false,
-  },
-  {
-    name: "Nữ",
-    value: true,
-  },
-];
-
 function UpdateUser() {
   const { user, changeUser } = useGeneral();
+  const { required } = useLocalSearchParams();
   const { addToast } = useToastStore();
+  const { genders } = useUserStore();
+  const localStorage = new LocalStorage();
+  const [loadingLogout, setLoadingLogout] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState<string>("");
@@ -45,6 +45,10 @@ function UpdateUser() {
       .required("Số điện thoại là bắt buộc")
       .matches(/^(0|\+84)[0-9]{9}$/, "Số điện thoại không hợp lệ"),
   });
+
+  const isRequired = useMemo(() => {
+    return required === "true";
+  }, [required]);
 
   const handleUpdateUser = useCallback(async () => {
     setLoading(true);
@@ -92,6 +96,10 @@ function UpdateUser() {
         "Cập nhật thông tin người dùng thành công!"
       );
       changeUser(result as IUser);
+
+      if (isRequired) {
+        router.replace("/");
+      }
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         err.inner.forEach((e) => {
@@ -116,7 +124,34 @@ function UpdateUser() {
     gender,
     email,
     user,
+    isRequired,
   ]);
+
+  const logout = useCallback(async () => {
+    setLoadingLogout(true);
+    try {
+      const token = await getDeviceID();
+      const result = await new AuthService().logout(token);
+      if (typeof result !== "string") {
+        throw new Error(result.message);
+      }
+
+      await localStorage.removeItem(env("KEY_TOKEN"));
+      if (router.canDismiss()) {
+        router.dismissAll();
+      }
+      router.replace("/login");
+    } catch (err: any) {
+      useToastStore
+        .getState()
+        .addToast(
+          constant.toast.type.error,
+          err.message || "An error occurred"
+        );
+    } finally {
+      setLoadingLogout(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -132,7 +167,7 @@ function UpdateUser() {
 
   return (
     <View className="flex-1 bg-white-50">
-      <HeaderBack title="Cập nhật thông tin người dùng" />
+      <HeaderBack title="Cập nhật thông tin người dùng" hasBack={!isRequired} />
       <ScrollView className="flex-1 p-3">
         <BoxInfo
           {...{
@@ -141,7 +176,6 @@ function UpdateUser() {
             birthDay,
             address,
             identityCard,
-            genders,
             gender,
             email,
             setName,
@@ -155,9 +189,23 @@ function UpdateUser() {
         />
       </ScrollView>
       <View className="p-3 flex bg-white-50">
-        <View className="flex-row">
+        <View className="flex-row gap-2">
+          {isRequired && (
+            <Button
+              disabled={loading || loadingLogout}
+              onPress={logout}
+              className="border-1 border-redPower-600 bg-redPower-600 items-center gap-3 p-3"
+            >
+              {loadingLogout ? (
+                <LoadingAnimation />
+              ) : (
+                <Icon icon={Logout} className="text-redPower-100" />
+              )}
+            </Button>
+          )}
+
           <Button
-            disabled={loading}
+            disabled={loading || loadingLogout}
             loading={loading}
             onPress={handleUpdateUser}
             className="flex-1 bg-lime-400 py-4"

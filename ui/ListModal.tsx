@@ -36,6 +36,7 @@ interface Props {
   disabled?: boolean;
   hasSearch?: boolean;
   loading?: boolean;
+  compareKey?: string;
   renderOption?: (option: any) => string;
 }
 
@@ -53,6 +54,7 @@ function ListModel({
   disabled = false,
   hasSearch = true,
   loading = false,
+  compareKey,
   renderOption,
 }: Props) {
   const { clickRef } = useGeneral();
@@ -76,10 +78,11 @@ function ListModel({
           options,
           placeHolder,
           renderOption,
+          compareKey
         }}
       />
     );
-  }, [options, optionKey, value]);
+  }, [options, optionKey, value, compareKey]);
 
   useEffect(() => {
     setResultSearch(
@@ -150,6 +153,7 @@ const ListModalItem: React.FC<Props> = ({
   disabled = false,
   hasSearch = true,
   loading = false,
+  compareKey,
   renderOption,
 }) => {
   const { showModal, hideModal } = useUI();
@@ -180,12 +184,18 @@ const ListModalItem: React.FC<Props> = ({
   );
 
   return (
-    <View className="absolute w-full left-0  items-center justify-center top-1/2 -translate-y-1/2 px-4">
+    <View
+      className={cn(
+        "absolute w-full left-0  items-center justify-center top-1/2 -translate-y-1/2 px-4 "
+      )}
+    >
       <Pressable
         onPress={() => {}}
-        className="rounded-xl shadow-sm shadow-white-100 w-full bg-white-50 gap-4"
+        className={cn(
+          "rounded-xl shadow-sm shadow-white-100 w-full bg-white-50"
+        )}
       >
-        <View className="px-4 flex-row items-center justify-between pt-4">
+        <View className="p-4 flex-row items-center justify-between">
           <Text className="text-mineShaft-950 font-BeVietnamSemiBold text-16">
             {label}
           </Text>
@@ -197,22 +207,30 @@ const ListModalItem: React.FC<Props> = ({
 
         <View className="px-4">
           {hasSearch && (
-            <Input
-              placeHolder="Tìm kiếm..."
-              value={searchValue}
-              className="h-11"
-              onChange={handleInputChange}
-            />
+            <View className="pt-4">
+              <Input
+                placeHolder="Tìm kiếm..."
+                value={searchValue}
+                className="h-11"
+                onChange={handleInputChange}
+              />
+            </View>
           )}
-          <ScrollView nestedScrollEnabled={true}>
-            <View className="py-4">
+          <ScrollView nestedScrollEnabled={true} className="max-h-96">
+            <View className={cn("py-4")}>
               {resultSearch.length > 0 ? (
-                resultSearch.map((option, index) => (
+                resultSearch.map((option, index) => {
+                  const isSelected = compareKey
+                  ? typeof option === "object" && typeof optionLocal === "object"
+                    ? option[compareKey] === optionLocal?.[compareKey]
+                    : option === optionLocal
+                  : option === optionLocal;
+                  return(
                   <Pressable
                     key={index}
                     className={cn(
                       "p-4 rounded-lg",
-                      option == optionLocal && "bg-lime-200/70"
+                          isSelected && "bg-lime-200/70"
                     )}
                     onPress={() => {
                       setOptionLocal(option);
@@ -226,7 +244,7 @@ const ListModalItem: React.FC<Props> = ({
                         : option[optionKey]}
                     </Text>
                   </Pressable>
-                ))
+                )})
               ) : (
                 <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 text-center">
                   Không có kết quả

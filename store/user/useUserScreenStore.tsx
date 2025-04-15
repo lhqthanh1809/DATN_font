@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { ReactNode } from "react";
-import { Bell, Chat, Home2, Document, Notification } from "@/ui/icon/symbol";
+import { Bell, Chat, Home2, Document, Notification, User } from "@/ui/icon/symbol";
 import { constant } from "@/assets/constant";
 import ListLodging from "@/pages/User/Lodging/List";
-import ListNotify from "@/ui/layout/ViewListNotification";
+import ListNotify from "@/ui/layouts/ViewListNotification";
 import ListFeedback from "@/pages/Feedback/User/List";
 import ListChannels from "@/pages/Channel/List";
+import MeScreen from "@/pages/User/MeScreen";
 
 interface ITab {
   name: string;
@@ -44,11 +45,6 @@ const useUserScreenStore = create<UserScreenStore>((set, get) => ({
         ),
       },
       {
-        name: "Hợp đồng",
-        icon: Document,
-        view: <></>,
-      },
-      {
         name: "Thông báo",
         icon: Bell,
         view: (
@@ -59,9 +55,9 @@ const useUserScreenStore = create<UserScreenStore>((set, get) => ({
         ),
       },
       {
-        name: "Phản hồi",
-        icon: Notification,
-        view: <ListFeedback />,
+        name: "Tôi",
+        icon: User,
+        view: <MeScreen />,
       },
     ];
 

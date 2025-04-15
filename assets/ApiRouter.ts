@@ -1,12 +1,17 @@
-import { create, update } from "lodash";
-
 export const apiRouter = {
+  //Auth
+  refreshToken: "/auth/refresh",
+  registerUser: "/auth/register",
+  loginUser: "/auth/login",
+  logoutUser: "/auth/logout",
+  requestOtp : "/auth/request_otp",
+  verifyOtp : "/auth/verify_otp",
+  resetPassword: "/auth/reset_password",
+
   //User
-  refreshUser: "/user/refresh",
-  registerUser: "/user/register",
-  loginUser: "/user/login",
   infoUser: "/user/info",
   updateUser: "/user/update",
+  changePassword: "/user/change_password",
   listLodgingAndRoomByUser: "/user/client/list_lodging_and_rooms",
 
   //Lodging
@@ -39,7 +44,7 @@ export const apiRouter = {
   detailLodgingService: "/lodging_service/detail/:id",
   updateLodgingService: "/lodging_service/update",
   deleteLodgingService: "/lodging_service/delete",
-
+  listLodgingServiceByRoom: "/lodging_service/list_by_room",
   //Room
   createRoom: "/room/create",
   listRoomByLodging: "/room/list/:lodging_id",
@@ -52,7 +57,11 @@ export const apiRouter = {
   createContract: "/contract/create",
   listContract: "/contract/list",
   detailContract: "/contract/detail/:id",
-  update: "/contract/update",
+  updateContract: "/contract/update",
+  debtContract: "/contract/debt/:id",
+  createFinalBill: "/contract/create_final_bill",
+  endContract: "/contract/end_contract",
+  payAmountByContract: "/contract/pay_amount",
 
   //Feedback
   createFeedback: "/feedback/create",
@@ -87,5 +96,15 @@ export const apiRouter = {
 
   //Chat
   createChat: "chat/create",
-  listChat: "chat/list"
+  listChat: "chat/list",
+
+  //Payment
+  paymentByContract: "/payment/payment_by_contract",
+  paymentByUser: "/payment/payment_by_user",
+
+  //Wallet
+  detailWallet: "/wallet/detail/:id",
+
+  //Transaction
+  listTransactionByWallet: "/transaction/list_by_wallet"
 };

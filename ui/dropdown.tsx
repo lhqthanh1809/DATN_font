@@ -1,4 +1,5 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   StyleProp,
   Text,
@@ -33,6 +34,8 @@ interface Props {
   disabled?: boolean;
   hasSearch?: boolean;
   loading?: boolean;
+  required?: boolean;
+  compareKey?: string;
   renderOption?: (option: any) => string;
 }
 
@@ -50,6 +53,8 @@ function Dropdown({
   disabled = false,
   hasSearch = true,
   loading = false,
+  required,
+  compareKey,
   renderOption,
 }: Props) {
   const { clickRef } = useGeneral();
@@ -103,9 +108,16 @@ function Dropdown({
   return (
     <View className="flex gap-2">
       {label && (
-        <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
-          {typeof label === "string" ? label : label[optionKey]}
-        </Text>
+        <View className="flex-row items-center">
+          <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
+            {typeof label === "string" ? label : label[optionKey]}
+          </Text>
+          {required && (
+            <Text className="font-BeVietnamRegular text-14 text-red-600 ml-2">
+              *
+            </Text>
+          )}
+        </View>
       )}
 
       <View>
@@ -163,27 +175,34 @@ function Dropdown({
               )}
               <ScrollView nestedScrollEnabled={true}>
                 {resultSearch.length > 0 ? (
-                  resultSearch.map((option, index) => (
-                    <Pressable
-                      key={index}
-                      className={cn(
-                        "p-2 rounded-lg",
-                        option == value && "bg-lime-200/70"
-                      )}
-                      onPress={() => {
-                        onChange && onChange(option);
-                        setShowDropdown(false);
-                      }}
-                    >
-                      <Text className="font-BeVietnamRegular text-14 text-mineShaft-950">
-                        {typeof option !== "object"
-                          ? option
-                          : renderOption
-                          ? renderOption(option)
-                          : option[optionKey]}
-                      </Text>
-                    </Pressable>
-                  ))
+                  resultSearch.map((option, index) => {
+                    const isSelected = compareKey
+                      ? typeof option === "object" && typeof value === "object"
+                        ? option[compareKey] === value?.[compareKey]
+                        : option === value
+                      : option === value;
+                    return (
+                      <Pressable
+                        key={index}
+                        className={cn(
+                          "p-2 rounded-lg",
+                          isSelected && "bg-lime-200/70"
+                        )}
+                        onPress={() => {
+                          onChange && onChange(option);
+                          setShowDropdown(false);
+                        }}
+                      >
+                        <Text className="font-BeVietnamRegular text-14 text-mineShaft-950">
+                          {typeof option !== "object"
+                            ? option
+                            : renderOption
+                            ? renderOption(option)
+                            : option[optionKey]}
+                        </Text>
+                      </Pressable>
+                    );
+                  })
                 ) : (
                   <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 text-center">
                     Không có kết quả

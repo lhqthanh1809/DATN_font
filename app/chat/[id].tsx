@@ -8,7 +8,7 @@ import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { ChevronLeft, PaperPlane } from "@/ui/icon/symbol";
 import Input from "@/ui/Input";
-import HeaderBack from "@/ui/layout/HeaderBack";
+import HeaderBack from "@/ui/components/HeaderBack";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import TextArea from "@/ui/Textarea";
 import { initializeEcho } from "@/utils/echo";

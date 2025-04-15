@@ -110,6 +110,7 @@ const BoxLocation: React.FC<
         value={province}
         loading={loadingProvince}
         placeHolder="Chọn tỉnh/thành phố"
+        compareKey="id"
       />
       <Dropdown
         onChange={setDistrict}
@@ -120,6 +121,7 @@ const BoxLocation: React.FC<
         loading={loadingDistrict}
         value={district}
         disabled={!province}
+        compareKey="id"
         placeHolder="Chọn quận/huyện"
       />
       <Dropdown
@@ -131,6 +133,7 @@ const BoxLocation: React.FC<
         loading={loadingWard}
         value={ward}
         disabled={!district}
+        compareKey="id"
         placeHolder="Chọn phường/xã"
         renderOption={(option) =>
           `${option.prefix ? option.prefix + " " : ""}${option.name}`

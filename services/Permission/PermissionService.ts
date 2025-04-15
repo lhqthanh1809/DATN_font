@@ -1,4 +1,4 @@
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { BaseHttpService } from "../BaseHttpService";
 import { HttpStatusCode } from "axios";
 import { IResponse } from "@/interfaces/ResponseInterface";

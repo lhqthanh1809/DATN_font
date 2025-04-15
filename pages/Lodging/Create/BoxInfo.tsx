@@ -1,4 +1,4 @@
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { LodgingType } from "@/interfaces/LodgingInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { BaseHttpService } from "@/services/BaseHttpService";
@@ -64,6 +64,7 @@ const BoxInfo: React.FC<{
         label="Loại hình cho thuê"
         onChange={(option) => setLodgingType(option)}
         loading={loading}
+        compareKey="id"
       />
       {!loading && lodgingType && (
         <Input

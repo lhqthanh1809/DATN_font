@@ -7,7 +7,7 @@ export interface UIContextValue {
   closeDatePicker: () => void;
   setDate: (id: string, date: Date) => void;
   showModal: (model: ReactNode) => void;
-  hideModal: (callback?: () => void) => void;
+  hideModal: (index?: number, callback?: () => void) => void;
 }
 
 export interface DatePickerState {

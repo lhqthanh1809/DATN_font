@@ -3,31 +3,20 @@ import { env, formatDateForRequest, formatNumber } from "@/helper/helper";
 import { IContract } from "@/interfaces/ContractInterface";
 import BoxInfo from "@/pages/Contract/BoxInfo";
 import BoxPrice from "@/pages/Contract/Create/BoxPrice";
-import ContractService from "@/services/Contract/ContractService";
 import useContractStore from "@/store/contract/useContractStore";
-import useToastStore from "@/store/toast/useToastStore";
+import useUserStore from "@/store/user/useUserStore";
 import Button from "@/ui/Button";
-import DetailItem from "@/ui/layout/DetailItem";
-import Layout from "@/ui/layout/Layout";
+import DetailItem from "@/ui/components/DetailItem";
+import Layout from "@/ui/components/Layout";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-const genders = [
-  {
-    name: "Nam",
-    value: false,
-  },
-  {
-    name: "Nữ",
-    value: true,
-  },
-];
-
 function CreateContract() {
   const { id, name, price, lodgingId } = useLocalSearchParams();
+  const { genders } = useUserStore();
   const { contract, fetchContract, updateContract, loading, loadingProcess } =
     useContractStore();
   const [nameCustom, setNameCustom] = useState<string>("");
@@ -53,7 +42,9 @@ function CreateContract() {
     setStartDate(new Date(contract.start_date ?? startDate));
     setEndDate(contract.end_date ? new Date(contract.end_date) : endDate);
 
-    setBirthDay(contract.date_of_birth ? new Date(contract.date_of_birth) : birthDay);
+    setBirthDay(
+      contract.date_of_birth ? new Date(contract.date_of_birth) : birthDay
+    );
     setAddress(contract.address ?? address);
     setIdentityCard(contract.identity_card ?? identityCard);
     setGender(genders.find((item) => item.value == contract.gender) ?? gender);
@@ -95,7 +86,6 @@ function CreateContract() {
     gender,
   ]);
 
-
   return (
     <View className="flex-1">
       <Layout
@@ -126,7 +116,6 @@ function CreateContract() {
                 birthDay,
                 endDate,
                 gender,
-                genders,
                 identityCard,
                 phone,
                 quantity,

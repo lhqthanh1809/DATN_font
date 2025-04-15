@@ -1,4 +1,4 @@
-import Layout from "@/ui/layout/Layout";
+import Layout from "@/ui/components/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { BoxInfo } from "@/pages/Equipment/BoxInfo";
@@ -6,7 +6,7 @@ import Button from "@/ui/Button";
 import * as FileSystem from "expo-file-system";
 import { router, useLocalSearchParams } from "expo-router";
 import { constant } from "@/assets/constant";
-import { BoxRoom } from "@/ui/layout/BoxRoom";
+import { BoxRoom } from "@/ui/components/BoxRoom";
 import { IRoom } from "@/interfaces/RoomInterface";
 import { AssetInfo } from "expo-media-library";
 import {
@@ -22,7 +22,7 @@ import LoadingAnimation from "@/ui/LoadingAnimation";
 import { useEquipmentStore } from "@/store/equipment/useEquipmentStore";
 import LodgingService from "@/services/Lodging/LodgingService";
 import { useUI } from "@/hooks/useUI";
-import ModalDelete from "@/ui/layout/ModalDelete";
+import ModalDelete from "@/ui/components/ModalDelete";
 
 function UpdateEquipment() {
   const { lodgingId, id } = useLocalSearchParams();

@@ -7,7 +7,7 @@ import BaseService from "../BaseService";
 import { IListResponse } from "@/interfaces/GeneralInterface";
 import { IError } from "@/interfaces/ErrorInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { constant } from "@/assets/constant";
 import { IUser } from "@/interfaces/UserInterface";
 

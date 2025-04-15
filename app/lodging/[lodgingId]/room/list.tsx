@@ -10,9 +10,9 @@ import Icon from "@/ui/Icon";
 import { Edit } from "@/ui/icon/active";
 import { Show } from "@/ui/icon/edit";
 import { CrossMedium, Document, File, FileAdd, Home2 } from "@/ui/icon/symbol";
-import ViewHasButtonAdd from "@/ui/layout/ViewHasButtonAdd";
-import HeaderBack from "@/ui/layout/HeaderBack";
-import RoomItem from "@/ui/layout/RoomItem";
+import ViewHasButtonAdd from "@/ui/layouts/ViewHasButtonAdd";
+import HeaderBack from "@/ui/components/HeaderBack";
+import RoomItem from "@/ui/components/RoomItem";
 import {
   Href,
   useFocusEffect,

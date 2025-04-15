@@ -1,7 +1,7 @@
 import { IError } from "@/interfaces/ErrorInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import BaseService from "./BaseService";
 
 export default class GeneralService extends BaseService {

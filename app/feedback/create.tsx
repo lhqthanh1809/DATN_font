@@ -1,7 +1,7 @@
 import Button from "@/ui/Button";
 import ImagePicker from "@/ui/ImagePicker";
 import Input from "@/ui/Input";
-import Layout from "@/ui/layout/Layout";
+import Layout from "@/ui/components/Layout";
 import TextArea from "@/ui/Textarea";
 import { AssetInfo } from "expo-media-library";
 import { useCallback, useEffect, useState } from "react";
@@ -11,11 +11,12 @@ import ListModel from "@/ui/ListModal";
 import { IRoom } from "@/interfaces/RoomInterface";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import ClientService from "@/services/Client/ClientService";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { ICreateFeedback } from "@/interfaces/FeedbackInterface";
 import FeedbackService from "@/services/Feedback/FeedbackService";
 
 function Create() {
+  const { room_id, lodging_id } = useLocalSearchParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [lodging, setLodging] = useState<ILodging | null>(null);
@@ -90,6 +91,13 @@ function Create() {
   }, [lodging]);
 
   useEffect(() => {
+    if(lodgings.length <= 0 || rooms.length <= 0 || !lodging_id || !room_id) return
+    
+    setLodging(lodgings.find(item => item.id == lodging_id) ?? lodging)
+    setRoom(rooms.find(item => item.id == room_id) ?? room)
+  }, [lodging_id, lodgings, rooms, room_id])
+
+  useEffect(() => {
     fetchLodgings();
   }, []);
 
@@ -98,6 +106,7 @@ function Create() {
       <ScrollView className="flex-1 bg-white-50">
         <View className="p-3 gap-3 flex-1 h-full">
           <ListModel
+            compareKey="id"
             loading={loading}
             label="Nhà thuê"
             value={lodging}
@@ -109,6 +118,7 @@ function Create() {
             placeHolder="Chọn nhà thuê"
           />
           <ListModel
+            compareKey="id"
             loading={loading}
             placeHolder="Chọn phòng"
             label="Phòng"

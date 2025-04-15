@@ -1,3 +1,5 @@
+import { IWallet } from "./WalletInterface";
+
 export interface IUser {
   id?: string;
   full_name: string | null;
@@ -11,6 +13,7 @@ export interface IUser {
   address: string | null;
   is_active?: boolean;
   is_completed: boolean;
+  wallet?: IWallet
 }
 
 export interface IRelative {

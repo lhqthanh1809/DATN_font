@@ -1,7 +1,7 @@
 import Box from "@/ui/Box";
 import { ScrollView, View } from "react-native";
 
-import { BoxPaymentTimeBill } from "@/ui/layout/BoxPaymentTimeBill";
+import { BoxPaymentTimeBill } from "@/ui/components/BoxPaymentTimeBill";
 import { BoxRetailInfo } from "./BoxRetailInfo";
 
 const Config: React.FC<{

@@ -2,7 +2,7 @@ import { IError } from "@/interfaces/ErrorInterface";
 import { ILodging, ILodgingStatistical, IOverviewLodging, IOverviewRoom } from "@/interfaces/LodgingInterface";
 import { BaseHttpService } from "../BaseHttpService";
 import { IResponse } from "@/interfaces/ResponseInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 import BaseService from "../BaseService";
 

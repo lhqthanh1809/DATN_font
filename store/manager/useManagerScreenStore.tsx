@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { ReactNode } from "react";
 import { Bell, Chat, Home2, Document, Notification } from "@/ui/icon/symbol";
 import { constant } from "@/assets/constant";
-import ListNotify from "@/ui/layout/ViewListNotification";
+import ListNotify from "@/ui/layouts/ViewListNotification";
 import ListFeedback from "@/pages/Feedback/Management/List";
 import HomeScreen from "@/pages/Lodging/Main/screen";
 import { Setting } from "@/ui/icon/active";

@@ -1,5 +1,6 @@
 import { IMap } from "@/interfaces/MapInterface";
 import React from "react";
+import { Platform, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 const Map: React.FC<{
@@ -15,6 +16,7 @@ const Map: React.FC<{
   onChangeRegion,
   showUserLocation = false,
 }) => {
+
   return (
     <MapView
       style={{

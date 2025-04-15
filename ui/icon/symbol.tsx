@@ -11,7 +11,12 @@ import {
   CheckSimple,
   CheckSimpleMedium,
 } from "./symbol/check";
-// import { ArrowRight } from "./symbol/arrow";
+import {
+  ArrowDownCircle,
+  ArrowExportCircle,
+  ArrowImportCircle,
+  ArrowUpCircle,
+} from "./symbol/arrow";
 import { Chat, Chats } from "./symbol/chat";
 // import Users from "./symbol/users";
 import { User } from "./symbol/users";
@@ -45,6 +50,7 @@ import { Calender } from "./symbol/calender";
 import { Time, TimeSmall } from "./symbol/time";
 import { ImageAdd } from "./symbol/image";
 import { File, FileAdd } from "./symbol/file";
+import { ClockRefresh } from "./symbol/clock";
 
 export {
   Plus,
@@ -97,4 +103,9 @@ export {
   ImageAdd,
   File,
   FileAdd,
+  ClockRefresh,
+  ArrowDownCircle,
+  ArrowExportCircle,
+  ArrowImportCircle,
+  ArrowUpCircle,
 };

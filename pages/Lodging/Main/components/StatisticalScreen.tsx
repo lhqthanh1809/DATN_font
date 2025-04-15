@@ -18,6 +18,7 @@ import DonutChart from "@/ui/DonutChart";
 import { Wallet } from "@/ui/icon/finance";
 import { Cube } from "@/ui/icon/shapes";
 import { Home2 } from "@/ui/icon/symbol";
+import MonthPicker from "@/ui/MonthPicker";
 
 interface OverviewItem {
   name: keyof IOverviewRoom;
@@ -30,6 +31,7 @@ interface OverviewItem {
 const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
   ({ lodgingId }) => {
     const { addToast } = useToastStore();
+    const [dateStatistical, setDateStatistical] = useState<Date>(new Date());
     const [statistical, setStatistical] = useState<ILodgingStatistical | null>(
       null
     );
@@ -86,8 +88,8 @@ const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
       try {
         const params = {
           lodging_id: lodgingId,
-          month: new Date().getMonth() + 1,
-          year: new Date().getFullYear(),
+          month: dateStatistical.getMonth() + 1,
+          year: dateStatistical.getFullYear(),
         };
 
         setLoadingStatistical(true);
@@ -114,7 +116,7 @@ const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
         setLoadingStatistical(false);
         setLoadingRoomOverview(false);
       }
-    }, [lodgingId, lodgingService, addToast]);
+    }, [lodgingId, lodgingService, addToast, dateStatistical]);
 
     useEffect(() => {
       fetchOverview();
@@ -158,10 +160,12 @@ const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
               Thống kê doanh thu
             </Text>
           </View>
-          <View className="border-1 px-4 py-2 rounded-xl border-mineShaft-200">
-            <Text className="font-BeVietnamMedium text-mineShaft-600 text-12">
-              Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
-            </Text>
+
+          <View className="w-1/4">
+            <MonthPicker
+              value={dateStatistical}
+              onChange={(date) => setDateStatistical(date)}
+            />
           </View>
         </View>
 

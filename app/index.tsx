@@ -14,6 +14,7 @@ import {
 import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import { router } from "expo-router";
+import MonthPicker from "@/ui/MonthPicker";
 
 function HomeUser() {
   const { user } = useGeneral();
@@ -43,7 +44,7 @@ function HomeUser() {
   return (
     <View className="flex-1 bg-white-50">
       <View className="p-5 flex-row justify-between items-center">
-        <Button onPress={() => {router.push("/user/update")}}>
+        <Button onPress={() => {router.push("/user/detail")}}>
           <Text className="font-BeVietnamSemiBold text-18 text-mineShaft-950">
             {user?.full_name}
           </Text>
@@ -57,6 +58,7 @@ function HomeUser() {
         />
       </View>
       <View className="flex-1 bg-white-50">{navActive?.screen}</View>
+
     </View>
   );
 }

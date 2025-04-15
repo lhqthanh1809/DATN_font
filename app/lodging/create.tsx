@@ -12,12 +12,15 @@ import { useRouter } from "expo-router";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import Layout from "@/ui/layout/Layout";
+import Layout from "@/ui/components/Layout";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import useToastStore from "@/store/toast/useToastStore";
+import { constant } from "@/assets/constant";
 
 function CreateLodging() {
   //Initial
   const route = useRouter();
+  const {addToast} = useToastStore()
   const { updateLodging } = useLodgingsStore();
   const [lodgingType, setLodgingType] = useState<LodgingType | null>(null);
   const [province, setProvince] = useState<LocationUnit | null>(null);
@@ -67,14 +70,22 @@ function CreateLodging() {
       area_room_default: formatNumber(areaRoom, "float"),
       price_room_default: formatNumber(priceRoom, "float"),
     };
-    const data = await new LodgingService().create(dataReq);
 
-    if (!("message" in data)) {
+    try{
+      const data = await new LodgingService().create(dataReq);
+
+      if (("message" in data)) {
+        throw new Error(data.message)
+      }
+      
       route.push("/");
+      updateLodging(data as ILodging);
+    }catch(err: any){
+      addToast(constant.toast.type.error, err.message || "Lỗi không xác định")
+    }finally{
+      setProcessingCreate(false);
     }
 
-    updateLodging(data as ILodging);
-    setProcessingCreate(false);
   }, [
     lodgingType,
     district,
@@ -203,7 +214,7 @@ function CreateLodging() {
 
   return (
     <View className="flex-1">
-      <Layout title={"Thêm mới nhà cho thêm"}>
+      <Layout title={"Thêm nhà cho thuê mới"}>
         <ScrollView className="px-5 flex-grow bg-white-50">
           <View className="gap-3 items-center py-3 flex-1">
             {view[viewIndex]}

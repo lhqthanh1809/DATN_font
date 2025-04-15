@@ -4,7 +4,7 @@ import {
 } from "@/interfaces/NotificationInterface";
 import BaseService from "../BaseService";
 import { IError } from "@/interfaces/ErrorInterface";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 import { IResponse } from "@/interfaces/ResponseInterface";
 

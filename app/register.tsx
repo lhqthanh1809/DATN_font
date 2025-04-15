@@ -9,19 +9,40 @@ import {
 } from "react-native";
 import BackView from "@/ui/BackView";
 import { useCallback, useState } from "react";
-import { encrypt } from "@/helper/helper";
+import { encrypt, env, getDeviceID } from "@/helper/helper";
 import { BaseHttpService } from "@/services/BaseHttpService";
-import { apiRouter } from "@/assets/ApiRouter";
+import { apiRouter } from "@/assets/apiRouter";
 import { useRouter } from "expo-router";
-import OAuthLogin from "@/ui/layout/OauthLogin";
+import OAuthLogin from "@/ui/components/OauthLogin";
+import AuthService from "@/services/Auth/AuthService";
+import { useGeneral } from "@/hooks/useGeneral";
+import { IError } from "@/interfaces/ErrorInterface";
+import useToastStore from "@/store/toast/useToastStore";
+import { constant } from "@/assets/constant";
+import { LocalStorage } from "@/services/LocalStorageService";
+import UserService from "@/services/User/UserService";
+import { IUser } from "@/interfaces/UserInterface";
+import * as Yup from "yup";
+
+const schema = Yup.object().shape({
+  email: Yup.string().email("Email không hợp lệ").required("Email là bắt buột"),
+  phone: Yup.string()
+    .required("Số điện thoại là bắt buộc")
+    .matches(/^0[0-9]{9}$/, "Số điện thoại không hợp lệ"),
+  password: Yup.string().required("Mật khẩu là bắt buộc"),
+});
 
 function RegisterScreen() {
-  const httpService = new BaseHttpService();
+  const { addToast } = useToastStore();
+  const service = new AuthService();
+  const { changeUser } = useGeneral();
   const route = useRouter();
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+  const userServer = new UserService();
 
   const handleInputEmail = useCallback((text: string) => setEmail(text), []);
   const handleInputPhone = useCallback((text: string) => setPhone(text), []);
@@ -35,17 +56,60 @@ function RegisterScreen() {
   );
 
   const handleRegister = useCallback(async () => {
-    const fields = {
-      email,
-      phone,
-      password: encrypt(password),
-    };
-    console.log(fields);
-    const data = await httpService.https({
-      method: "POST",
-      url: apiRouter.registerUser,
-      body: fields,
-    });
+    setLoading(true);
+
+    try {
+      await schema.validate(
+        {
+          phone,
+          email,
+          password,
+        },
+        { abortEarly: false }
+      );
+      const result: IError | string = await new AuthService().register({
+        email,
+        password: encrypt(password),
+        phone,
+        token: await getDeviceID(),
+      });
+
+      if (result.hasOwnProperty("message") || !result) {
+        addToast(constant.toast.type.error, "Đăng ký thất bại.");
+        return;
+      }
+
+      const token = result as string;
+      await new LocalStorage().setItem(env("KEY_TOKEN"), token);
+      if (token) {
+        const dataUser = await userServer.info();
+        if (!dataUser) {
+          await new LocalStorage().removeItem(env("KEY_TOKEN"));
+          return;
+        }
+
+        changeUser(dataUser as IUser);
+        addToast(constant.toast.type.success, "Đăng ký thành công!");
+        if ((dataUser as IUser)?.is_completed) {
+          route.push("/");
+        } else {
+          route.push("/user/update?required=true");
+        }
+      }
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        err.inner.forEach((e) => {
+          addToast(constant.toast.type.error, e.message);
+        });
+      } else {
+        addToast(
+          constant.toast.type.error,
+          "Đã có lỗi xảy ra, vui lòng thử lại"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [password, email, phone, confirmPass]);
 
   return (
@@ -54,9 +118,10 @@ function RegisterScreen() {
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView className="pt-8"        contentContainerStyle={{ paddingBottom: 26
-          
-         }}>
+        <ScrollView
+          className="pt-8"
+          contentContainerStyle={{ paddingBottom: 26 }}
+        >
           <View
             style={{
               flex: 1,
@@ -99,6 +164,8 @@ function RegisterScreen() {
                 />
               </View>
               <Button
+                loading={loading}
+                disabled={loading}
                 onPress={handleRegister}
                 className="w-full min-h-16 bg-lime-400"
               >
