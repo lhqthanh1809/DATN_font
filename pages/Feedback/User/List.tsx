@@ -9,50 +9,90 @@ import useFeedbackStore from "@/store/feedback/useFeedbackStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { Building } from "@/ui/icon/general";
-import { ChevronRight, Home2, Plus, PlusTiny } from "@/ui/icon/symbol";
+import { ChevronRight, Home2, Notification, Plus, PlusTiny } from "@/ui/icon/symbol";
 import ViewHasButtonAdd from "@/ui/layouts/ViewHasButtonAdd";
 import SearchAndSegmentedControl from "@/ui/components/SearchAndSearchAndSegmentedControl";
 import { initializeEcho } from "@/utils/echo";
 import { Channel } from "@ably/laravel-echo";
 import axios from "axios";
 import { router, useFocusEffect } from "expo-router";
-import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text } from "react-native";
 import { View } from "react-native";
+import { createScrollHandler } from "@/utils/scrollHandle";
+import LoadingAnimation from "@/ui/LoadingAnimation";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 
 function ListFeedback() {
   const { user } = useGeneral();
   const { feedbacks, setFeedbacks, updateFeedback, removeFeedback } =
     useFeedbackStore();
 
+  const limit = constant.limit;
+
+  const [hasMore, setHasMore] = useState(true);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
   const [statusActive, setStatusActive] = useState<number | null>(null);
   const feedbackService = new FeedbackService();
 
+  const [sourceAxios, setSourceAxios] = useState(axios.CancelToken.source());
   const statusRef = useRef(statusActive);
+  const searchRef = useRef(search);
 
+  // Fetch feedback data from the server
   const fetchFeedback = useCallback(
-    async (cancelToken: any) => {
-      setLoading(true);
-      const data = await feedbackService.listFeedbackByUser(cancelToken, {
-        status: statusActive,
-      });
-      if (isArray(data)) {
-        setFeedbacks(data);
+    async (cancelToken: any, loadMore = false) => {
+      // Calculate the new offset for pagination
+      const offsetNew = loadMore ? offset + limit : 0;
+
+      // Prevent further loading if there are no more items
+      if (loadMore && !hasMore) {
+        return;
       }
 
-      if (!cancelToken.reason) setLoading(false);
+
+      // Reset offset if not loading more
+      loadMore ? setLoadingMore(true) : setLoading(true);
+
+      try {
+        // Fetch feedback data from the service
+        const result = await feedbackService.list(
+          {
+            status: statusActive, // Filter by active status
+            scope: "user", // Scope limited to user feedback
+            search, // Search query
+            limit, // Limit per page
+            offset: offsetNew, // Offset for pagination
+          },
+          cancelToken // Cancel token for request cancellation
+        );
+
+        // Handle invalid data or cancelled requests
+        if ("message" in result || cancelToken.reason) {
+          return;
+        }
+
+        setFeedbacks(loadMore ? [...feedbacks, ...result.data] : result.data);
+
+        setOffset(offsetNew); // Update the offset for next request
+        // Update the state to indicate if more items are available
+        setHasMore(result.total > offsetNew + result.data.length); // Check if the returned data length matches the limit
+      } finally {
+        // Reset offset if not loading more
+        loadMore ? setLoadingMore(false) : setLoading(false);
+      }
     },
-    [user, user?.id, statusActive]
+    [user?.id, statusActive, search, offset, feedbacks, hasMore] // Dependencies for the callback
   );
 
   useFocusEffect(
     useCallback(() => {
       const source = axios.CancelToken.source();
+      setSourceAxios(source);
       statusRef.current = statusActive;
 
       fetchFeedback(source.token);
@@ -64,21 +104,36 @@ function ListFeedback() {
   );
 
   useEffect(() => {
+    searchRef.current = search;
+    const delayDebounce = setTimeout(() => {
+      fetchFeedback(sourceAxios.token);
+    }, 100);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
+  useEffect(() => {
     let channel: Channel | null = null;
     const setupEcho = async () => {
       try {
         const echo = await initializeEcho();
         channel = echo.private(`feedback.user.${user?.id}`);
-        channel.listen(".update", (data: IDataRealtime<IFeedback>) => {
+        channel.listen(".update", (payload: IDataRealtime<IFeedback>) => {
           const { feedbacks, updateFeedback, removeFeedback } =
             useFeedbackStore.getState();
-          if (!statusRef.current || data.data.status == statusRef.current) {
-            updateFeedback(data.data);
+          if (
+            (!statusRef.current || payload.data.status == statusRef.current) &&
+            (!searchRef.current ||
+              payload.data.title.includes(searchRef.current))
+          ) {
+            updateFeedback(payload.data);
             return;
           }
 
-          const feedback = feedbacks.find((item) => item.id === data.data.id);
-          if (feedback && feedback.status != data.data.status) {
+          const feedback = feedbacks.find(
+            (item) => item.id === payload.data.id
+          );
+          if (feedback && feedback.status != payload.data.status) {
             removeFeedback(feedback);
           }
         });
@@ -137,16 +192,19 @@ function ListFeedback() {
           </View>
         </ScrollView>
       ) : feedbacks.length <= 0 ? (
-        <View className="flex-1 items-center justify-center px-3 ">
-          <Text className="font-BeVietnamRegular text-mineShaft-200">
-            Không có kết quả
-          </Text>
-        </View>
+        <EmptyScreen description="Hãy thử thay đổi bộ lọc hoặc kiểm tra lại kết nối mạng." icon={Notification} title="Không tìm thấy góp ý phù hợp"/>
       ) : (
         <ScrollView
           contentContainerStyle={{
             paddingBottom: 76,
           }}
+          onScroll={createScrollHandler({
+            callback: () => fetchFeedback(sourceAxios.token, true),
+            hasMore,
+            loading: loadingMore,
+            threshold: 20,
+          })}
+          scrollEventThrottle={16}
           className="flex-1 px-3 "
         >
           <View className="gap-2 w-full h-full">
@@ -157,6 +215,7 @@ function ListFeedback() {
               return (
                 <Button
                   key={index}
+                  onPress={() => router.push(`/feedback/detail/${feedback.id}`)}
                   className="border-1 border-mineShaft-100 justify-between items-start px-4 py-3 gap-3"
                 >
                   <View className="items-start gap-3">
@@ -189,14 +248,11 @@ function ListFeedback() {
                       <Icon icon={ChevronRight} className="text-lime-600" />
                     </Button>
                   </View>
-                  <View
-                    className={cn(
-                      "px-4 py-2 rounded-full",status.bg
-                    )}
-                  >
+                  <View className={cn("px-4 py-2 rounded-full", status.bg)}>
                     <Text
                       className={cn(
-                        "font-BeVietnamRegular text-12",status.text
+                        "font-BeVietnamRegular text-12",
+                        status.text
                       )}
                     >
                       {status?.name}
@@ -206,6 +262,12 @@ function ListFeedback() {
               );
             })}
           </View>
+
+          {loadingMore && (
+            <View>
+              <LoadingAnimation />
+            </View>
+          )}
         </ScrollView>
       )}
     </ViewHasButtonAdd>

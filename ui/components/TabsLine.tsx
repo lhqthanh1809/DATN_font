@@ -12,7 +12,7 @@ type TabsLineProps<T extends { name: string }> = {
 };
 
 const TabsLine = <T extends { name: string }>({
-  gap = 10,
+  gap = 0,
   active,
   tabs,
   onChange,
@@ -23,51 +23,58 @@ const TabsLine = <T extends { name: string }>({
   const underlineLeft = useMemo(() => {
     const tabIndex = tabs.findIndex((tab) => tab === active);
     if (tabIndex === -1) return 0;
-    return widthTabs.slice(0, tabIndex).reduce((sum, width) => sum + width, 0) + gap * tabIndex;
+    return (
+      widthTabs.slice(0, tabIndex).reduce((sum, width) => sum + width, 0) +
+      gap * tabIndex
+    );
   }, [widthTabs, tabs, active, gap]);
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <View className="flex-row relative" style={{ gap }}>
-        {tabs.map((tab, index) => (
-          <Button
-            className="py-4"
-            key={tab.name}
-            onPress={() => onChange(tab)}
-            onLayout={(event) => {
-              const { width } = event.nativeEvent.layout;
-              setWidthTabs((prev) => {
-                if (prev[index] === width) return prev;
-                const newWidths = [...prev];
-                newWidths[index] = width;
-                return newWidths;
-              });
-            }}
-          >
-            <Text
-              className={cn(
-                "font-BeVietnamMedium",
-                tab === active ? "text-lime-600" : "text-white-400"
-              )}
-            >
-              {tab.name}
-            </Text>
-          </Button>
-        ))}
-
-        {/* Animated underline */}
-        <MotiView
-          className="bg-lime-500 h-[2] rounded-full w-9 absolute bottom-2"
-          from={{ left: 0 }}
-          animate={{ left: underlineLeft }}
-          transition={{
-            type: "spring",
-            damping: 10,
-            stiffness: 100,
+    <View className="flex-row relative border-white-100" style={{ gap, borderBottomWidth: 1 }}>
+      {tabs.map((tab, index) => (
+        <Button
+          className="py-3 flex-1 bg-white-50"
+          key={tab.name}
+          onPress={() => onChange(tab)}
+          onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            setWidthTabs((prev) => {
+              if (prev[index] === width) return prev;
+              const newWidths = [...prev];
+              newWidths[index] = width;
+              return newWidths;
+            });
           }}
-        />
-      </View>
-    </ScrollView>
+        >
+          <Text
+            style={{
+              fontSize: 13,
+            }}
+            className={cn(
+              "font-BeVietnamMedium",
+              tab === active ? "text-lime-600" : "text-mineShaft-950"
+            )}
+          >
+            {tab.name}
+          </Text>
+        </Button>
+      ))}
+
+      {/* Animated underline */}
+      <MotiView
+        className="bg-lime-500 h-[2] rounded-full absolute bottom-0"
+        style={{
+          width: `${100 / tabs.length}%`,
+        }}
+        from={{ left: 0 }}
+        animate={{ left: underlineLeft }}
+        transition={{
+          type: "spring",
+          damping: 50,
+          stiffness: 400,
+        }}
+      />
+    </View>
   );
 };
 

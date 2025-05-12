@@ -118,7 +118,7 @@ export const getTimeAgo = (timestamp: string) => {
   } else if (diffHours < 24) {
     return `${diffHours} giờ trước`;
   } else {
-    return notifTime.format("DD/MM/YYYY");
+    return notifTime.format("DD/MM/YYYY HH:mm");
   }
 };
 

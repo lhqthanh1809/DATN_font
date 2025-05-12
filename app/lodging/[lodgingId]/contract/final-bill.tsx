@@ -1,5 +1,9 @@
 import { constant } from "@/assets/constant";
-import { convertToNumber, formatDateForRequest, formatNumber } from "@/helper/helper";
+import {
+  convertToNumber,
+  formatDateForRequest,
+  formatNumber,
+} from "@/helper/helper";
 import { ICreateFinalBill } from "@/interfaces/ContractInterface";
 import BoxDepositRefund from "@/pages/Contract/BoxDepositRefund";
 import BoxRentalMonth from "@/pages/Contract/BoxRentalMonth";
@@ -27,6 +31,7 @@ import {
   Text,
   View,
 } from "react-native";
+import BoxMethodCalculator from "@/pages/Contract/BoxMethodCalculator";
 
 function FinalBill() {
   const { lodgingId } = useLocalSearchParams();
@@ -40,6 +45,7 @@ function FinalBill() {
   const [totalDeposit, setTotalDeposit] = useState(0);
   const [moneyRefund, setMoneyRefund] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isMonthBilling, setIsMonthBilling] = useState(true);
 
   useEffect(() => {
     setTotalPrice(0);
@@ -58,23 +64,28 @@ function FinalBill() {
       return;
     }
     setLoading(true);
+    console.log(services);
     try {
-      const data : ICreateFinalBill = {
+      const data: ICreateFinalBill = {
         contract_id: contract?.id,
         room_id: contract?.room_id,
         deposit_amount_refund: moneyRefund,
         end_date: formatDateForRequest(endDate),
+        is_monthly_billing: isMonthBilling,
         ...(services.length > 0 && {
           services: services
             .filter((service) => service.id !== undefined)
             .map((service) => ({
               id: service.id as string,
-              value: typeof service.current_value == "string" ? formatNumber(service.current_value, "float") : service.current_value,
+              value:
+                typeof service.current_value == "string"
+                  ? formatNumber(service.current_value, "float")
+                  : service.current_value,
             })),
         }),
       };
-      
-      const result = await (new ContractService).createFinalBill(data);
+
+      const result = await new ContractService().createFinalBill(data);
 
       if (typeof result != "string") {
         throw new Error(result.message);
@@ -93,7 +104,7 @@ function FinalBill() {
     } finally {
       setLoading(false);
     }
-  }, [services, moneyRefund, endDate, contract]);
+  }, [services, moneyRefund, endDate, contract, isMonthBilling]);
 
   return (
     <KeyboardAvoidingView
@@ -120,6 +131,10 @@ function FinalBill() {
                 disabled
               />
             </Box>
+            <BoxMethodCalculator
+              value={isMonthBilling}
+              onPress={setIsMonthBilling}
+            />
             <BoxDepositRefund
               {...{
                 setTotalDeposit,
@@ -128,8 +143,9 @@ function FinalBill() {
                 setMoneyRefund,
               }}
             />
-            <BoxRentalMonth {...{ setTotalRental, totalRental }} />
-            <BoxServiceUsage {...{ setTotalService, totalService }} />
+
+            <BoxRentalMonth {...{ setTotalRental, totalRental, isMonthBilling }} />
+            <BoxServiceUsage {...{ setTotalService, totalService, isMonthBilling }} />
           </View>
         </ScrollView>
 
@@ -140,7 +156,12 @@ function FinalBill() {
               {convertToNumber(totalPrice.toString())} đ
             </Text>
           </View>
-          <Button disabled={loading} loading={loading} onPress={() => handleCreateFinalBill()} className="bg-lime-400 py-3">
+          <Button
+            disabled={loading}
+            loading={loading}
+            onPress={() => handleCreateFinalBill()}
+            className="bg-lime-400 py-3"
+          >
             <Text className="text-mineShaft-900 font-BeVietnamSemiBold">
               Lập quyết toán
             </Text>

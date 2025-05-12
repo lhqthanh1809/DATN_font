@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import { IListRental, IRentalHistory } from "@/interfaces/RentalInterface";
-import RentalHistory from "@/services/RentalHistory/RentalHistoryService";
+import { IListRental, IRentPayment } from "@/interfaces/RentalPaymentInterface";
+import RentPaymentService from "@/services/RentalPayment/RentPaymentService";
 import { isArray } from "lodash";
 import useToastStore from "../toast/useToastStore";
 import { constant } from "@/assets/constant";
 import axios, { CancelTokenSource } from "axios";
 
 interface RentalHistoryStore {
-  rentals: IRentalHistory[];
+  rentals: IRentPayment[];
   loading: boolean;
   cancelTokenSource?: CancelTokenSource;
   fetchRental: (data: IListRental) => Promise<void>;
@@ -28,7 +28,7 @@ export const useRentalHistoryStore = create<RentalHistoryStore>((set, get) => ({
     set({ cancelTokenSource: newSource });
 
     try {
-      const res = await new RentalHistory().list(data, newSource.token);
+      const res = await new RentPaymentService().list(data, newSource.token);
 
       if (isArray(res)) {
         set({ rentals: res });

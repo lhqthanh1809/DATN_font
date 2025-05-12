@@ -22,8 +22,9 @@ export default class BaseService {
 
         if (
           (error.response?.status === HttpStatusCode.Unauthorized ||
-            errData.errors?.[0]?.message === "Token has expired") &&
-          !originalRequest._retry
+            errData.errors?.[0]?.message === "Token has expired") 
+            // &&
+            // originalRequest.url != apiRouter.refreshToken
         ) {
           
           originalRequest._retry = true;

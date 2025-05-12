@@ -6,7 +6,12 @@ import useChannelsStore from "@/store/channel/useChannelsStore";
 import useChatHistoriesStore from "@/store/chat/useChatHistoriesStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
-import { ChevronLeft, PaperPlane } from "@/ui/icon/symbol";
+import {
+  ArrowRightSquare,
+  ChevronLeft,
+  PaperPlane,
+  Trash,
+} from "@/ui/icon/symbol";
 import Input from "@/ui/Input";
 import HeaderBack from "@/ui/components/HeaderBack";
 import LoadingAnimation from "@/ui/LoadingAnimation";
@@ -16,11 +21,29 @@ import { Channel } from "@ably/laravel-echo";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { Image, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Dimensions,
+  Image,
+  InteractionManager,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Text, View, ScrollView } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
-import { string } from "yup";
+import ChannelService from "@/services/Channel/ChannelService";
+import { SvgUri } from "react-native-svg";
+import { createScrollHandler } from "@/utils/scrollHandle";
+import { BlurView } from "expo-blur";
+import { useUI } from "@/hooks/useUI";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function Chat() {
   const { id, member_id, member_type } = useLocalSearchParams();
@@ -33,8 +56,9 @@ function Chat() {
     loadingMore,
     createChat,
     updateMessages,
+    title,
   } = useChatHistoriesStore();
-  const {changeLastMessage} = useChannelsStore()
+  const { changeLastMessage } = useChannelsStore();
 
   const [mess, setMess] = useState("");
 
@@ -47,6 +71,15 @@ function Chat() {
       message: mess,
     });
   }, [id, mess, member_id, member_type]);
+
+  const handleLeaveChannel = useCallback(async () => {
+    await new ChannelService().leaveChannel({
+      channel_id: id as string,
+      member_id: member_id as string,
+      member_type: member_type as string,
+    });
+    router.back();
+  }, [id, member_id, member_type]);
 
   useEffect(() => {
     let channel: Channel | null = null;
@@ -91,17 +124,17 @@ function Chat() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 18 : 0}
     >
       {/* Header - Begin */}
-      <View className="px-4 bg-white-50 py-2 flex-row items-center gap-1 border-b-1 border-mineShaft-100">
+      <View className="px-4 bg-white-50 py-3 flex-row items-center gap-1 border-b-1 border-mineShaft-100">
         <Button
           onPress={() => {
-            router.back();
+            handleLeaveChannel();
           }}
           className="flex items-center justify-center p-1 rounded-full "
         >
           <Icon icon={ChevronLeft} className="text-mineShaft-950" />
         </Button>
         <Text className="font-BeVietnamSemiBold text-14 text-mineShaft-950 w-full">
-          Phòng D003 - Chung cư mini Vườn Mây
+          {title}
         </Text>
       </View>
       {/* Header - End */}
@@ -146,17 +179,11 @@ const EmptyMessage = () => {
       }}
       className="flex-1 items-center justify-center flex-col gap-0"
     >
-      <Image
-        source={require("@/assets/images/start-chat.png")}
-        className="max-w-full max-h-full object-contain"
-        resizeMode="contain"
-        style={{
-          height: "70%",
-        }}
+      <SvgUri
+        uri={
+          "https://qqmdkbculairrumaowaj.supabase.co/storage/v1/object/public/lodging_management/asset/empy_mess.svg"
+        }
       />
-      <Text className="font-BeVietnamMedium text-16 text-mineShaft-950 text-center -translate-y-6">
-        Hãy bắt đầu cuộc trò chuyện
-      </Text>
     </Button>
   );
 };
@@ -166,102 +193,126 @@ const ScreenMessage: React.FC<{
   memberId: string;
 }> = ({ messages, memberId }) => {
   const { loadMore, hasMore, loadingMore } = useChatHistoriesStore();
+  const { showModal } = useUI();
+  const messageRefs = useRef(new Map());
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  const showModalMessage = useCallback(
+    (message: IChatHistory) => {
+      const messageRef = messageRefs.current.get(message.id);
+      if (messageRef) {
+        InteractionManager.runAfterInteractions(() => {
+          messageRef.measureInWindow(
+            (x: number, y: number, width: number, height: number) => {
+              showModal(<ModalMessage message={message} y={y} />);
+            }
+          );
+        });
+      }
+    },
+    [showModal]
+  );
+
   return (
-    <>
-      <ScrollView
-        className="px-3"
-        style={{ transform: [{ scaleY: -1 }] }}
-        contentContainerStyle={{
-          paddingBottom: 12,
-        }}
-        onScroll={({ nativeEvent }) => {
-          if (nativeEvent.contentOffset.y <= 50 && hasMore && !loadingMore) {
-            loadMore();
-          }
-        }}
-        scrollEventThrottle={16}
-      >
-        <Button className="gap-2 flex-col">
-          {messages.map((message, index) => {
-            const prev = messages[index - 1];
-            const next = messages[index + 1];
-            const isMe = message.sender_id === memberId;
-            const prevSameSender = prev?.sender_id === message.sender_id;
-            const nextSameSender = next?.sender_id === message.sender_id;
+    <ScrollView
+      ref={scrollViewRef}
+      className="px-3"
+      style={{ transform: [{ scaleY: -1 }] }}
+      contentContainerStyle={{ paddingBottom: 12 }}
+      onScroll={(event) => {
+        setScrollOffset(event.nativeEvent.contentOffset.y);
+        createScrollHandler({
+          callback: () => loadMore(),
+          hasMore,
+          loading: loadingMore,
+          threshold: 50,
+        })(event);
+      }}
+      scrollEventThrottle={16}
+    >
+      <Button className="gap-2 flex-col">
+        {messages.map((message, index) => {
+          const prev = messages[index - 1];
+          const next = messages[index + 1];
+          const isMe = message.sender_id === memberId;
+          const prevSameSender = prev?.sender_id === message.sender_id;
+          const nextSameSender = next?.sender_id === message.sender_id;
 
-            const isLastMessage = !next && !hasMore;
-            const isTimeGap =
-              next &&
-              moment(message.created_at).diff(
-                moment(next.created_at),
-                "minutes"
-              ) > 10;
-            const showTimeNext = isLastMessage || isTimeGap;
+          const isLastMessage = !next && !hasMore;
+          const isTimeGap =
+            next &&
+            moment(message.created_at).diff(
+              moment(next.created_at),
+              "minutes"
+            ) > 10;
+          const showTimeNext = isLastMessage || isTimeGap;
 
-            const showTimePrev =
-              !prev ||
-              moment(prev.created_at).diff(
-                moment(message.created_at),
-                "minutes"
-              ) > 10;
+          const showTimePrev =
+            !prev ||
+            moment(prev.created_at).diff(
+              moment(message.created_at),
+              "minutes"
+            ) > 10;
 
-            return (
-              <View
-                key={message.id}
-                className="w-full"
-                style={{ transform: [{ scaleY: -1 }] }}
-              >
-                {showTimeNext && (
-                  <View className="mb-2 w-full items-center">
-                    <Text className="font-BeVietnamRegular text-gray-500">
-                      {formatTime(message.created_at)}
-                    </Text>
-                  </View>
-                )}
-                <View
-                  className={`flex-col items-start gap-1 ${
-                    isMe ? "self-end" : "self-start"
-                  }`}
-                >
-                  {/* Hiển thị tên người gửi nếu là "other" và khác sender trước đó */}
-                  {!isMe && (!next || next.sender_id !== message.sender_id) && (
-                    <Text className="font-BeVietnamRegular text-12 pl-6 pt-2">
-                      {ChatService.getNameSender(message)}
-                    </Text>
-                  )}
-
-                  <Button
-                    className={cn(
-                      "py-4 px-6 rounded-3xl max-w-[90%]",
-                      isMe ? "bg-lime-200" : "bg-white-100",
-                      next && nextSameSender && !showTimeNext
-                        ? isMe
-                          ? "rounded-tr-lg"
-                          : "rounded-tl-lg"
-                        : "",
-                      prev && prevSameSender && !showTimePrev
-                        ? isMe
-                          ? "rounded-br-lg"
-                          : "rounded-bl-lg"
-                        : ""
-                    )}
-                  >
-                    <Text className="font-BeVietnamRegular text-mineShaft-950">
-                      {message.content.text}
-                    </Text>
-                  </Button>
+          return (
+            <View
+              key={message.id}
+              className="w-full"
+              style={{ transform: [{ scaleY: -1 }] }}
+            >
+              {showTimeNext && (
+                <View className="mb-2 w-full items-center">
+                  <Text className="font-BeVietnamRegular text-gray-500">
+                    {formatTime(message.created_at)}
+                  </Text>
                 </View>
+              )}
+              <View
+                className={`flex-col items-start gap-1 ${
+                  isMe ? "self-end" : "self-start"
+                }`}
+              >
+                {!isMe && (!next || next.sender_id !== message.sender_id) && (
+                  <Text className="font-BeVietnamRegular text-12 pl-6 pt-2">
+                    {ChatService.getNameSender(message)}
+                  </Text>
+                )}
+                <Button
+                  onLongPress={() => isMe && showModalMessage(message)}
+                  ref={(ref) => {
+                    if (ref) messageRefs.current.set(message.id, ref);
+                  }}
+                  className={cn(
+                    "py-4 px-6 rounded-3xl max-w-[80%]",
+                    isMe ? "bg-lime-200" : "bg-white-100",
+                    next && nextSameSender && !showTimeNext
+                      ? isMe
+                        ? "rounded-tr-lg"
+                        : "rounded-tl-lg"
+                      : "",
+                    prev && prevSameSender && !showTimePrev
+                      ? isMe
+                        ? "rounded-br-lg"
+                        : "rounded-bl-lg"
+                      : ""
+                  )}
+                >
+                  <Text className="font-BeVietnamRegular text-mineShaft-950">
+                    {message.content.text}
+                  </Text>
+                </Button>
               </View>
-            );
-          })}
-        </Button>
-        {loadingMore && (
-          <View className="py-2">
-            <LoadingAnimation />
-          </View>
-        )}
-      </ScrollView>
-    </>
+            </View>
+          );
+        })}
+      </Button>
+      {loadingMore && (
+        <View className="py-2">
+          <LoadingAnimation />
+        </View>
+      )}
+    </ScrollView>
   );
 };
 
@@ -285,12 +336,12 @@ const ScreenMessageLoad = () => {
       },
       {
         type: "other",
-        width: "85%",
+        width: "55%",
         hasName: true,
       },
       {
         type: "other",
-        width: "90%",
+        width: "80%",
         hasName: true,
       },
     ];
@@ -339,6 +390,58 @@ const ScreenMessageLoad = () => {
         ))}
       </View>
     </ScrollView>
+  );
+};
+
+const ModalMessage: React.FC<{ message: IChatHistory; y: number }> = ({
+  message,
+  y,
+}) => {
+  const insets = useSafeAreaInsets();
+  const screenHeight = Dimensions.get('window').height;
+  const modalRef = useRef<View>(null);
+  const [modalHeight, setModalHeight] = useState(0);
+
+  // Đo chiều cao modal khi render
+  useEffect(() => {
+    if (modalRef.current) {
+      modalRef.current.measure((_, __, ___, height) => {
+        setModalHeight(height);
+      });
+    }
+  }, []);
+
+  // Giới hạn vị trí top để modal không vượt quá đáy màn hình
+  const adjustedTop = Math.min(
+    y + insets.top - 20,
+    screenHeight - modalHeight - insets.bottom - 20 // Đảm bảo modal không chạm đáy
+  );
+
+  return (
+    <View className="w-screen h-screen">
+      <BlurView className="absolute w-full h-full" intensity={40} tint="dark" />
+      <View
+        ref={modalRef}
+        className="w-full px-3 items-end gap-2 absolute"
+        style={{ top: adjustedTop }}
+      >
+        <Button className={cn('py-4 px-6 rounded-3xl max-w-[80%] bg-lime-200')}>
+          <Text className="font-BeVietnamRegular text-mineShaft-950">
+            {message.content.text}
+          </Text>
+        </Button>
+        <View className="bg-white-50 rounded-2xl flex-row px-7 py-3 gap-7">
+          <Button className="flex-col items-center gap-1">
+            <Icon icon={ArrowRightSquare} className="text-yellow-400" />
+            <Text className="font-BeVietnamRegular">Thu hồi</Text>
+          </Button>
+          <Button className="flex-col items-center gap-1">
+            <Icon icon={Trash} className="text-red-600" />
+            <Text className="font-BeVietnamRegular">Xoá</Text>
+          </Button>
+        </View>
+      </View>
+    </View>
   );
 };
 

@@ -13,6 +13,10 @@ export interface IListFeedback {
   lodging_id?: string,
   room_id?: string,
   status?: number | null
+  search?: string | null,
+  limit?: number | null,
+  offset?: number | null,
+  scope: "user" | "owner"
 }
 
 export interface IUpdateFeedback {

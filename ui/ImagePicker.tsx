@@ -11,6 +11,7 @@ import { cn } from "@/helper/helper";
 import { Camera as Cam } from "expo-camera";
 import { router } from "expo-router";
 import eventEmitter from "@/utils/eventEmitter";
+import { createScrollHandler } from "@/utils/scrollHandle";
 
 const ImagePicker: React.FC<{
   label?: string;
@@ -21,9 +22,8 @@ const ImagePicker: React.FC<{
 }> = React.memo(({ label, required, onChange, single, value }) => {
   const { showModal, hideModal } = useUI();
   const [width, setWidth] = useState(0);
-  const [selectPhotos, setSelectPhotos] = useState<
-    (MediaLibrary.AssetInfo | string)[]
-  >(value);
+  const [selectPhotos, setSelectPhotos] =
+    useState<(MediaLibrary.AssetInfo | string)[]>(value);
   const _COLUMN = 4;
   const _GAP = 8;
   const [itemSize, setItemSize] = useState(
@@ -47,7 +47,7 @@ const ImagePicker: React.FC<{
         selects={selectPhotos.filter((item) => typeof item != "string")}
         onChangeSelects={(photos: MediaLibrary.AssetInfo[]) => {
           setSelectPhotos((prev) => {
-            const stringItems = prev.filter(item => typeof item === "string");
+            const stringItems = prev.filter((item) => typeof item === "string");
             return [...photos, ...stringItems];
           });
         }}
@@ -106,10 +106,10 @@ const ImagePicker: React.FC<{
   }, [selectPhotos, onChange]);
 
   useEffect(() => {
-    if(value != selectPhotos){
-      setSelectPhotos(value)
+    if (value != selectPhotos) {
+      setSelectPhotos(value);
     }
-  }, [value])
+  }, [value]);
 
   return (
     <View className="gap-2">
@@ -318,16 +318,12 @@ const ViewModalImagePicker: React.FC<{
     >
       <ScrollView
         className="px-4 h-96"
-        onScroll={({ nativeEvent }) => {
-          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-          const isCloseToBottom =
-            layoutMeasurement.height + contentOffset.y >=
-            contentSize.height - 80;
-
-          if (isCloseToBottom && hasMore && !isLoading.current) {
-            loadPhotos(true);
-          }
-        }}
+        onScroll={createScrollHandler({
+          callback: () => loadPhotos(true),
+          hasMore,
+          loading: isLoading.current,
+          threshold: 80,
+        })}
         contentContainerStyle={{ paddingBottom: 50 }}
         scrollEventThrottle={400} // Giảm tần suất gọi onScroll
       >

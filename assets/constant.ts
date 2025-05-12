@@ -66,6 +66,20 @@ export const constant = {
     },
   },
 
+  payment: {
+    status: {
+      unpaid: 1,
+      paid: 2,
+      partial: 3,
+    },
+    method: {
+      system: "system",
+      cash: "cash",
+      bank: "bank",
+      transfer: "transfer",
+    },
+  },
+
   object: {
     type: {
       lodging: "lodging",
@@ -73,6 +87,8 @@ export const constant = {
       room: "room",
     },
   },
+
+  limit: 10,
 
   toast: {
     type: {

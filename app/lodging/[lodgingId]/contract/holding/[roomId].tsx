@@ -6,7 +6,7 @@ import ContractService from "@/services/Contract/ContractService";
 import Button from "@/ui/Button";
 import DetailItem from "@/ui/components/DetailItem";
 import HeaderBack from "@/ui/components/HeaderBack";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import moment from "moment";

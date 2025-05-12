@@ -1,5 +1,5 @@
 import { BoxPaymentTimeBill } from "@/ui/components/BoxPaymentTimeBill";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import Button from "@/ui/Button";

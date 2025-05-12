@@ -12,13 +12,13 @@ import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { ILodging, LodgingType } from "@/interfaces/LodgingInterface";
 import { LocationUnit } from "@/interfaces/LocationInterface";
 import LodgingService from "@/services/Lodging/LodgingService";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
 import { IError } from "@/interfaces/ErrorInterface";
-import { BlurView } from "expo-blur";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import LoadingScreen from "@/ui/layouts/LoadingScreen";
 
 function EditLodging() {
   //Initial
@@ -60,6 +60,11 @@ function EditLodging() {
 
   // Xử lý chỉnh sửa nhà trọ
   const handleUpdateLodging = useCallback(async () => {
+    if (!lodging) {
+      addToast(constant.toast.type.error, "Nhà cho thuê là không tồn tại");
+      return;
+    }
+
     if (!lodgingType) {
       addToast(constant.toast.type.error, "Loại nhà cho thuê là bắt buộc");
       return;
@@ -69,6 +74,8 @@ function EditLodging() {
       addToast(constant.toast.type.error, "Tên nhà cho thuê là bắt buộc");
       return;
     }
+
+
 
     setProcessing(true);
     const dataReq: ILodging = {
@@ -290,19 +297,7 @@ function EditLodging() {
   return (
     <View className="flex-1">
       <Layout title={"Chỉnh sửa nhà cho thêm"}>
-        {loading && (
-          <View className="absolute inset-0 z-10 items-center justify-center">
-            {/* Tạo nền mờ */}
-            <BlurView
-              className="absolute w-full h-full"
-              intensity={30}
-              tint="dark"
-            />
-
-            {/* Animation Loading */}
-            <LoadingAnimation className="text-white-50" />
-          </View>
-        )}
+      {loading && <LoadingScreen />}
 
         <ScrollView className="px-5 flex-grow bg-white-50">
           <View className="gap-3 items-center py-3 flex-1">

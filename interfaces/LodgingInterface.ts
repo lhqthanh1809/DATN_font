@@ -36,6 +36,7 @@ export interface ILodging {
   id?: string;
   name: string;
   address?: string | null;
+  is_enabled: boolean,
   province_id?: number | null;
   district_id?: number | null;
   ward_id?: number | null;
@@ -59,4 +60,10 @@ export interface ILodging {
     name: string;
   };
   wallet?: IWallet
+  config?: ILodgingConfig;
 }
+
+export interface ILodgingConfig {
+  password_for_client: string;
+}
+

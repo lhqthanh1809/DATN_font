@@ -3,6 +3,7 @@ import { create } from "zustand";
 import useToastStore from "./toast/useToastStore";
 import { constant } from "@/assets/constant";
 import * as Yup from "yup";
+import { getDeviceID } from "@/helper/helper";
 
 const otpSchema = Yup.object().shape({
     phone: Yup.string()
@@ -36,7 +37,12 @@ export const useOTPStore = create<IOtpStore>((set, get) => ({
             await otpSchema.validate({
                 phone: get().phone
             }, { context: { isCreate: true } });
-            const result = await service.requestOTP(get().phone);
+
+            const token = await getDeviceID();
+            const result = await service.requestOTP({
+                phone: get().phone,
+                ...(token && {token})
+            });
 
             if (typeof result !== "string") {
                 throw new Error(result.message);

@@ -1,10 +1,10 @@
 import { useGeneral } from "@/hooks/useGeneral";
 import Icon from "@/ui/Icon";
 import { Bell } from "@/ui/icon/symbol";
-import { Text, View } from "react-native";
+import { Image, InteractionManager, Text, View } from "react-native";
 import { Building } from "@/ui/icon/general";
 import { Fingerprint } from "@/ui/icon/security";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ItemMenu,
   ManagementScreen,
@@ -13,54 +13,36 @@ import {
 } from "@/pages/User/Home/components";
 import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import MonthPicker from "@/ui/MonthPicker";
 
-function HomeUser() {
+function Index() {
   const { user } = useGeneral();
-  const [navActive, setNavActive] = useState<ItemMenu | null>(null);
-  const { addToast } = useToastStore();
+  useFocusEffect(
+    useCallback(() => {
+      if (!user) return;
 
-  const navItem = useMemo(
-    () => [
-      {
-        text: "Cá nhân",
-        icon: Fingerprint,
-        screen: <PersonScreen />,
-      },
-      {
-        text: "Quản lý",
-        icon: Building,
-        screen: <ManagementScreen />,
-      },
-    ],
-    []
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (user?.rule === "manager") router.navigate("/lodging");
+        else router.navigate("/user");
+      });
+
+      return () => task.cancel();
+    }, [user?.rule])
   );
 
-  useEffect(() => {
-    setNavActive(navItem[0]);
-  }, []);
-
   return (
-    <View className="flex-1 bg-white-50">
-      <View className="p-5 flex-row justify-between items-center">
-        <Button onPress={() => {router.push("/user/detail")}}>
-          <Text className="font-BeVietnamSemiBold text-18 text-mineShaft-950">
-            {user?.full_name}
-          </Text>
-        </Button>
-        <MenuHome
-          active={navActive}
-          items={navItem}
-          onChange={(item) => {
-            setNavActive(item);
-          }}
-        />
-      </View>
-      <View className="flex-1 bg-white-50">{navActive?.screen}</View>
+    <View className="flex-1 bg-white-50 items-center justify-center gap-4">
+      <Image
+        style={{ width: 150, height: 150 }}
+        source={require("../assets/images/icon512.png")}
+      />
 
+      <Text className="font-BeVietnamBold text-5xl text-mineShaft-950">
+        Nestify
+      </Text>
     </View>
   );
 }
 
-export default HomeUser;
+export default Index;

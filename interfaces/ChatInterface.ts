@@ -12,7 +12,8 @@ export interface IChatHistory{
         text: string
     }
     sender?: IUser | ILodging
-    created_at: string
+    created_at: string,
+    is_read?: boolean
 }
 
 export interface ICreateChat{

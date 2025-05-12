@@ -1,7 +1,7 @@
 import Button from "@/ui/Button";
 import ImagePicker from "@/ui/ImagePicker";
 import Input from "@/ui/Input";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import TextArea from "@/ui/Textarea";
 import { AssetInfo } from "expo-media-library";
 import { useCallback, useEffect, useState } from "react";

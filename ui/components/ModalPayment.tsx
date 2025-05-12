@@ -17,7 +17,7 @@ import { cn, convertToNumber, formatNumber } from "@/helper/helper";
 import { MotiView } from "moti";
 
 const ModalPayment: React.FC<{
-  actionWhenPaymentSuccess?: (amount: number) => void
+  actionWhenPaymentSuccess?: (amount: number, method: string) => void
 }> = ({actionWhenPaymentSuccess}) => {
   const { hideModal } = useUI();
   const { addToast } = useToastStore();
@@ -34,7 +34,7 @@ const ModalPayment: React.FC<{
       );
       if (result) {
         addToast(constant.toast.type.success, "Thanh toán thành công")
-        actionWhenPaymentSuccess && actionWhenPaymentSuccess(formatNumber(amount, "float") ?? 0)
+        actionWhenPaymentSuccess && actionWhenPaymentSuccess(formatNumber(amount, "float") ?? 0 , methodPayment.value)
         hideModal();
       }
     } catch (err) {

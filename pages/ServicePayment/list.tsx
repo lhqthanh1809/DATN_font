@@ -62,12 +62,18 @@ const ServicePaymentItem = ({
   contractId: string;
   lodgingId?: string;
 }) => {
-    const {user} = useGeneral();
-  const {addToast} = useToastStore()
+  const { user } = useGeneral();
+  const { addToast } = useToastStore();
   const { room_service_usage: usage } = payment;
   const [paymentLocal, setPaymentLocal] = useState(payment);
-  const { openPaymentModal: openPaymentModalStore, setAmountToBePaid: setAmountToBePaidStore } = usePaymentStore();
-  const { openPaymentModal: openPaymentModalUser, setAmountToBePaid: setAmountToBePaidUser } = usePaymentUserStore();
+  const {
+    openPaymentModal: openPaymentModalStore,
+    setAmountToBePaid: setAmountToBePaidStore,
+  } = usePaymentStore();
+  const {
+    openPaymentModal: openPaymentModalUser,
+    setAmountToBePaid: setAmountToBePaidUser,
+  } = usePaymentUserStore();
   const { showModal } = useUI();
   const service = useMemo(
     () =>
@@ -101,7 +107,7 @@ const ServicePaymentItem = ({
     }, [usage, paymentLocal.payment_amount, paymentLocal.amount_paid]);
 
   const handleWhenPaymentSuccess = useCallback(
-    (amount: number) => {
+    (amount: number, method: string) => {
       const amountPaid = amount + Number(paymentLocal.amount_paid);
       const lastPayment = new Date().toISOString();
 
@@ -117,23 +123,45 @@ const ServicePaymentItem = ({
   const handleOpenPayment = useCallback(() => {
     if (lodgingId) {
       setAmountToBePaidStore(diffAmount);
-      openPaymentModalStore(payment.id, payment.contract_id, "service", showModal, handleWhenPaymentSuccess, "debt");
+      openPaymentModalStore(
+        payment.id,
+        payment.contract_id,
+        "service",
+        showModal,
+        handleWhenPaymentSuccess,
+        "debt"
+      );
     } else {
-      if(!user?.wallet) {
+      if (!user?.wallet) {
         addToast(constant.toast.type.error, "Ví người dùng không khả dụng");
-        return
+        return;
       }
       setAmountToBePaidUser(diffAmount);
-      openPaymentModalUser(payment.id, payment.contract_id, "service", user.wallet.balance ,showModal, handleWhenPaymentSuccess);
+      openPaymentModalUser(
+        payment.id,
+        payment.contract_id,
+        "service",
+        user.wallet.balance,
+        showModal,
+        handleWhenPaymentSuccess
+      );
     }
-  }, [payment, showModal, openPaymentModalUser, openPaymentModalStore, diffAmount, handleWhenPaymentSuccess, lodgingId, user]);
-
+  }, [
+    payment,
+    showModal,
+    openPaymentModalUser,
+    openPaymentModalStore,
+    diffAmount,
+    handleWhenPaymentSuccess,
+    lodgingId,
+    user,
+  ]);
 
   return (
     <Button className="w-full bg-white-50 rounded-xl p-4 border border-white-100 shadow-soft-md flex-col items-start gap-2">
       {/* Header */}
       <View className="flex-row justify-between items-start w-full gap-4">
-        <View className="gap-2">
+        <View className="gap-2 flex-1">
           <View className="flex-row items-center gap-2">
             <Icon icon={service.icon} className={service.text} />
             <Text className="font-BeVietnamMedium">
@@ -141,7 +169,7 @@ const ServicePaymentItem = ({
             </Text>
           </View>
           <Text className="font-BeVietnamRegular text-12 text-mineShaft-700">
-            {isFixed ? "Đơn giá" : "Chỉ số cũ - mới"}:{" "}
+            {`${isFixed ? "Đơn giá" : "Chỉ số cũ - mới"}: `}
             <Text className="font-BeVietnamSemiBold">{displayValue}</Text>
           </Text>
         </View>
@@ -186,7 +214,16 @@ const ServicePaymentItem = ({
 
       {/* Actions */}
       <View className="w-full flex-row gap-2">
-        <Button onPress={() => router.push(`/payment_history/service/${payment.id}?redirect_to=${lodgingId ? "lodging" : "user"}` as Href )} className="flex-1 border border-lime-500 px-4 py-2">
+        <Button
+          onPress={() =>
+            router.push(
+              `/payment_history/service/${payment.id}?redirect_from=${
+                lodgingId ? "lodging" : "user"
+              }` as Href
+            )
+          }
+          className="flex-1 border border-lime-500 px-4 py-2"
+        >
           <Text className="font-BeVietnamMedium text-mineShaft-950">
             Xem chi tiết
           </Text>
@@ -267,7 +304,7 @@ const ListServicePayment: React.FC<Props> = ({ lodgingId, contractId }) => {
             ? [...Array(4)].map((_, i) => <LoadingSkeleton key={i} />)
             : servicePayments.map((payment) => (
                 <ServicePaymentItem
-                lodgingId={lodgingId}
+                  lodgingId={lodgingId}
                   key={payment.id}
                   payment={payment}
                   contractId={contractId}

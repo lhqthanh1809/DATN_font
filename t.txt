@@ -1,5 +1,0 @@
-// "eas": {
-//   "projectId": "f8b5f582-894c-41f1-9fb9-e8dec6642f1c"
-// }
-
-      // "useNextNotificationsApi": true,

@@ -7,9 +7,8 @@ import useContractStore from "@/store/contract/useContractStore";
 import useUserStore from "@/store/user/useUserStore";
 import Button from "@/ui/Button";
 import DetailItem from "@/ui/components/DetailItem";
-import Layout from "@/ui/components/Layout";
-import LoadingAnimation from "@/ui/LoadingAnimation";
-import { BlurView } from "expo-blur";
+import Layout from "@/ui/layouts/Layout";
+import LoadingScreen from "@/ui/layouts/LoadingScreen";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -91,19 +90,7 @@ function CreateContract() {
       <Layout
         title={`Chốt hợp đồng ${contract?.code && `- #${contract.code}`} `}
       >
-        {loading && (
-          <View className="absolute inset-0 z-10 items-center justify-center">
-            {/* Tạo nền mờ */}
-            <BlurView
-              className="absolute w-full h-full"
-              intensity={30}
-              tint="dark"
-            />
-
-            {/* Animation Loading */}
-            <LoadingAnimation className="text-white-50" />
-          </View>
-        )}
+      {loading && <LoadingScreen />}
         <ScrollView className="px-3 flex-grow bg-white-50">
           <View className="gap-3 items-center py-3 flex-1">
             {contract && contract.room && (

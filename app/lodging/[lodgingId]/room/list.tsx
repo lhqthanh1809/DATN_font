@@ -24,6 +24,7 @@ import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 
 function ListRoom() {
   const { showModal, hideModal } = useUI();
@@ -183,8 +184,16 @@ function ListRoom() {
           route.push(`lodging/${lodgingId}/room/create` as Href);
         }}
       >
+        {rooms.length <= 0 && !loading ? (
+          <EmptyScreen
+            className="pb-16"
+            icon={Home2}
+            description="Hãy thử thay đổi bộ lọc hoặc kiểm tra lại kết nối mạng."
+            title="Không tìm thấy phòng nào"
+          />
+        ) : (
         <ScrollView
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps="never"
           className="px-3 flex-grow bg-white-50"
         >
           <View className="gap-2 items-center py-3 flex-1">
@@ -211,6 +220,8 @@ function ListRoom() {
                 ))}
           </View>
         </ScrollView>
+        )}
+
       </ViewHasButtonAdd>
     </View>
   );

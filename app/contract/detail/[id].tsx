@@ -5,7 +5,7 @@ import BackView from "@/ui/BackView";
 import HeaderBack from "@/ui/components/HeaderBack";
 import TabsLine from "@/ui/components/TabsLine";
 import { useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 
 function Detail() {
@@ -36,20 +36,22 @@ function Detail() {
     [id]
   );
 
-  const [active, setActive] = useState(tabs[0]);
+  const [active, setActive] = useState(tabs[0])
+  useEffect(() => {
+    setActive(tabs[0])
+  }, [])
+
   return (
     <View className="flex-1 bg-white-50">
       <HeaderBack title="Chi tiết hợp đồng" />
-      <View className="bg-black px-4 rounded-b-xl">
         <TabsLine
           tabs={tabs}
           active={active}
           onChange={(tab) => setActive(tab)}
         />
-      </View>
       {active.view}
     </View>
   );
 }
 
-export default Detail;
+export default Detail

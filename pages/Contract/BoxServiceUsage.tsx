@@ -20,7 +20,8 @@ import { Text, View } from "react-native";
 const BoxServiceUsage:React.FC<{
   totalService: number;
   setTotalService: (value: number) => void;
-}> = ({ totalService, setTotalService })=>{
+  isMonthBilling: boolean
+}> = ({ totalService, setTotalService, isMonthBilling })=>{
   const [amountReduce, setAmountReduce] = useState("0");
   const { endDate } = useEndContractStore();
   const { contract } = useContractStore();
@@ -35,10 +36,11 @@ const BoxServiceUsage:React.FC<{
       ...ServiceFactory.createService(
         service,
         contract,
-        endDate
+        endDate,
+        isMonthBilling
       ).getDisplayValue(),
     }));
-  }, [contract, services, endDate]);
+  }, [contract, services, endDate, isMonthBilling]);
 
 
   const totalPrice = useMemo(() => {

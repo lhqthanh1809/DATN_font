@@ -5,14 +5,14 @@ import BoxPrice from "@/pages/Contract/Create/BoxPrice";
 import ContractService from "@/services/Contract/ContractService";
 import useUserStore from "@/store/user/useUserStore";
 import Button from "@/ui/Button";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 function CreateContract() {
-  const { roomId, name, price } = useLocalSearchParams();
-  const {genders} = useUserStore()
+  const { roomId, name, price, filter } = useLocalSearchParams();
+  const { genders } = useUserStore();
   const [loading, setLoading] = useState(false);
   const [nameCustom, setNameCustom] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -63,6 +63,15 @@ function CreateContract() {
     depositAmount,
     gender,
   ]);
+
+  useEffect(() => {
+    if (!filter) return;
+
+    const base64 = (filter as string).replace(/-/g, "+").replace(/_/g, "/");
+    const data = JSON.parse(atob(base64));
+    setTime(data.lease_duration);
+    setQuantity(data.quantity);
+  }, [filter]);
 
   return (
     <View className="flex-1">

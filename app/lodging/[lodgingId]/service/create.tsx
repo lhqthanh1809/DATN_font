@@ -1,5 +1,5 @@
 import { BoxPaymentTimeBill } from "@/ui/components/BoxPaymentTimeBill";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import BoxInfo from "@/pages/Service/BoxInfo";
@@ -58,7 +58,7 @@ function CreateService() {
     if (!("message" in data)) {
       route.back();
     }
-  }, [lodgingId, paymentDate, lateDays, service, unit, name, price]);
+  }, [lodgingId, paymentDate, lateDays, service, unit, name, price, selectRooms]);
 
   return (
     <View className="flex-1">

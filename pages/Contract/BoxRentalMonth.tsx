@@ -19,7 +19,8 @@ import { Text, View } from "react-native";
 const BoxRentalMonth: React.FC<{
   totalRental: number;
   setTotalRental: (value: number) => void;
-}> = ({ totalRental, setTotalRental }) => {
+  isMonthBilling: boolean;
+}> = ({ totalRental, setTotalRental, isMonthBilling }) => {
   const { contract } = useContractStore();
   const { endDate } = useEndContractStore();
   const [priceRoom, setPriceRoom] = useState(contract?.room?.price ?? 0);
@@ -38,11 +39,14 @@ const BoxRentalMonth: React.FC<{
     const pricePerMonth =
       (priceRoom / (contract?.room?.current_tenants ?? 1)) *
       (contract?.quantity ?? 1);
+    if (isMonthBilling) {
+      return pricePerMonth * (duration.months + (duration.days > 0 ? 1 : 0));
+    }
     const dayInMonth = moment(endDate).daysInMonth();
     const pricePerDay = pricePerMonth / dayInMonth;
 
     return pricePerMonth * duration.months + pricePerDay * duration.days;
-  }, [priceRoom, contract, duration, endDate]);
+  }, [priceRoom, contract, duration, endDate, isMonthBilling]);
 
   useEffect(() => {
     setDuration(calculateDuration(fromDate, endDate));
@@ -85,14 +89,23 @@ const BoxRentalMonth: React.FC<{
 
       <Text className="font-BeVietnamRegular text-12">
         Số ngày khách ở tính từ chu kì gần nhất:{" "}
-        <Text className="text-redPower-600 font-BeVietnamSemiBold">
-          {duration.months}
+        {isMonthBilling ? (
+          <><Text className="text-redPower-600 font-BeVietnamSemiBold">
+          {duration.months + (duration.days > 0 ? 1 : 0)}
         </Text>{" "}
-        tháng,{" "}
-        <Text className="text-redPower-600 font-BeVietnamSemiBold">
-          {duration.days}
-        </Text>{" "}
-        ngày
+        tháng</>
+        ) : (
+          <>
+            <Text className="text-redPower-600 font-BeVietnamSemiBold">
+              {duration.months}
+            </Text>{" "}
+            tháng,{" "}
+            <Text className="text-redPower-600 font-BeVietnamSemiBold">
+              {duration.days}
+            </Text>{" "}
+            ngày
+          </>
+        )}
       </Text>
 
       <View className="bg-lime-50 px-4 py-2 rounded-xl border-1 border-lime-200 gap-2 items-end">

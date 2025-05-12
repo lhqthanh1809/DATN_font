@@ -1,4 +1,4 @@
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { BoxInfo } from "@/pages/Equipment/BoxInfo";
@@ -17,12 +17,11 @@ import {
 import { EquipmentService } from "@/services/Equipment/EquipmentService";
 import useToastStore from "@/store/toast/useToastStore";
 import { IError } from "@/interfaces/ErrorInterface";
-import { BlurView } from "expo-blur";
-import LoadingAnimation from "@/ui/LoadingAnimation";
 import { useEquipmentStore } from "@/store/equipment/useEquipmentStore";
 import LodgingService from "@/services/Lodging/LodgingService";
 import { useUI } from "@/hooks/useUI";
 import ModalDelete from "@/ui/components/ModalDelete";
+import LoadingScreen from "@/ui/layouts/LoadingScreen";
 
 function UpdateEquipment() {
   const { lodgingId, id } = useLocalSearchParams();
@@ -89,19 +88,7 @@ function UpdateEquipment() {
   return (
     <View className="flex-1">
       <Layout title="Cập nhật thiết bị">
-        {loading && (
-          <View className="absolute inset-0 z-10 items-center justify-center">
-            {/* Tạo nền mờ */}
-            <BlurView
-              className="absolute w-full h-full"
-              intensity={30}
-              tint="dark"
-            />
-
-            {/* Animation Loading */}
-            <LoadingAnimation className="text-white-50" />
-          </View>
-        )}
+      {loading && <LoadingScreen />}
         <ScrollView className="px-3 flex-grow bg-white-50">
           <View className="gap-3 items-center py-3 flex-1">
             <BoxInfo

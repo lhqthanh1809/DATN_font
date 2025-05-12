@@ -3,10 +3,10 @@ import { useGeneral } from "@/hooks/useGeneral";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { ChevronDownSmall, ChevronLeft } from "@/ui/icon/symbol";
-import { usePathname, useRouter } from "expo-router";
+import { useFocusEffect, usePathname, useRouter } from "expo-router";
 import { isArray } from "lodash";
 import { View } from "moti";
-import { useState, useCallback, useEffect, useMemo, ReactNode } from "react";
+import { useState, useCallback, useEffect, useMemo, ReactNode, use } from "react";
 import { ScrollView, Text } from "react-native";
 import LoadPermission from "./components/LoadPermission";
 import MenuFunctionBox from "./components/MenuFunctionBox";
@@ -15,6 +15,7 @@ import TabsBlock from "@/ui/components/TabsBlock";
 import ManagerScreen from "./components/ManagerScreen";
 import StatisticalScreen from "./components/StatisticalScreen";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
+import { useRoute } from '@react-navigation/native';
 
 interface TabProp {
   name: string;
@@ -26,7 +27,7 @@ const HomeScreen: React.FC<{
 }> = ({ id }) => {
   const { user } = useGeneral();
   const { lodgings} = useLodgingsStore()
-  const currentPath = usePathname();
+  const [currentPath, setCurrentPath] = useState<string>(usePathname());
   const [lodging, setLodging] = useState<ILodging | null>(null);
   const route = useRouter();
   const [tab, setTab] = useState<TabProp | null>(null);

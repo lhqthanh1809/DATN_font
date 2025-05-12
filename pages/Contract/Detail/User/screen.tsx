@@ -9,11 +9,11 @@ import { router } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Linking, ScrollView, Text, View } from "react-native";
 import BoxInfo from "../BoxInfo";
-import LoadingAnimation from "@/ui/LoadingAnimation";
-import { BlurView } from "expo-blur";
 import useContractStore from "@/store/contract/useContractStore";
 import moment from "moment";
 import useUserStore from "@/store/user/useUserStore";
+import LoadingScreen from "@/ui/layouts/LoadingScreen";
+import { cn } from "@/helper/helper";
 
 const DetailContract: React.FC<{
   id: string;
@@ -28,19 +28,7 @@ const DetailContract: React.FC<{
 
   return (
     <View className="flex-1">
-      {loading && (
-        <View className="absolute inset-0 z-10 items-center justify-center">
-          {/* Tạo nền mờ */}
-          <BlurView
-            className="absolute w-full h-full"
-            intensity={30}
-            tint="dark"
-          />
-
-          {/* Animation Loading */}
-          <LoadingAnimation className="text-white-50" />
-        </View>
-      )}
+      {loading && <LoadingScreen />}
       <ScrollView className="px-3 flex-1">
         <View className="flex-1 gap-2 py-3">
           <DetailItem title="Mã hợp đồng" data={`#${contract?.code ?? ""}`} />
@@ -66,14 +54,16 @@ const DetailContract: React.FC<{
         <View className="flex-row gap-2">
           <Button
             onPress={() =>
-              router.push(
-                `/feedback/create?lodging_id=${contract?.room?.lodging_id}&room_id=${contract?.room_id}`
-              )
+              contract?.status == constant.contract.status.active
+                ? router.push(
+                    `/feedback/create?lodging_id=${contract?.room?.lodging_id}&room_id=${contract?.room_id}`
+                  )
+                : router.back()
             }
-            className="flex-1  bg-lime-400 py-4"
+            className={cn("flex-1 py-4", contract?.status == constant.contract.status.active ? "bg-lime-400" : "border-1 border-lime-400 bg-white-50")}
           >
-            <Text className="text-mineShaft-950 text-14 font-BeVietnamMedium">
-              Phản hồi
+            <Text className={cn("text-mineShaft-950 font-BeVietnamMedium", contract?.status == constant.contract.status.active ? "text-mineShaft-950" : "text-lime-500")}>
+              {contract?.status == constant.contract.status.active ? "Phản hồi" : "Quay lại"}
             </Text>
           </Button>
         </View>

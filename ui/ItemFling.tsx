@@ -18,13 +18,15 @@ const ItemFling = <T,>({
   onPress,
   onDelete,
   item,
-  className
+  className,
+  classNameContainer,
 }: {
   children: ReactNode;
   onPress: (item: T) => void;
   onDelete?: (item: T) => void;
   item: T;
-  className?: string
+  className?: string,
+  classNameContainer?: string
 }) => {
   const _MIN_TRANSLATE_X = -50;
   const _MAX_TRANSLATE_X = 0;
@@ -61,7 +63,7 @@ const ItemFling = <T,>({
   });
   return (
     <View className="w-full">
-      <View className="h-fit relative w-full overflow-hidden rounded-md">
+      <View className={cn("h-fit relative w-full overflow-hidden rounded-md", classNameContainer)}>
         <GestureDetector gesture={fling}>
           <MotiView style={animatedStyle}>
             <Button

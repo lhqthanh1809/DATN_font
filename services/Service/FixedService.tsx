@@ -12,12 +12,13 @@ export class FixedService implements IService {
   constructor(
     private contract: IContract,
     private service: ILodgingService,
-    private endDate: Date
+    private endDate: Date,
+    private isMonth?: boolean
   ) {}
 
-  getDisplayValue() : {
-    displayValue: ReactNode,
-    price: number
+  getDisplayValue(): {
+    displayValue: ReactNode;
+    price: number;
   } {
     if (this.service.unit?.name === constant.unit.name.person) {
       return {
@@ -39,7 +40,14 @@ export class FixedService implements IService {
         this.endDate
       );
       return {
-        displayValue: (
+        displayValue: this.isMonth ? (
+          <>
+            <Text className="text-redPower-600 font-BeVietnamSemiBold">
+              {duration.months + (duration.days > 0 ? 1 : 0)}
+            </Text>{" "}
+            tháng
+          </>
+        ) : (
           <>
             {duration.months > 0 && (
               <>
@@ -55,19 +63,24 @@ export class FixedService implements IService {
             ngày
           </>
         ),
-        price: this.calculatorPriceTotal(duration),
+        price: this.calculatorPriceTotal(duration, this.isMonth),
       };
     }
     return {
-        displayValue: null,
-        price: 0
+      displayValue: null,
+      price: 0,
     };
   }
 
-  private calculatorPriceTotal(duration: any) {
+  private calculatorPriceTotal(duration: any, isMonth?: boolean) {
     const pricePerMonth =
-      (this.service.price_per_unit / (this.contract?.room?.current_tenants ?? 1)) *
-      (this.contract?.quantity ?? 1); 
+      (this.service.price_per_unit /
+        (this.contract?.room?.current_tenants ?? 1)) *
+      (this.contract?.quantity ?? 1);
+
+    if (isMonth) {
+      return pricePerMonth * (duration.months + (duration.days > 0 ? 1 : 0));
+    }
     const dayInMonth = moment(this.endDate).daysInMonth();
     const pricePerDay = pricePerMonth / dayInMonth;
 

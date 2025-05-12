@@ -3,6 +3,7 @@ import { IPaymentContract, IPaymentUser } from "@/interfaces/PaymentInterface";
 import BaseService from "../BaseService";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { apiRouter } from "@/assets/apiRouter";
+import { reference } from "@/assets/reference";
 
 export class PaymentService extends BaseService {
   public async paymentByContract(
@@ -25,9 +26,7 @@ export class PaymentService extends BaseService {
     }
   }
 
-  public async paymentByUser(
-    data: IPaymentUser
-  ): Promise<string | IError> {
+  public async paymentByUser(data: IPaymentUser): Promise<string | IError> {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.paymentByUser,
@@ -43,5 +42,21 @@ export class PaymentService extends BaseService {
     } catch (error: any) {
       return this.returnError(error);
     }
+  }
+
+  static getReferenceStatusPayment(status: number) {
+    return status in reference.payment.status
+      ? reference.payment.status[
+          status as keyof typeof reference.payment.status
+        ]
+      : reference.undefined;
+  }
+
+  static getReferencePaymentMethod(method: string) {
+    return method in reference.payment.method
+      ? reference.payment.method[
+          method as keyof typeof reference.payment.method
+        ]
+      : reference.other;
   }
 }

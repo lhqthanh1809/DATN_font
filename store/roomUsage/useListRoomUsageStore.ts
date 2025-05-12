@@ -1,17 +1,17 @@
 import { create } from "zustand";
-import RoomUsageService from "@/services/RoomUsage/RoomUsageService";
-import { IRoomUsage } from "@/interfaces/RoomUsageInterface";
+import RoomServiceInvoiceService from "@/services/RoomServiceInvoice/RoomServiceInvoiceService";
+import { IRoomServiceInvoice } from "@/interfaces/RoomServiceInvoiceInterface";
 import { isArray } from "lodash";
 
 interface RoomUsageState {
-  roomUsages: IRoomUsage[];
+  roomUsages: IRoomServiceInvoice[];
   loading: boolean;
   fetchRoomUsages: (lodgingId: string) => Promise<void>;
   removeRoomUsage: (id: string) => void;
 }
 
 export const useListRoomUsageStore = create<RoomUsageState>((set) => {
-  const roomUsageService = new RoomUsageService();
+  const roomUsageService = new RoomServiceInvoiceService();
 
   return {
     roomUsages: [],
@@ -19,7 +19,7 @@ export const useListRoomUsageStore = create<RoomUsageState>((set) => {
     fetchRoomUsages: async (lodgingId: string) => {
       set({ loading: true });
       try {
-        const result = await roomUsageService.listRoomUsageNeedClose(lodgingId);
+        const result = await roomUsageService.listRoomServiceNeedClose(lodgingId);
         if (isArray(result)) {
           set({ roomUsages: result });
         }

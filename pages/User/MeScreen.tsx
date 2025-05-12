@@ -13,12 +13,14 @@ import { Logout } from "@/ui/icon/active";
 import {
   ChevronRight,
   ClockRefresh,
+  Document,
   Home2,
+  HomeAdd,
   Notification,
   Trash,
   User,
 } from "@/ui/icon/symbol";
-import BoxDevInfor from "@/ui/components/BoxDevInfor";
+import BoxDevInfo from "@/ui/components/BoxDevInfor";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import { Href, router } from "expo-router";
 import React, {
@@ -65,6 +67,16 @@ const MeScreen: React.FC<{}> = ({}) => {
         name: "Phản hồi",
         icon: Notification,
         router: `feedback`,
+      },
+      {
+        name: "Lịch sử hợp đồng",
+        icon: Document,
+        router: `/contract/history`,
+      },
+      {
+        name: "Tạo nhà cho thuê",
+        icon: HomeAdd,
+        router: `/lodging/create`,
       },
     ];
   }, [user]);
@@ -139,7 +151,7 @@ const MeScreen: React.FC<{}> = ({}) => {
           className="border-1 border-redPower-600 bg-white-50 items-center gap-3 py-3"
         >
           {loadingLogout ? (
-            <LoadingAnimation />
+            <LoadingAnimation size={18} strokeWidth={2} color="#D0302F" />
           ) : (
             <Icon icon={Logout} className="text-redPower-600" />
           )}
@@ -148,7 +160,7 @@ const MeScreen: React.FC<{}> = ({}) => {
           </Text>
         </Button>
 
-        <BoxDevInfor />
+        <BoxDevInfo />
       </View>
     </ScrollView>
   );

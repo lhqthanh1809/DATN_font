@@ -10,14 +10,18 @@ import Button from "@/ui/Button";
 import Divide from "@/ui/Divide";
 import Icon from "@/ui/Icon";
 import { Money } from "@/ui/icon/finance";
-import { CheckCircle, Error, Warning } from "@/ui/icon/symbol";
+import { CheckCircle, Document, Error, Warning } from "@/ui/icon/symbol";
 import SearchAndSegmentedControl from "@/ui/components/SearchAndSearchAndSegmentedControl";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { isArray } from "lodash";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import React, { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import axios from "axios";
+import { createScrollHandler } from "@/utils/scrollHandle";
+import LoadingAnimation from "@/ui/LoadingAnimation";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 
 const ListContract: React.FC<{
   lodgingId: string;
@@ -25,34 +29,87 @@ const ListContract: React.FC<{
 }> = ({ lodgingId, roomId }) => {
   const { addToast } = useToastStore();
   const [contracts, setContracts] = useState<IContract[]>([]);
+
+  const limit = constant.limit;
+
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
   const [statusActive, setStatusActive] = useState<null | number>(null);
   const [loading, setLoading] = useState(false);
   const contractService = new ContractService();
+  const [sourceAxios, setSourceAxios] = useState(axios.CancelToken.source());
 
-  const fetchContract = useCallback(async () => {
-    const data: IListContract = {
-      lodging_id: lodgingId as string,
-      status: statusActive,
-      ...(roomId && { room_id: roomId }),
-    };
+  const fetchContract = useCallback(
+    async (cancelToken: any, loadMore = false) => {
+      // Calculate the new offset for pagination
+      const offsetNew = loadMore ? offset + limit : 0;
 
-    setLoading(true);
+      // Prevent further loading if there are no more items
+      if (loadMore && !hasMore) {
+        return;
+      }
 
-    const result = await contractService.listContract(data);
+      // Reset offset if not loading more
+      loadMore ? setLoadingMore(true) : setLoading(true);
 
-    if (isArray(result)) {
-      setContracts(result);
-    } else {
-      addToast(constant.toast.type.error, result.message);
-    }
+      try {
+        const data: IListContract = {
+          lodging_id: lodgingId as string,
+          status: statusActive,
+          search: search,
+          limit: limit,
+          offset: offsetNew,
+          ...(roomId && { room_id: roomId }),
+        };
 
-    setLoading(false);
-  }, [lodgingId, roomId, statusActive]);
+        const result = await contractService.listContract(data, cancelToken);
+        // Handle invalid data or cancelled requests
+        if ("message" in result || cancelToken.reason) {
+          return;
+        }
+
+        setContracts((prev) =>
+          loadMore ? [...prev, ...result.data] : result.data
+        );
+
+        setOffset(offsetNew); // Update the offset for next request
+        // Update the state to indicate if more items are available
+        setHasMore(result.total > offsetNew + result.data.length); // Check if the returned data length matches the limit
+      } finally {
+        // Reset offset if not loading more
+        loadMore ? setLoadingMore(false) : setLoading(false);
+      }
+    },
+    [lodgingId, roomId, statusActive, search, offset, hasMore, limit]
+  );
 
   useEffect(() => {
-    fetchContract();
+    fetchContract(sourceAxios.token);
   }, [statusActive]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const source = axios.CancelToken.source();
+      setSourceAxios(source);
+
+      fetchContract(source.token);
+
+      return () => {
+        source.cancel("Hủy request do mất focus hoặc dữ liệu thay đổi");
+      };
+    }, [])
+  );
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchContract(sourceAxios.token);
+    }, 100);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
   return (
     <View className="flex-1 pt-3 gap-2">
       <SearchAndSegmentedControl
@@ -62,93 +119,91 @@ const ListContract: React.FC<{
         placeHolder="Tìm kiếm theo mã hợp đồng..."
       />
 
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        className="px-3 flex-grow flex-1"
-        contentContainerStyle={{
-          paddingBottom: 12,
-        }}
-      >
-        <View className="gap-3 items-center flex-1 py-3">
-          {loading
-            ? Array(4)
-                .fill("")
-                .map((_, index) => (
-                  <Button
-                    key={index}
-                    className={cn(
-                      "w-full bg-white-100 rounded-xl p-4 gap-2 flex-col items-start"
-                    )}
-                  >
-                    {/* Header */}
-                    <View className="flex-row justify-between items-start w-full">
-                      {/* Header HD */}
-                      <View className="gap-1">
-                        <Skeleton colorMode="light" height={24} width={80} />
-                        <Skeleton colorMode="light" height={20} width={160} />
-                      </View>
+      {!loading && contracts.length <= 0 ? (
+        <EmptyScreen
+          icon={Document}
+          description="Hãy thử thay đổi bộ lọc hoặc kiểm tra lại kết nối mạng."
+          title="Không tìm thấy hợp đồng phù hợp"
+        />
+      ) : (
+        <ScrollView
+          keyboardShouldPersistTaps="never"
+          className="px-3 flex-grow flex-1"
+          contentContainerStyle={{
+            paddingBottom: 12,
+          }}
+          scrollEventThrottle={20}
+          onScroll={createScrollHandler({
+            callback: () => {
+              !loading && fetchContract(sourceAxios.token, true);
+            },
+            loading: loadingMore,
+            hasMore: hasMore,
+          })}
+        >
+          <View className="gap-3 items-center flex-1 py-3">
+            {loading
+              ? Array(2)
+                  .fill("")
+                  .map((_, index) => (
+                    <Button
+                      key={index}
+                      className={
+                        "w-full bg-white-100 rounded-xl p-4 gap-2 flex-col items-start"
+                      }
+                    >
+                      <Skeleton.Group show={true}>
+                        <View className="flex-row justify-between items-start w-full">
+                          <View className="gap-1">
+                            <Skeleton
+                              colorMode="light"
+                              height={44}
+                              width={160}
+                            />
+                          </View>
+                          <Skeleton
+                            colorMode="light"
+                            height={30}
+                            width={100}
+                            radius={"round"}
+                          />
+                        </View>
 
-                      {/* Status */}
-                      <Skeleton
-                        colorMode="light"
-                        height={30}
-                        width={100}
-                        radius={"round"}
-                      />
-                    </View>
+                        <View className="gap-2 w-full">
+                          <Skeleton
+                            colorMode="light"
+                            height={66}
+                            width={"100%"}
+                          />
+                        </View>
 
-                    <View className="w-full px-11">
-                      <Divide className="h-0.25" />
-                    </View>
+                        <View className="w-full">
+                          <Skeleton
+                            colorMode="light"
+                            height={36}
+                            width={"100%"}
+                          />
+                        </View>
+                      </Skeleton.Group>
+                    </Button>
+                  ))
+              : contracts.map((contract) => (
+                  <ContractItem
+                    key={contract.id}
+                    contract={contract}
+                    roomId={roomId as string}
+                    lodgingId={lodgingId as string}
+                  />
+                ))}
+          </View>
 
-                    {/* Body */}
-                    <View className="gap-2 w-full">
-                      <View className="items-center">
-                        <Skeleton colorMode="light" height={22} width={"50%"} />
-                      </View>
-
-                      <View className="flex-row items-center gap-2">
-                        <Skeleton colorMode="light" height={22} width={"70%"} />
-                      </View>
-
-                      <View className="flex-row items-center gap-2">
-                        <Skeleton colorMode="light" height={22} width={"60%"} />
-                      </View>
-                    </View>
-
-                    <View className="w-full px-11">
-                      <Divide className="h-0.25" />
-                    </View>
-
-                    {/* Footer */}
-                    <View className="w-full flex-row gap-2">
-                      <View className="flex-1">
-                        <Skeleton
-                          colorMode="light"
-                          height={36}
-                          width={"100%"}
-                        />
-                      </View>
-                      <View className="flex-1">
-                        <Skeleton
-                          colorMode="light"
-                          height={36}
-                          width={"100%"}
-                        />
-                      </View>
-                    </View>
-                  </Button>
-                ))
-            : contracts.map((contract) => (
-                <ContractItem
-                  key={contract.id}
-                  contract={contract}
-                  roomId={roomId as string}
-                  lodgingId={lodgingId as string}
-                />
-              ))}
-        </View>
-      </ScrollView>
+          {!loading && loadingMore && (
+            <View>
+              <LoadingAnimation />
+            </View>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -180,15 +235,21 @@ const ContractItem: React.FC<{
         ...contract,
         total_due: totalDue,
         due_months: totalDue > 0 ? contract.due_months : 0,
-      })
-
+      });
     },
     [contract]
   );
 
   const handleOpenPayment = useCallback(() => {
     setAmountToBePaid(contract.total_due ?? 0);
-    openPaymentModal("", contract.id, "rent", showModal, handleWhenPaymentSuccess, "full");
+    openPaymentModal(
+      "",
+      contract.id,
+      "rent",
+      showModal,
+      handleWhenPaymentSuccess,
+      "full"
+    );
   }, [showModal, openPaymentModal, contract, handleWhenPaymentSuccess]);
 
   const statusSub = useCallback(() => {
@@ -311,18 +372,21 @@ const ContractItem: React.FC<{
           <ButtonCancelContract />
         ) : contract.status === constant.contract.status.cancel ||
           contract.status === constant.contract.status.finished ? null : (
-          !!contract.due_months && <ButtonPayment onPress={handleOpenPayment}/>
+          !!contract.due_months && <ButtonPayment onPress={handleOpenPayment} />
         )}
       </View>
     </Button>
   );
 };
 
-const ButtonPayment:React.FC<{
+const ButtonPayment: React.FC<{
   onPress?: () => void;
-}> = ({ onPress }) =>  {
+}> = ({ onPress }) => {
   return (
-    <Button onPress={() => onPress && onPress()} className="flex-1 bg-lime-300 px-4 py-2">
+    <Button
+      onPress={() => onPress && onPress()}
+      className="flex-1 bg-lime-300 px-4 py-2"
+    >
       <Text className="font-BeVietnamMedium text-mineShaft-950">
         Thanh toán
       </Text>

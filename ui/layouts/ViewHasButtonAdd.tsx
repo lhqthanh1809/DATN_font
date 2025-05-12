@@ -18,7 +18,7 @@ const SPACING_HEIGHT = 14;
 
 const ViewHasButtonAdd: React.FC<{
   children?: React.ReactNode;
-  onPressAdd: () => void;
+  onPressAdd?: () => void;
   className?: string;
 }> = ({ children, onPressAdd, className }) => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -92,7 +92,7 @@ const ViewHasButtonAdd: React.FC<{
           transition={{ type: "spring" }}
         >
           <Button
-            onPress={onPressAdd}
+            onPress={() => onPressAdd && onPressAdd()}
             style={{
               width: BUTTON_SIZE,
               height: BUTTON_SIZE,

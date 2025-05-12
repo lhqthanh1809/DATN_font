@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["ios", "android", "web"],
-    "icon": "./assets/images/icon512.png",
+    "icon": "./assets/images/app-icon.png",
     "scheme": "nestify",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

@@ -10,6 +10,7 @@ import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 import { reference } from "@/assets/reference";
 import { IResponse } from "@/interfaces/ResponseInterface";
+import { IListResponse } from "@/interfaces/GeneralInterface";
 
 export default class FeedbackService extends BaseService {
   public async createFeedback(
@@ -31,39 +32,24 @@ export default class FeedbackService extends BaseService {
     }
   }
 
-  public async listFeedbackByUser(
-    cancelToken: any,
-    data?: IListFeedback
-  ): Promise<IFeedback[] | IError> {
-    try {
-      const res = await this.https({
-        url: apiRouter.listFeedbackByUser,
-        authentication_requested: true,
-        cancelToken,
-        body: data,
-      });
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
-        return this.getErrorResponse(res);
-      }
-      return res.body?.data ?? [];
-    } catch (error: any) {
-      return this.returnError(error);
-    }
-  }
-
   public async list(
     data: IListFeedback,
     cancelToken: any
-  ): Promise<IFeedback[] | IError> {
+  ): Promise<IListResponse<IFeedback> | IError> {
     try {
-      const res: IResponse = await this.https({
+      const res: IResponse | IError = await this.https({
         method: "POST",
         url: apiRouter.listFeedback,
+        authentication_requested: true,
         body: data,
         cancelToken,
       });
 
-      return res.body?.data ?? [];
+      if ("message" in res) {
+        return res as IError;
+      }
+
+      return res.body as IListResponse<IFeedback>;
     } catch (error: any) {
       return this.returnError(error);
     }

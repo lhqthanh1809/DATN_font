@@ -23,6 +23,7 @@ import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { createScrollHandler } from "@/utils/scrollHandle";
 
 const transactionService = new TransactionService();
 
@@ -195,7 +196,7 @@ function Transaction() {
           return;
         }
 
-        setHasMore(result.total - (offset + limit) > 0);
+        setHasMore(result.total > offset + result.data.length);
 
         setTransactions((prev) =>
           loadMore ? [...prev, ...result.data] : result.data
@@ -270,17 +271,12 @@ function Transaction() {
         ) : (
           <ScrollView
             scrollEventThrottle={400}
-            onScroll={({ nativeEvent }) => {
-              const { layoutMeasurement, contentOffset, contentSize } =
-                nativeEvent;
-              const isCloseToBottom =
-                layoutMeasurement.height - contentOffset.y >=
-                contentSize.height - 20;
-
-              if (isCloseToBottom && hasMore && (!loadingMore)) {
-                fetchListTransaction(sourceAxios.token, true);
-              }
-            }}
+            onScroll={createScrollHandler({
+              callback: () => fetchListTransaction(sourceAxios.token, true),
+              hasMore,
+              loading: loadingMore,
+              threshold: 20,
+            })}
             className="flex-1 px-3"
             contentContainerStyle={{
               paddingBottom: 12,

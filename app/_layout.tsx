@@ -3,6 +3,7 @@ import "../global.css";
 import {
   AppState,
   AppStateStatus,
+  Platform,
   SafeAreaView,
   StatusBar,
   Text,
@@ -164,19 +165,22 @@ export default function RootLayout() {
     return (
       <View className="flex-1 bg-white-50 items-center justify-center gap-4">
         <Image
-          style={{ width: 150, height: 150 }}
-          source={require("../assets/images/icon512.png")}
+          style={{ width: 180, height: 250 }}
+          source={require("../assets/images/icon_text.png")}
         />
-
-        <Text className="font-BeVietnamBold text-5xl text-mineShaft-950">
-          Nestify
-        </Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white-50">
+    <SafeAreaView
+      className="flex-1 bg-white-50"
+      style={
+        Platform.OS === "android" && {
+          paddingTop: StatusBar.currentHeight,
+        }
+      }
+    >
       <GeneralProvider user={user}>
         <UIProvider>
           <GestureHandlerRootView>
@@ -199,7 +203,7 @@ const Container = () => {
       }}
     >
       <View className="flex-1 bg-white-50 relative" ref={containerRef}>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle={"dark-content"} backgroundColor={"#FFF"}/>
         <Stack
           screenOptions={{
             headerShown: false,

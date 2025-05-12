@@ -1,6 +1,21 @@
 import Icon from "@/ui/Icon";
-import { Money } from "@/ui/icon/finance";
-import { ArrowDownCircle, ArrowExportCircle, ArrowImportCircle, ArrowUpCircle, Bulb, Car, Home, TagLine, Trash, Water, Wifi } from "@/ui/icon/symbol";
+import { Setting } from "@/ui/icon/active";
+import { Bank, Money } from "@/ui/icon/finance";
+import {
+  ArrowArrangeCircle,
+  ArrowDownCircle,
+  ArrowExportCircle,
+  ArrowImportCircle,
+  ArrowUpCircle,
+  Bulb,
+  Car,
+  Home,
+  Receipt,
+  TagLine,
+  Trash,
+  Water,
+  Wifi,
+} from "@/ui/icon/symbol";
 
 export const reference = {
   permission: {
@@ -9,11 +24,11 @@ export const reference = {
       icon: Home,
     },
     service_list: {
-      name: "Quản lý dịch vụ",
+      name: "Danh sách dịch vụ",
       icon: Home,
     },
     equipment_list: {
-      name: "Quản lý trang thiết bị",
+      name: "Danh sách trang thiết bị",
       icon: Home,
     },
     contract_list: {
@@ -36,32 +51,41 @@ export const reference = {
       name: "Lập hợp đồng mới",
       icon: Home,
     },
+    invoice_list: {
+      name: "Danh sách hoá đơn",
+      icon: Receipt,
+    },
   },
   service: {
     water: {
       name: "Tiền nước",
       icon: Water,
       text: "text-curiousBlue-400",
+      bg: "bg-curiousBlue-100",
     },
     wifi: {
       name: "Tiền wifi",
       icon: Wifi,
       text: "text-purplePlum-400",
+      bg: "bg-purplePlum-200",
     },
     electricity: {
       name: "Tiền điện",
       icon: Bulb,
       text: "text-buttercup-300",
+      bg: "bg-buttercup-100",
     },
     garbage: {
       name: "Tiền rác",
       icon: Trash,
       text: "text-lime-600",
+      bg: "bg-lime-100",
     },
     parking: {
       name: "Tiền đổ xe",
       icon: Car,
       text: "text-pickledBlueWood-400",
+      bg: "bg-pickledBlueWood-100",
     },
   },
   unit: {
@@ -181,9 +205,32 @@ export const reference = {
 
   payment: {
     status: {
-      1: { name: "Chưa thanh toán" },
-      2: { name: "Đã thanh toán" },
-      3: { name: "Đã thanh toán một phần" },
+      1: {
+        name: "Chưa thanh toán",
+        bg: "bg-redPower-100",
+        text: "text-redPower-600",
+      },
+      2: { name: "Đã thanh toán", bg: "bg-lime-100", text: "text-lime-500" },
+      3: {
+        name: "Thanh toán một phần",
+        bg: "bg-happyOrange-100",
+        text: "text-happyOrange-600",
+      },
+    },
+    method: {
+      cash: {
+        name: "Tiền mặt",
+        icon: Money,
+      },
+      bank: { name: "Chuyển khoản", icon: Bank },
+      system: {
+        name: "Hệ thống",
+        icon: Setting,
+      },
+      transfer: {
+        name: "Ví nội bộ",
+        icon: ArrowArrangeCircle,
+      },
     },
   },
 };

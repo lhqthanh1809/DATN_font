@@ -16,6 +16,8 @@ import {
   ArrowExportCircle,
   ArrowImportCircle,
   ArrowUpCircle,
+  ArrowArrangeCircle,
+  ArrowRightSquare
 } from "./symbol/arrow";
 import { Chat, Chats } from "./symbol/chat";
 // import Users from "./symbol/users";
@@ -35,7 +37,7 @@ import { Bell } from "./symbol/bell";
 import Warning from "./symbol/warning";
 import Error from "./symbol/error";
 import { Trash } from "./symbol/trash";
-import Home, { Home2 } from "./symbol/home";
+import Home, { Home2, HomeAdd } from "./symbol/home";
 import Menu from "./symbol/menu";
 import { Notification } from "./symbol/notification";
 import { Water } from "./symbol/water";
@@ -51,6 +53,7 @@ import { Time, TimeSmall } from "./symbol/time";
 import { ImageAdd } from "./symbol/image";
 import { File, FileAdd } from "./symbol/file";
 import { ClockRefresh } from "./symbol/clock";
+import { Receipt } from "./symbol/receipt";
 
 export {
   Plus,
@@ -96,6 +99,7 @@ export {
   QR,
   Document,
   Home2,
+  HomeAdd,
   FilterSearch,
   Calender,
   Time,
@@ -108,4 +112,7 @@ export {
   ArrowExportCircle,
   ArrowImportCircle,
   ArrowUpCircle,
+  ArrowArrangeCircle,
+  ArrowRightSquare,
+  Receipt
 };

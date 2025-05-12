@@ -11,7 +11,6 @@ import {
   ViewStyle,
 } from "react-native";
 import Button from "./Button";
-import { number } from "yup";
 import Divide from "./Divide";
 import Icon from "./Icon";
 import { CrossMedium } from "./icon/symbol";
@@ -53,7 +52,7 @@ const MonthPicker = ({
   }, [value]);
 
   return (
-    <View className="flex gap-2 flex-1">
+    <View className="flex gap-2">
       {label && (
         <View className="flex-row">
           <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
@@ -76,14 +75,14 @@ const MonthPicker = ({
       >
         <View
           className={cn(
-            "border-1 border-mineShaft-200 px-3 h-[3rem] rounded-xl flex-row items-center gap-2 relative w-full",
+            "border-1 border-mineShaft-200 px-3 py-2 rounded-xl flex-row items-center gap-2 relative",
             disabled && "bg-mineShaft-50"
           )}
         >
           {prefix}
           <Text
             className={cn(
-              `py-0 flex-1 text-14 font-BeVietnamRegular text-mineShaft-600 ${className}`,
+              `py-0 text-14 font-BeVietnamRegular text-mineShaft-600 ${className}`,
               !value && "text-mineShaft-300"
             )}
           >

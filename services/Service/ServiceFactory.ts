@@ -5,9 +5,9 @@ import { FixedService } from "./FixedService";
 import { VariableService } from "./VariableService";
 
 export class ServiceFactory {
-    static createService(service: ILodgingService & { current_value: any }, contract: IContract, endDate: Date): IService {
+    static createService(service: ILodgingService & { current_value: any }, contract: IContract, endDate: Date, isMonth?: boolean): IService {
         if (service.unit?.is_fixed) {
-            return new FixedService(contract, service ,endDate);
+            return new FixedService(contract, service ,endDate, isMonth);
         } else {
             return new VariableService(service, contract);
         }

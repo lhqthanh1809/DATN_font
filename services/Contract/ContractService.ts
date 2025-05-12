@@ -12,6 +12,7 @@ import { apiRouter } from "@/assets/apiRouter";
 import { HttpStatusCode } from "axios";
 import { IError } from "@/interfaces/ErrorInterface";
 import { reference } from "@/assets/reference";
+import { IListResponse } from "@/interfaces/GeneralInterface";
 
 export default class ContractService extends BaseService {
   public async createContract(
@@ -35,21 +36,23 @@ export default class ContractService extends BaseService {
   }
 
   public async listContract(
-    data: IListContract
-  ): Promise<IContract[] | IError> {
+    data: IListContract,
+    cancelToken?: any
+  ): Promise<IListResponse<IContract> | IError> {
     try {
       const res: IResponse | IError = await this.https({
         method: "POST",
         authentication_requested: true,
         body: data,
         url: apiRouter.listContract,
+        cancelToken,
       });
 
       if (res.hasOwnProperty("message")) {
         return res as IError;
       }
 
-      return (res as IResponse).body?.data || [];
+      return (res as IResponse).body as IListResponse<IContract>;
     } catch (err: any) {
       return this.returnError(err);
     }
@@ -72,10 +75,13 @@ export default class ContractService extends BaseService {
     }
   }
 
-  public async debt(contractId: string): Promise<{
-    room: number,
-    service: number
-  } | IError> {
+  public async debt(contractId: string): Promise<
+    | {
+        room: number;
+        service: number;
+      }
+    | IError
+  > {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.debtContract.replace(":id", contractId),
@@ -143,9 +149,7 @@ export default class ContractService extends BaseService {
     }
   }
 
-  public async endContract(
-    data: IEndContract
-  ): Promise<string | IError> {
+  public async endContract(data: IEndContract): Promise<string | IError> {
     try {
       const res: IResponse | IError = await this.https({
         method: "POST",
@@ -180,6 +184,29 @@ export default class ContractService extends BaseService {
       return (res as IResponse).body?.data ?? null;
     } catch (error: any) {
       return this.returnError(error);
+    }
+  }
+
+  public async listContractByUser(data: {
+    status?: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<IListResponse<IContract> | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        method: "POST",
+        authentication_requested: true,
+        body: data,
+        url: apiRouter.listContractByUser,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+
+      return ((res as IResponse).body as IListResponse<IContract>)|| null;
+    } catch (err: any) {
+      return this.returnError(err);
     }
   }
 }

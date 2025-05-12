@@ -13,10 +13,12 @@ function Detail() {
     () => [
       {
         name: "Chi tiết",
-        view: <DetailContract id={id as string} lodgingId={lodgingId as string}/>,
+        view: (
+          <DetailContract id={id as string} lodgingId={lodgingId as string} />
+        ),
       },
       {
-        name: "Thanh toán tiền thuê",
+        name: "Hoá đơn tiền thuê",
         view: (
           <ListRentalHistory
             lodgingId={lodgingId as string}
@@ -25,7 +27,7 @@ function Detail() {
         ),
       },
       {
-        name: "Thanh toán dịch vụ",
+        name: "Hoá đơn dịch vụ",
         view: (
           <ListServicePayment
             lodgingId={lodgingId as string}
@@ -41,7 +43,7 @@ function Detail() {
   return (
     <View className="flex-1 bg-white-50">
       <HeaderBack title="Chi tiết hợp đồng" />
-      <View className="bg-black px-4 rounded-b-xl">
+      <View className="">
         <TabsLine
           tabs={tabs}
           active={active}

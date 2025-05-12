@@ -3,18 +3,25 @@ import useLodgingStore from "@/store/lodging/user/useLodgingStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { ChevronRight, ClockRefresh, Home2, Trash } from "@/ui/icon/symbol";
-import BoxDevInfor from "@/ui/components/BoxDevInfor";
+import BoxDevInfo from "@/ui/components/BoxDevInfor";
 import { Href, router } from "expo-router";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 import CardBalanceWallet from "@/ui/components/CardBalanceWallet";
 import Divide from "@/ui/Divide";
+import { useGeneral } from "@/hooks/useGeneral";
+import { formatPhone } from "@/helper/helper";
+import { reference } from "@/assets/reference";
+import { Key } from "@/ui/icon/security";
+import { Setting } from "@/ui/icon/active";
+import LogoutButton from "@/ui/components/LogoutButton";
 
 const SettingScreen: React.FC<{
   lodgingId: string;
 }> = ({ lodgingId }) => {
+  const { user } = useGeneral();
   const { showModal } = useUI();
   const { lodgings } = useLodgingsStore();
   const [lodging, setLodging] = useState<ILodging | null>(null);
@@ -36,6 +43,17 @@ const SettingScreen: React.FC<{
             },
           ]
         : []),
+
+      {
+        name: "Đổi mật khẩu",
+        icon: Key,
+        router: `/user/change_password`,
+      },
+      {
+        name: "Cấu hình",
+        icon: Setting,
+        router: `/lodging/${lodgingId}/config`,
+      },
     ];
   }, [lodging]);
 
@@ -54,6 +72,49 @@ const SettingScreen: React.FC<{
         className="flex-1 p-3"
       >
         <View className="gap-2">
+          <Button className="shadow-soft-xs border-1 border-white-100 bg-white-50 p-4 items-start">
+            <View className="flex-1 flex-row items-center gap-4">
+              <Image
+                source={{
+                  uri: `https://ui-avatars.com/api/?name=${user?.full_name}&background=random&color=random`,
+                }}
+                width={46}
+                height={46}
+                className="rounded-full object-contain"
+              />
+
+              <View className="gap-1 items-start">
+                <Text className="font-BeVietnamSemiBold">
+                  {user?.full_name}
+                </Text>
+                <Text className="font-BeVietnamRegular text-12 text-white-700">
+                  {user?.phone
+                    ? formatPhone(user?.phone)
+                    : reference.undefined.name}
+                </Text>
+                <Text className="font-BeVietnamRegular text-white-700 text-12">
+                  {user?.email || reference.undefined.name}
+                </Text>
+
+                <View className="bg-lime-400 py-1 px-3  rounded-full">
+                  <Text className="font-BeVietnamMedium text-lime-100 text-12">
+                    Chủ nhà
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <Button
+              onPress={() => {
+                router.push("/user/update");
+              }}
+            >
+              <Text className="font-BeVietnamRegular text-lime-600">
+                Chỉnh sửa
+              </Text>
+            </Button>
+          </Button>
+
           {lodging && lodging.wallet && (
             <CardBalanceWallet balance={lodging.wallet.balance} />
           )}
@@ -95,7 +156,9 @@ const SettingScreen: React.FC<{
             </Text>
           </Button>
 
-          <BoxDevInfor />
+          <LogoutButton/>
+
+          <BoxDevInfo />
         </View>
       </ScrollView>
     </View>

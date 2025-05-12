@@ -1,45 +1,85 @@
 import { constant } from "@/assets/constant";
 import { IRoom } from "@/interfaces/RoomInterface";
+import FilterRoom from "@/pages/Contract/filterRoom";
 import RoomService from "@/services/Room/RoomService";
 import HeaderBack from "@/ui/components/HeaderBack";
 import RoomItem from "@/ui/components/RoomItem";
+import { Home2 } from "@/ui/icon/symbol";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 import { router, useLocalSearchParams } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 function Create() {
-  const {lodgingId} = useLocalSearchParams()
+  const { lodgingId } = useLocalSearchParams();
   const [rooms, setRooms] = useState<IRoom[]>([]);
   const [loading, setLoading] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [leaseDuration, setLeaseDuration] = useState(1);
 
-  const fetchService = useCallback(async () => {
-    setLoading(true);
-    const service = new RoomService(lodgingId as string);
-    const data = await service.listByLodging({
-      status: constant.room.status.unfilled,
+  const filterBase64Url = useMemo(() => {
+    const field = JSON.stringify({
+      lease_duration: leaseDuration,
+      quantity: quantity,
     });
-    if (isArray(data)) {
-      setRooms(data);
-    }
-    setLoading(false);
-  }, [lodgingId]);
+
+    return btoa(field)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }, [quantity, leaseDuration]);
+
+  const fetchRoom = useCallback(
+    async ({
+      quantity,
+      leaseDuration,
+    }: {
+      quantity: number;
+      leaseDuration: number;
+    }) => {
+      setLoading(true);
+      const service = new RoomService(lodgingId as string);
+      const data = await service.filter({
+        lease_duration: leaseDuration,
+        lodging_id: lodgingId as string,
+        quantity: quantity,
+
+        status: constant.room.status.unfilled,
+      });
+      if (isArray(data)) {
+        setRooms(data);
+      }
+      setLoading(false);
+    },
+    [lodgingId]
+  );
 
   useEffect(() => {
-    fetchService();
+    fetchRoom({ leaseDuration, quantity });
   }, []);
+
   return (
-    <View
-      className="flex-1 bg-white-50"
-    >
+    <View className="flex-1 bg-white-50">
       <HeaderBack title="Lập hợp đồng thuê phòng" />
+      <FilterRoom
+        onFilter={({ quantity, leaseDuration }) =>
+          fetchRoom({ quantity, leaseDuration })
+        }
+        {...{
+          leaseDuration,
+          setLeaseDuration,
+          quantity,
+          setQuantity,
+        }}
+      />
       {!loading && rooms.length <= 0 ? (
-        <View className="w-full flex-1 items-center justify-center">
-          <Text className="font-BeVietnamRegular text-mineShaft-200">
-            Hiện không có phòng phù hợp
-          </Text>
-        </View>
+        <EmptyScreen
+          icon={Home2}
+          description="Hãy thử thay đổi bộ lọc hoặc kiểm tra lại kết nối mạng."
+          title="Không tìm thấy phòng nào"
+        />
       ) : (
         <ScrollView className="px-2 flex-1">
           <View className="gap-2 items-center py-3 flex flex-1">
@@ -65,7 +105,7 @@ function Create() {
                     onPress={() =>
                       room.id &&
                       router.push(
-                        `/lodging/${lodgingId}/contract/create/${room.id}?name=${room.room_code}&price=${room.price}` as any
+                        `/lodging/${lodgingId}/contract/create/${room.id}?name=${room.room_code}&price=${room.price}&filter=${filterBase64Url}` as any
                       )
                     }
                   />

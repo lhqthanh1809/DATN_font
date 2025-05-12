@@ -23,7 +23,7 @@ const BoxDepositRefund:React.FC<{
   totalDeposit: number
   setTotalDeposit: (value: number) => void,
   moneyRefund: number
-  setMoneyRefund: (value: number) => void
+  setMoneyRefund: (value: number) => void,
 }> = ({setTotalDeposit, totalDeposit, moneyRefund, setMoneyRefund}) => {
   const { lodgingId } = useLocalSearchParams();
   const { contract } = useContractStore();

@@ -1,8 +1,8 @@
 import { constant } from "@/assets/constant";
 import { reference } from "@/assets/reference";
 import { cn, convertToDate, convertToNumber, env } from "@/helper/helper";
-import { IListRental, IRentalHistory } from "@/interfaces/RentalInterface";
-import RentalHistory from "@/services/RentalHistory/RentalHistoryService";
+import { IListRental, IRentPayment } from "@/interfaces/RentalPaymentInterface";
+import RentPaymentService from "@/services/RentalPayment/RentPaymentService";
 import { useRentalHistoryStore } from "@/store/rentalHistory/useRentalHistoryStore";
 import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
@@ -16,14 +16,14 @@ import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import RentalHistoryItem from "./components/RentalHistoryItem";
-import RentalHistoryItemLoading from "./components/RentalHistoryItemLoading";
+import RentPaymentItem from "./components/RentalHistoryItem";
+import RentPaymentItemLoading from "./components/RentPaymentItemLoading";
 
 const ListRentalHistory: React.FC<{
   lodgingId?: string;
   contractId: string;
 }> = ({ lodgingId, contractId }) => {
-  const [rentals, setRentals] = useState<IRentalHistory[]>([]);
+  const [rentals, setRentals] = useState<IRentPayment[]>([]);
   const { addToast } = useToastStore();
   const [isLoading, setIsLoading] = useState(true);
   const [statusActive, setStatusActive] = useState<number | null>(null);
@@ -38,7 +38,7 @@ const ListRentalHistory: React.FC<{
         ...(lodgingId && { lodging_id: lodgingId })
       };
 
-      const res = await new RentalHistory().list(data, cancelToken);
+      const res = await new RentPaymentService().list(data, cancelToken);
 
       if (isArray(res)) {
         setRentals(res);
@@ -70,10 +70,10 @@ const ListRentalHistory: React.FC<{
             ? Array(4)
                 .fill("")
                 .map((_, index) => (
-                  <RentalHistoryItemLoading key={index} />
+                  <RentPaymentItemLoading key={index} />
                 ))
             : rentals.map((rental) => (
-                <RentalHistoryItem key={rental.id} rental={rental} lodgingId={lodgingId} />
+                <RentPaymentItem key={rental.id} rental={rental} lodgingId={lodgingId} />
               ))}
         </View>
       </ScrollView>

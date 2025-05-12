@@ -17,6 +17,7 @@ interface IChatHistoriesStore {
   limit: number;
   total: number;
   hasMore: boolean;
+  title: string
 
   params: Omit<IListChat, "offset" | "limit"> | null;
   fetchChatHistories: (params: Omit<IListChat, "offset" | "limit">) => void;
@@ -77,6 +78,7 @@ const useChatHistoriesStore = create<IChatHistoriesStore>((set, get) => {
     total: 0,
     hasMore: true,
     params: null,
+    title: "",
 
     fetchChatHistories: async (params) => {
       set({ loading: true, params });

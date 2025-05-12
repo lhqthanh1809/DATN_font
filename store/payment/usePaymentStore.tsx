@@ -26,7 +26,7 @@ interface IPaymentStore {
     contractId: string,
     paymentType: "rent" | "service",
     showModal: (model: ReactNode) => void,
-    actionWhenPaymentSuccess?: (amount: number) => void,
+    actionWhenPaymentSuccess?: (amount: number, method: string) => void,
     rentPaymentType?: "full" | "debt"
   ) => void;
 

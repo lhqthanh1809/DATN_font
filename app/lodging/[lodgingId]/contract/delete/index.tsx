@@ -8,7 +8,7 @@ import Button from "@/ui/Button";
 import Divide from "@/ui/Divide";
 import Icon from "@/ui/Icon";
 import { Money } from "@/ui/icon/finance";
-import { CheckCircle, Error, Warning } from "@/ui/icon/symbol";
+import { CheckCircle, Document, Error, Warning } from "@/ui/icon/symbol";
 import HeaderBack from "@/ui/components/HeaderBack";
 import {
   Href,
@@ -17,12 +17,13 @@ import {
   useLocalSearchParams,
   usePathname,
 } from "expo-router";
-import { isArray } from "lodash";
+import { isArray, set } from "lodash";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 
 function Delete() {
   const { lodgingId } = useLocalSearchParams();
@@ -43,11 +44,12 @@ function Delete() {
 
     const result = await contractService.listContract(data);
 
-    if (isArray(result)) {
-      setContracts(result);
-    } else {
+    if ("message" in result) {
       addToast(constant.toast.type.error, result.message);
+      return;
     }
+
+    setContracts(result.data as IContract[]);
 
     setLoading(false);
   }, [lodgingId]);
@@ -62,78 +64,72 @@ function Delete() {
     <View className="flex-1 bg-white-50">
       <HeaderBack title={`Thanh lý/Kết thúc hợp đồng`} />
       <View className="flex-1 gap-2">
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          className="px-3 flex-grow flex-1"
-          contentContainerStyle={{
-            paddingBottom: 12,
-          }}
-        >
-          <View className="gap-3 items-center flex-1 py-3">
-            {loading
-              ? Array(4)
-                  .fill("")
-                  .map((_, index) => (
-                    <Button
-                      key={index}
-                      className={cn(
-                        "w-full bg-white-100 rounded-xl p-4 gap-2 flex-col items-start"
-                      )}
-                    >
-                      {/* Header */}
-                      <View className="flex-row justify-between items-start w-full">
-                        {/* Header HD */}
-                        <View className="gap-1">
-                          <Skeleton colorMode="light" height={24} width={80} />
-                          <Skeleton colorMode="light" height={20} width={160} />
-                        </View>
+        {!loading && contracts.length <= 0 ? (
+          <EmptyScreen
+            icon={Document}
+            title="Không có hợp đồng còn hiệu lực"
+            description="Tất cả các hợp đồng đã kết thúc hoặc chưa bắt đầu. Vui lòng kiểm tra lại sau."
+          />
+        ) : (
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            className="px-3 flex-grow flex-1"
+            contentContainerStyle={{
+              paddingBottom: 12,
+            }}
+          >
+            <View className="gap-3 items-center flex-1 py-3">
+              {loading
+                ? Array(3)
+                    .fill("")
+                    .map((_, index) => (
+                      <Button
+                        key={index}
+                        className={
+                          "w-full bg-white-100 rounded-xl p-4 gap-2 flex-col items-start"
+                        }
+                      >
+                        <Skeleton.Group show={true}>
+                          <View className="flex-row justify-between items-start w-full">
+                            <View className="gap-1">
+                              <Skeleton
+                                colorMode="light"
+                                height={44}
+                                width={160}
+                              />
+                            </View>
+                            <Skeleton
+                              colorMode="light"
+                              height={30}
+                              width={100}
+                              radius={"round"}
+                            />
+                          </View>
 
-                        {/* Status */}
-                        <Skeleton
-                          colorMode="light"
-                          height={30}
-                          width={100}
-                          radius={"round"}
-                        />
-                      </View>
+                          <View className="gap-2 w-full">
+                            <Skeleton
+                              colorMode="light"
+                              height={66}
+                              width={"100%"}
+                            />
+                          </View>
 
-                      <View className="w-full px-11">
-                        <Divide className="h-0.25" />
-                      </View>
-
-                      {/* Body */}
-                      <View className="gap-2 w-full">
-                        <View className="items-center">
-                          <Skeleton
-                            colorMode="light"
-                            height={22}
-                            width={"50%"}
-                          />
-                        </View>
-
-                        <View className="flex-row items-center gap-2">
-                          <Skeleton
-                            colorMode="light"
-                            height={22}
-                            width={"70%"}
-                          />
-                        </View>
-
-                        <View className="flex-row items-center gap-2">
-                          <Skeleton
-                            colorMode="light"
-                            height={22}
-                            width={"60%"}
-                          />
-                        </View>
-                      </View>
-                    </Button>
-                  ))
-              : contracts.map((contract) => (
-                  <ContractItem key={contract.id} contract={contract} />
-                ))}
-          </View>
-        </ScrollView>
+                          <View className="w-full">
+                            <Skeleton
+                              colorMode="light"
+                              height={36}
+                              width={"100%"}
+                            />
+                          </View>
+                        </Skeleton.Group>
+                      </Button>
+                    ))
+                : contracts.map((contract) => (
+                    <ContractItem key={contract.id} contract={contract} />
+                  ))}
+            </View>
+          </ScrollView>
+        )}
       </View>
     </View>
   );

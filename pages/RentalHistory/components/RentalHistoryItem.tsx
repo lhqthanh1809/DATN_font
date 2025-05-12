@@ -1,5 +1,5 @@
 import { cn, convertToDate, convertToNumber, env } from "@/helper/helper";
-import { IRentalHistory } from "@/interfaces/RentalInterface";
+import { IRentPayment } from "@/interfaces/RentalPaymentInterface";
 import moment from "moment";
 import { View, Text } from "react-native";
 import Button from "@/ui/Button";
@@ -15,8 +15,8 @@ import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
 import { Href, router } from "expo-router";
 
-const RentalHistoryItem: React.FC<{
-  rental: IRentalHistory;
+const RentPaymentItem: React.FC<{
+  rental: IRentPayment;
   lodgingId?: string;
 }> = ({ rental, lodgingId }) => {
   const paymentDate = moment.tz(
@@ -39,7 +39,7 @@ const RentalHistoryItem: React.FC<{
   } = usePaymentUserStore();
 
   const handleWhenPaymentSuccess = useCallback(
-    (amount: number) => {
+    (amount: number, method: string) => {
       const amountPaid = amount + Number(rentalLocal.amount_paid);
       const lastPayment = new Date().toISOString();
 
@@ -167,7 +167,7 @@ const RentalHistoryItem: React.FC<{
               className=" flex-1 border-1 border-lime-500 px-4 py-2"
               onPress={() =>
                 router.push(
-                  `/payment_history/rental/${rental.id}?redirect_to=${
+                  `/payment_history/rental/${rental.id}?redirect_from=${
                     lodgingId ? "lodging" : "user"
                   }` as Href
                 )
@@ -222,4 +222,4 @@ const RentalHistoryItem: React.FC<{
   );
 };
 
-export default RentalHistoryItem;
+export default RentPaymentItem;

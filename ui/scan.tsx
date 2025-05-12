@@ -17,7 +17,7 @@ const Scan: React.FC<{
     // Lắng nghe sự kiện khi nhận dữ liệu từ scanner
     const listener = (data: string) => {
       onChange(data);
-    //   eventEmitter.off("qrScanner", listener);
+      //   eventEmitter.off("qrScanner", listener);
     };
 
     eventEmitter.on("qrScanner", listener);
@@ -30,9 +30,9 @@ const Scan: React.FC<{
   return (
     <>
       <Button
-        onPress={() =>
-          !isPermissionGranted ? requestPermission : router.push("/scanner")
-        }
+        onPress={() => {
+          !isPermissionGranted ? requestPermission() : router.push("/scanner");
+        }}
       >
         <Icon icon={QR} />
       </Button>

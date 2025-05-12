@@ -2,7 +2,15 @@ import { DatePickerState, UIContextValue } from "@/interfaces/UIInterface";
 import Button from "@/ui/Button";
 import Calendar from "@/ui/date/Calendar";
 import { weekdays } from "moment";
-import React, { createContext, ReactNode, useState } from "react";
+import NetInfo from "@react-native-community/netinfo";
+import * as Haptics from "expo-haptics";
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   Text,
   View,
@@ -11,10 +19,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Linking,
 } from "react-native";
 import DateTimePicker, {
-  getDefaultClassNames,
+  useDefaultClassNames,
 } from "react-native-ui-datepicker";
+import Icon from "@/ui/Icon";
+import { Wifi } from "@/ui/icon/symbol";
 
 // Tạo context
 export const UIContext = createContext<UIContextValue | undefined>(undefined);
@@ -25,6 +36,7 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedDates, setSelectedDates] = useState<DatePickerState>({});
   const [idPicker, setIdPicker] = useState<string | null>(null);
   const [modals, setModals] = useState<ReactNode[]>([]);
+  const [isConnected, setConnected] = useState(true);
 
   const showModal = (content: ReactNode) => {
     setModals((prev) => [...prev, content]);
@@ -54,6 +66,22 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const setDate = (id: string, date: Date) => {
     setSelectedDates((prev) => ({ ...prev, [id]: date }));
   };
+
+  const retryConnection = useCallback(async () => {
+    const state = await NetInfo.fetch();
+
+    const isConnected = !!(state?.isConnected && state?.isInternetReachable);
+    setConnected(isConnected);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setConnected(state?.isConnected ?? false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <UIContext.Provider
@@ -99,7 +127,7 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
                     }}
                     components={Calendar}
                     classNames={{
-                      ...getDefaultClassNames,
+                      ...useDefaultClassNames,
                       selected: "rounded-xl bg-lime-500",
                       selected_label: "font-BeVietnamSemiBold text-lime-50",
                       day: "",
@@ -143,6 +171,49 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
       ))}
+
+      {!isConnected && (
+        <View className="absolute w-screen h-screen bg-black/50 z-50 items-center justify-center p-4">
+          <View className="bg-white-50 p-6 rounded-2xl items-center w-full gap-5">
+            <View className="bg-white-200 p-6 rounded-full">
+              <Icon
+                icon={Wifi}
+                strokeWidth={2}
+                className="text-mineShaft-950"
+              />
+            </View>
+
+            <View className="gap-2 items-center">
+              <Text className="font-BeVietnamSemiBold text-18">
+                Không có kết nối Internet
+              </Text>
+              <Text className="font-BeVietnamRegular">
+                Vui lòng kiểm tra cài đặt mạng của bạn và thử lại.
+              </Text>
+            </View>
+
+            <View className="gap-3 w-full">
+              <Button
+                className="bg-lime-400 w-full p-3"
+                onPress={retryConnection}
+              >
+                <Text className="font-BeVietnamMedium text-mineShaft-950 text-16">
+                  Thử lại
+                </Text>
+              </Button>
+
+              <Button
+                className="border-1 border-white-200 w-full p-3"
+                onPress={() => Linking.openSettings()}
+              >
+                <Text className="font-BeVietnamMedium text-mineShaft-950 text-16">
+                  Chuyển đến cài đặt
+                </Text>
+              </Button>
+            </View>
+          </View>
+        </View>
+      )}
     </UIContext.Provider>
   );
 };

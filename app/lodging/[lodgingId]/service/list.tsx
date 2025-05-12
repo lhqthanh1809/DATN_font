@@ -23,6 +23,7 @@ import { useUI } from "@/hooks/useUI";
 import useToastStore from "@/store/toast/useToastStore";
 import ModalDelete from "@/ui/components/ModalDelete";
 import { IService } from "@/interfaces/ServiceInterface";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 
 function ListService() {
   const { lodgingId } = useLocalSearchParams();
@@ -96,79 +97,97 @@ function ListService() {
           route.push(`lodging/${lodgingId}/service/create` as Href);
         }}
       >
-        <ScrollView className="px-3 flex-grow bg-white-50">
-          <View className="gap-3 items-center py-3 flex-1">
-            {loading
-              ? Array(4)
-                  .fill("")
-                  .map((_, index) => (
-                    <View
+        {services.length <= 0 && !loading ? (
+          <EmptyScreen
+            icon={reference.other.icon}
+            title="Chưa có dịch vụ nào"
+            description="Hãy tạo mới một dịch vụ để bắt đầu quản lý."
+          />
+        ) : (
+          <ScrollView className="px-3 flex-grow bg-white-50">
+            <View className="gap-3 items-center py-3 flex-1">
+              {loading
+                ? Array(4)
+                    .fill("")
+                    .map((_, index) => (
+                      <View
+                        key={index}
+                        className="w-full bg-white-100 rounded-md flex-row px-3 py-4 gap-4 items-center"
+                      >
+                        <View className="flex-row gap-4 py-1">
+                          <Skeleton
+                            width={32}
+                            height={32}
+                            colorMode="light"
+                            radius={"round"}
+                          />
+                        </View>
+                        <View className="gap-2">
+                          <Skeleton
+                            width={"50%"}
+                            height={22}
+                            colorMode="light"
+                          />
+                          <Skeleton
+                            width={"70%"}
+                            height={20}
+                            colorMode="light"
+                          />
+                        </View>
+                      </View>
+                    ))
+                : services.map((service, index) => (
+                    <ItemFling<ILodgingService>
+                      item={service}
+                      onPress={() => {
+                        route.push(
+                          `/lodging/${lodgingId}/service/edit/${service.id}` as any
+                        );
+                      }}
+                      className="bg-white-50"
+                      onDelete={() => handleOpenConfirmDelete(service)}
                       key={index}
-                      className="w-full bg-white-100 rounded-md flex-row px-3 py-4 gap-4 items-center"
                     >
-                      <View className="flex-row gap-4 py-1">
-                        <Skeleton
-                          width={32}
-                          height={32}
-                          colorMode="light"
-                          radius={"round"}
-                        />
-                      </View>
-                      <View className="gap-2">
-                        <Skeleton width={"50%"} height={22} colorMode="light" />
-                        <Skeleton width={"70%"} height={20} colorMode="light" />
-                      </View>
-                    </View>
-                  ))
-              : services.map((service, index) => (
-                  <ItemFling<ILodgingService>
-                    item={service}
-                    onPress={() => {
-                      route.push(
-                        `/lodging/${lodgingId}/service/edit/${service.id}` as any
-                      );
-                    }}
-
-                    onDelete={() => handleOpenConfirmDelete(service)}
-                    
-                    key={index}
-                  >
-                    <View className="flex-row gap-4 py-1 items-center">
-                      <View className="bg-lime-50 rounded-full p-2">
-                        <Icon
-                          className="text-lime-900"
-                          icon={
-                            service.service
+                      <View className="flex-row gap-4 py-1 items-center">
+                        <View className="bg-lime-400 rounded-full p-2">
+                          <Icon
+                            className="text-lime-50"
+                            icon={
+                              service.service
+                                ? serviceManagerService.getReferenceService(
+                                    service.service
+                                  ).icon
+                                : reference.other.icon
+                            }
+                          />
+                        </View>
+                        <View className="gap-1">
+                          <Text className="font-BeVietnamSemiBold text-14 text-mineShaft-900">
+                            {service.service
                               ? serviceManagerService.getReferenceService(
                                   service.service
-                                ).icon
-                              : reference.other.icon
-                          }
-                        />
+                                ).name
+                              : service.name}
+                          </Text>
+                          <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
+                            {`${new Intl.NumberFormat("vi-VN").format(
+                              Number(service.price_per_unit)
+                            )} ${
+                              service.unit
+                                ? unitService.getUnitSuffix(
+                                    "đồng",
+                                    service.unit
+                                  )
+                                : reference.undefined.name
+                            }`}
+                          </Text>
+                        </View>
                       </View>
-                      <View className="gap-2">
-                        <Text className="font-BeVietnamSemiBold text-14 text-mineShaft-900">
-                          {service.service
-                            ? serviceManagerService.getReferenceService(
-                                service.service
-                              ).name
-                            : service.name}
-                        </Text>
-                        <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
-                          {`${new Intl.NumberFormat("vi-VN").format(
-                            Number(service.price_per_unit)
-                          )} ${
-                            service.unit
-                              ? unitService.getUnitSuffix("đồng", service.unit)
-                              : reference.undefined.name
-                          }`}
-                        </Text>
-                      </View>
-                    </View>
-                  </ItemFling>
-                ))}
-          </View>
-        </ScrollView>
+                    </ItemFling>
+                  ))}
+            </View>
+          </ScrollView>
+        )}
       </ViewHasButtonAdd>
     </View>
   );

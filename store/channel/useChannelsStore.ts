@@ -95,7 +95,7 @@ const useChannelsStore = create<IChannelsStore>((set, get) => {
       set((state) => {
         const updatedChannels = state.channels.map((channel) =>
           channel.id === channelId
-            ? { ...channel, latest_message: newMessage }
+            ? { ...channel, latest_message: newMessage, is_read: false }
             : channel
         );
   

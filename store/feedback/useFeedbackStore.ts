@@ -19,14 +19,14 @@ const useFeedbackStore = create<IFeedbackStore>((set, get) => ({
     }));
   },
 
-  updateFeedback: (updatedFeedback: IFeedback) => {
+  updateFeedback: (feedback: IFeedback) => {
     set((state) => {
       let feedbacks = [...state.feedbacks];
-      const index = feedbacks.findIndex((f) => f.id === updatedFeedback.id);
+      const index = feedbacks.findIndex((f) => f.id === feedback.id);
       if (index !== -1) {
-        feedbacks[index] = updatedFeedback;
+        feedbacks[index] = feedback;
       } else {
-        feedbacks.push(updatedFeedback);
+        feedbacks.push(feedback);
       }
       feedbacks.sort(
         (a, b) => moment(b.created_at).valueOf() - moment(a.created_at).valueOf()
@@ -40,6 +40,8 @@ const useFeedbackStore = create<IFeedbackStore>((set, get) => ({
       feedbacks: state.feedbacks.filter((f) => f.id !== feedback.id),
     }));
   },
+
+
 
   setFeedbacks(feedbacks) {
     set({feedbacks})

@@ -22,6 +22,7 @@ export interface IListContract {
   status?: number | null;
   limit?: number | null;
   offset?: number | null;
+  search?: string | null;
 }
 
 export interface IContract {

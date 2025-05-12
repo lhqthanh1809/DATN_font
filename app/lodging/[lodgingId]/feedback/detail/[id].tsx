@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "@/ui/Button";
-import Layout from "@/ui/components/Layout";
+import Layout from "@/ui/layouts/Layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import ClientService from "@/services/Client/ClientService";
@@ -13,7 +13,7 @@ import ImageViewBox from "@/ui/ImageViewBox";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import DetailItem from "@/ui/components/DetailItem";
 
-function Create() {
+function Detail() {
   const { id, lodgingId } = useLocalSearchParams();
   const [feedback, setFeedback] = useState<IFeedback | null>(null);
 
@@ -105,7 +105,7 @@ function Create() {
                     handleUpdateFeedback(constant.feedback.status.closed)
                   }
                 >
-                  <Text className="text-mineShaft-900 text-16 font-BeVietnamSemiBold">
+                  <Text className="text-mineShaft-900 text-14 font-BeVietnamSemiBold">
                     Đóng phản hồi
                   </Text>
                 </Button>
@@ -118,7 +118,7 @@ function Create() {
                   handleUpdateFeedback((feedback?.status ?? 1) + 1)
                 }
               >
-                <Text className="text-mineShaft-900 text-16 font-BeVietnamSemiBold">
+                <Text className="text-mineShaft-900 text-14 font-BeVietnamSemiBold">
                   {titleButtonAction[(feedback?.status ?? 1) + 1]}
                 </Text>
               </Button>
@@ -142,4 +142,4 @@ function Create() {
 }
 
 
-export default Create;
+export default Detail;

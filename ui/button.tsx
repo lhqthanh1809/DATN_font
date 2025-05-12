@@ -4,6 +4,7 @@ import {
   LayoutChangeEvent,
   Pressable,
   StyleProp,
+  View,
   ViewStyle,
 } from "react-native";
 import Animated, {
@@ -13,6 +14,7 @@ import LoadingAnimation from "./LoadingAnimation";
 
 interface Props {
   onPress?: () => void;
+  onLongPress?: () => void;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   className?: string;
@@ -20,27 +22,35 @@ interface Props {
   loading?: boolean;
   accessibilityLabel?: string;
   classNameLoading?: string;
+  delayLongPress?: number;
   onLayout?: ((event: LayoutChangeEvent) => void) | undefined
 }
 
-function Button({
-  onPress,
-  disabled = false,
-  style,
-  className,
-  children,
-  accessibilityLabel,
-  loading = false,
-  classNameLoading,
-  onLayout
-}: Props) {
-
+const Button = React.forwardRef<View, Props>(function Button(
+  {
+    onPress,
+    onLongPress,
+    disabled = false,
+    style,
+    className,
+    children,
+    accessibilityLabel,
+    loading = false,
+    classNameLoading,
+    delayLongPress = 300,
+    onLayout,
+  },
+  ref
+) {
   return (
     <Pressable
       disabled={disabled}
       onPress={onPress}
-      style={[style]}
+      onLongPress={onLongPress}
+      delayLongPress={delayLongPress}
       onLayout={onLayout}
+      ref={ref}
+      style={style}
       className={cn(
         "rounded-2xl flex flex-row gap-5 items-center justify-center disabled:opacity-85",
         className
@@ -51,6 +61,7 @@ function Button({
       {loading ? <LoadingAnimation className={classNameLoading} /> : <>{children}</>}
     </Pressable>
   );
-}
+});
+
 
 export default Button;

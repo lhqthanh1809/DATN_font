@@ -16,11 +16,11 @@ const FilterRoom: React.FC<{
   quantity: number;
   setQuantity: (quantity: number) => void;
 
-  startDate: Date;
-  setStartDate: (date: Date) => void;
+  startDate?: Date;
+  setStartDate?: (date: Date) => void;
 
   onFilter: (params: {
-    startDate: Date;
+    startDate?: Date;
     quantity: number;
     leaseDuration: number;
   }) => void;
@@ -79,11 +79,11 @@ const ModalFilter: React.FC<{
   quantity: number;
   setQuantity: (quantity: number) => void;
 
-  startDate: Date;
-  setStartDate: (date: Date) => void;
+  startDate?: Date;
+  setStartDate?: (date: Date) => void;
 
   onFilter: (params: {
-    startDate: Date;
+    startDate?: Date;
     quantity: number;
     leaseDuration: number;
   }) => void;
@@ -103,7 +103,11 @@ const ModalFilter: React.FC<{
   const [localTime, setLocalTime] = useState(leaseDuration);
 
   useEffect(() => setQuantity(localQuantity), [localQuantity]);
-  useEffect(() => setStartDate(localStartDate), [localStartDate]);
+  useEffect(() => {
+    if (setStartDate && localStartDate) {
+      setStartDate(localStartDate);
+    }
+  }, [localStartDate]);
   useEffect(() => setLeaseDuration(localTime), [localTime]);
 
   return (
@@ -124,12 +128,15 @@ const ModalFilter: React.FC<{
       <Divide direction="horizontal" className="h-[1]" />
       <View className="px-2 gap-3">
         <View className="flex-row gap-2">
-          <DatePicker
-            label="Ngày dự kiến vào ở"
-            value={localStartDate}
-            onChange={(date) => setLocalStartDate(date)}
-            prefix={<Icon icon={Calender} />}
-          />
+          {localStartDate && (
+            <DatePicker
+              label="Ngày dự kiến vào ở"
+              value={localStartDate}
+              onChange={(date) => setLocalStartDate(date)}
+              prefix={<Icon icon={Calender} />}
+            />
+          )}
+
           <View className="flex-1">
             <Input
               label="Thời gian thuê dự kiến"

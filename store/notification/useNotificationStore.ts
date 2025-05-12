@@ -6,7 +6,11 @@ import { isArray } from "lodash";
 import moment from "moment-timezone";
 
 interface NotificationStore {
-  loading: boolean
+  loading: boolean;
+  loadingMore: boolean;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
   notifications: INotification[];
   newNotifies: INotification[];
   todayNotifies: INotification[];
@@ -15,11 +19,15 @@ interface NotificationStore {
   addNotification: (notify: INotification) => void;
   setNotifications: (notifies: INotification[]) => void;
   filterNotifications: () => void;
-  fetchNotifications: (id : string, type: string) => void
+  fetchNotifications: (id: string, type: string, loadMore?: boolean) => void;
 }
 
 const useNotificationStore = create<NotificationStore>((set, get) => ({
   loading: false,
+  loadingMore: false,
+  limit: 10,
+  offset: 0,
+  hasMore: false,
   notifications: [],
   newNotifies: [],
   todayNotifies: [],
@@ -30,7 +38,7 @@ const useNotificationStore = create<NotificationStore>((set, get) => ({
     set((state) => ({
       notifications: [notify, ...state.notifications],
     }));
-    get().filterNotifications(); 
+    get().filterNotifications();
   },
 
   setNotifications: (notifies) => {
@@ -40,29 +48,36 @@ const useNotificationStore = create<NotificationStore>((set, get) => ({
 
   filterNotifications: () => {
     const now = moment().tz(getTimezone());
-    const today = now.clone().startOf("day");  // Lấy khoảng 00:00:00
+    const today = now.clone().startOf("day"); // Lấy khoảng 00:00:00
     const notifications = get().notifications;
 
     const newNotifs = notifications.filter((n) => {
-      const notifTime = moment.tz(n.created_at, env("TIMEZONE")).tz(getTimezone());
+      const notifTime = moment
+        .tz(n.created_at, env("TIMEZONE"))
+        .tz(getTimezone());
       return now.diff(notifTime, "hours") < 1;
     });
 
     const todayNotifs = notifications.filter((n) => {
-      const notifTime = moment.tz(n.created_at, env("TIMEZONE")).tz(getTimezone());
+      const notifTime = moment
+        .tz(n.created_at, env("TIMEZONE"))
+        .tz(getTimezone());
       return notifTime.isSame(now, "day") && now.diff(notifTime, "hours") >= 1;
     });
 
     const yesterdayNotifs = notifications.filter((n) => {
-      const notifTime = moment.tz(n.created_at, env("TIMEZONE")).tz(getTimezone());
+      const notifTime = moment
+        .tz(n.created_at, env("TIMEZONE"))
+        .tz(getTimezone());
       return notifTime.isSame(today.clone().subtract(1, "day"), "day");
     });
 
     const olderNotifs = notifications.filter((n) => {
-      const notifTime = moment.tz(n.created_at, env("TIMEZONE")).tz(getTimezone());
+      const notifTime = moment
+        .tz(n.created_at, env("TIMEZONE"))
+        .tz(getTimezone());
       return notifTime.isBefore(today.clone().subtract(1, "day"), "day");
     });
-
 
     set({
       newNotifies: newNotifs,
@@ -72,21 +87,41 @@ const useNotificationStore = create<NotificationStore>((set, get) => ({
     });
   },
 
-  fetchNotifications: async (id, type) => {
-    set({loading : true})
+  fetchNotifications: async (id, type, loadMore = false) => {
+    const offsetNew = loadMore ? get().offset + get().limit : 0;
 
-    const notificationService = new NotificationService()
-    const data = await notificationService.list({
-      object_id: id,
-      object_type: type
-    }) 
-
-    if(isArray(data)){
-      get().setNotifications(data)
+    // Prevent further loading if there are no more items
+    if (loadMore && (!get().hasMore || get().loadingMore)) {
+      return;
     }
 
-    set({ loading : false })
-  }
+
+
+    // Reset offset if not loading more
+    set(loadMore ? { loadingMore: true } : { loading: true });
+
+    try {
+      const notificationService = new NotificationService();
+      const result = await notificationService.list({
+        object_id: id,
+        object_type: type,
+        offset: offsetNew,
+        limit: get().limit,
+      });
+
+      if ("message" in result) return;
+
+      set({
+        hasMore: result.total > offsetNew + result.data.length,
+        offset: offsetNew,
+        notifications: loadMore ? [...get().notifications, ...result.data] : result.data,
+      })
+
+      get().filterNotifications();
+    } finally {
+      set(loadMore ? { loadingMore: false } : { loading: false });
+    }
+  },
 }));
 
 export default useNotificationStore;

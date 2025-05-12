@@ -6,7 +6,7 @@ function LoadPermission() {
     <Pressable className="p-2 gap-2">
       <Skeleton height={30} width={"46%"} colorMode="light" />
       <View className="flex-row gap-2 flex-wrap">
-        {Array(6)
+        {Array(3)
           .fill("")
           .map((_, index) => {
             return (

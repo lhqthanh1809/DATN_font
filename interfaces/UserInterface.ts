@@ -13,7 +13,8 @@ export interface IUser {
   address: string | null;
   is_active?: boolean;
   is_completed: boolean;
-  wallet?: IWallet
+  wallet?: IWallet;
+  rule?: "user" | "manager"
 }
 
 export interface IRelative {

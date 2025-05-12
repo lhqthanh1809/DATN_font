@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { cn, convertToNumber } from "@/helper/helper";
-import { IRoomUsage } from "@/interfaces/RoomUsageInterface";
+import { IRoomServiceInvoice } from "@/interfaces/RoomServiceInvoiceInterface";
 import ServiceManagerService from "@/services/Service/ServiceManagerService";
 import { reference } from "@/assets/reference";
 import Divide from "@/ui/Divide";
@@ -11,7 +11,7 @@ import { MotiView } from "moti";
 import { Pressable } from "react-native-gesture-handler";
 
 interface ItemRoomUsageProps {
-  roomUsage: IRoomUsage;
+  roomUsage: IRoomServiceInvoice;
   active: string | null;
   setActive: (id: string) => void;
   value: string;

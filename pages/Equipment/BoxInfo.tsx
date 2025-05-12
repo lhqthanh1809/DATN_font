@@ -68,13 +68,15 @@ const BoxInfo: React.FC<{
 
     return (
       <Box title="Thông tin thiết bị" className="z-10">
-        <ImagePicker
-          required
-          value={photo}
-          single
-          label="Ảnh đại diện"
-          onChange={handleImageChange}
-        />
+        <View style={{ minHeight: 106 }}>
+          <ImagePicker
+            required
+            value={photo}
+            single
+            label="Ảnh đại diện"
+            onChange={handleImageChange}
+          />
+        </View>
         <View className="flex-row gap-2">
           <View className="flex-1">
             <Input

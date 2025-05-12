@@ -12,11 +12,7 @@ import {
 import BackView from "@/ui/BackView";
 import { useCallback, useEffect, useState } from "react";
 import { env, encrypt, getDeviceID } from "@/helper/helper";
-import { BaseHttpService } from "@/services/BaseHttpService";
-import { apiRouter } from "@/assets/apiRouter";
-import { IResponse } from "@/interfaces/ResponseInterface";
 import { LocalStorage } from "@/services/LocalStorageService";
-import { HttpStatusCode } from "axios";
 import { useRouter } from "expo-router";
 import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
@@ -26,6 +22,19 @@ import { IError } from "@/interfaces/ErrorInterface";
 import useToastStore from "@/store/toast/useToastStore";
 import { constant } from "@/assets/constant";
 import AuthService from "@/services/Auth/AuthService";
+import TabsBlock from "@/ui/components/TabsBlock";
+
+const tabs = [
+  {
+    rule: "user",
+    name: "Người dùng"
+
+  },
+  {
+    rule: "manager",
+    name: "Quản lý"
+  }
+]
 
 function LoginScreen() {
   const { addToast } = useToastStore();
@@ -36,6 +45,9 @@ function LoginScreen() {
   const [activeLogin, setActiveLogin] = useState<Boolean>(false);
   const [loading, setLoading] = useState(false);
   const userServer = new UserService();
+  const [tab, setTab] = useState(tabs[0])
+
+
 
   const handleInputPhone = useCallback((text: string) => setPhone(text), []);
   const handleInputPassword = useCallback(
@@ -49,14 +61,15 @@ function LoginScreen() {
       phone,
       token,
       password: encrypt(password),
+      rule: tab.rule
     };
     setLoading(true);
     setActiveLogin(false);
     try {
       const dataLogin: IError | string = await new AuthService().login(fields);
 
-      if (dataLogin.hasOwnProperty("message") || !dataLogin) {
-        addToast(constant.toast.type.error, "Đăng nhập thất bại.");
+      if (typeof dataLogin != "string" ) {
+        addToast(constant.toast.type.error,dataLogin.message);
         return;
       }
 
@@ -82,7 +95,7 @@ function LoginScreen() {
       setLoading(false);
       setActiveLogin(true);
     }
-  }, [password, phone]);
+  }, [password, phone, tab]);
 
   useEffect(() => {
     setActiveLogin(Boolean(phone && password));
@@ -91,7 +104,7 @@ function LoginScreen() {
   return (
     <BackView>
       <View
-        className="px-8 gap-11 flex-1 justify-center items-center"
+        className="px-8 gap-9 flex-1 justify-center items-center"
         style={{
           flex: 1,
           justifyContent: "center",
@@ -106,6 +119,7 @@ function LoginScreen() {
           </View>
         </View>
         <View className="w-full flex gap-3">
+          <TabsBlock renderKey="name" tabs={tabs} onChange={(tab) => {setTab(tab)}} className="bg-gray-100 border-1 border-white-100 mb-4"/>
           <View className="gap-5">
             <Input
               className=""
@@ -131,11 +145,11 @@ function LoginScreen() {
           <Button
             disabled={!activeLogin}
             onPress={handleLogin}
-            loading={loading}
+            loading={!!loading}
             className="w-full min-h-16 bg-lime-400"
           >
-            <Text className="text-mineShaft-900 text-20 font-BeVietnamSemiBold">
-              Đăng nhập
+            <Text className="text-mineShaft-950 text-18 font-BeVietnamMedium">
+              Đăng nhập như {tab.name.toLocaleLowerCase()}
             </Text>
           </Button>
 

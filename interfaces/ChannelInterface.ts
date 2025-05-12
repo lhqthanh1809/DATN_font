@@ -9,6 +9,7 @@ export interface IChannel{
     room?: IRoom,
     created_at: string,
     joined_at: string,
+    is_read?: boolean
 } 
 
 export interface IListChannel{
@@ -16,4 +17,10 @@ export interface IListChannel{
     member_type: (typeof constant.object.type)[keyof typeof constant.object.type],
     offset?: number,
     limit?: number
+}
+
+export interface ILeaveChannel {
+    channel_id: string,
+    member_id: string,
+    member_type: (typeof constant.object.type)[keyof typeof constant.object.type],
 }

@@ -1,15 +1,20 @@
+import { constant } from "@/assets/constant";
 import { cn, getTimeAgo } from "@/helper/helper";
 import { IDataRealtime } from "@/interfaces/GeneralInterface";
 import { INotification } from "@/interfaces/NotificationInterface";
+import NotificationService from "@/services/Notification/NotificationService";
 import useNotificationStore from "@/store/notification/useNotificationStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
 import { Bell } from "@/ui/icon/symbol";
 import { initializeEcho } from "@/utils/echo";
 import { Channel } from "@ably/laravel-echo";
+import { Href, router, useFocusEffect } from "expo-router";
 import { Skeleton } from "moti/skeleton";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import LoadingAnimation from "../LoadingAnimation";
+import { createScrollHandler } from "@/utils/scrollHandle";
 
 const ListNotify: React.FC<{
   id: string;
@@ -25,6 +30,8 @@ const ListNotify: React.FC<{
     oldNotifies,
     yesterdayNotifies,
     loading,
+    loadingMore,
+    hasMore,
   } = useNotificationStore();
 
   useEffect(() => {
@@ -51,6 +58,12 @@ const ListNotify: React.FC<{
     };
   }, [id, type]);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications(id, type);
+    }, [id, type])
+  );
+
   return (
     <>
       {notifications.length <= 0 && !loading ? (
@@ -67,6 +80,15 @@ const ListNotify: React.FC<{
             contentContainerStyle={{
               paddingBottom: 76,
             }}
+            onScroll={createScrollHandler({
+              callback: () => {
+                !loading && fetchNotifications(id, type, true);
+              },
+              hasMore,
+              loading: loadingMore,
+              threshold: 20,
+            })}
+            scrollEventThrottle={20}
             className="flex-1"
           >
             <View className="flex-1 gap-3 px-3">
@@ -132,6 +154,12 @@ const ListNotify: React.FC<{
                 </>
               )}
             </View>
+
+            {loadingMore && (
+              <View className="py-2">
+                <LoadingAnimation />
+              </View>
+            )}
           </ScrollView>
         </View>
       )}
@@ -177,44 +205,74 @@ function NotificationBox({
   items: INotification[];
   title: string;
 }) {
+  const handlePush = useCallback((item: INotification) => {
+    if (!item.is_seen) new NotificationService().toggleRead(item.id);
+
+    router.push(item.url as Href);
+  }, []);
   return (
     <View className="gap-2">
-      <Text className="text-16 font-BeVietnamMedium text-mineShaft-950">
+      <Text className="text-14 font-BeVietnamMedium text-mineShaft-950">
         {title}
       </Text>
       <View className="gap-2">
         {items.map((item) => (
-          <NotificationItem item={item} key={item.id} />
+          <NotificationItem
+            onPress={() => handlePush(item)}
+            item={item}
+            key={item.id}
+          />
         ))}
       </View>
     </View>
   );
 }
 
-function NotificationItem({ item }: { item: INotification }) {
+function NotificationItem({
+  item,
+  onPress,
+}: {
+  item: INotification;
+  onPress: () => void;
+}) {
   return (
     <Button
       className={cn(
-        "border-1 rounded-lg p-3 border-white-100 gap-1 flex-col items-start",
-        !item.is_seen &&
-          "bg-lime-100 border-lime-200 shadow-sm shadow-lime-500/20"
+        "border-1 rounded-2xl p-4 border-white-100 items-start justify-between",
+        !item.is_seen && "border-l-4 border-lime-400"
       )}
+      onPress={onPress}
     >
-      <Text
-        numberOfLines={1}
-        className="truncate font-BeVietnamMedium text-14 text-mineShaft-950"
-      >
-        {item.title}
-      </Text>
-      <Text
-        numberOfLines={2}
-        className="truncate font-BeVietnamRegular text-14 text-mineShaft-800"
-      >
-        {item.body}
-      </Text>
-      <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
-        {getTimeAgo(item.created_at)}
-      </Text>
+      <View className="gap-4 flex-1">
+        <View
+          className="
+      gap-1"
+        >
+          <Text
+            style={{
+              fontSize: 16,
+            }}
+            numberOfLines={1}
+            className={cn(
+              "truncate font-BeVietnamRegular text-mineShaft-950",
+              !item.is_seen && "font-BeVietnamSemiBold"
+            )}
+          >
+            {item.title}
+          </Text>
+          <Text
+            numberOfLines={2}
+            className="truncate font-BeVietnamRegular text-14 text-mineShaft-800"
+          >
+            {item.body}
+          </Text>
+        </View>
+        <Text className="font-BeVietnamMedium text-12 text-mineShaft-500">
+          {getTimeAgo(item.created_at)}
+        </Text>
+      </View>
+
+      {!item.is_seen && <View className="h-3 w-3 bg-lime-400 rounded-full" />}
     </Button>
   );
 }

@@ -31,7 +31,11 @@ interface OverviewItem {
 const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
   ({ lodgingId }) => {
     const { addToast } = useToastStore();
-    const [dateStatistical, setDateStatistical] = useState<Date>(new Date());
+    const [dateStatistical, setDateStatistical] = useState<Date>(() => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - 1);
+      return date;
+    });
     const [statistical, setStatistical] = useState<ILodgingStatistical | null>(
       null
     );
@@ -161,12 +165,10 @@ const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
             </Text>
           </View>
 
-          <View className="w-1/4">
-            <MonthPicker
-              value={dateStatistical}
-              onChange={(date) => setDateStatistical(date)}
-            />
-          </View>
+          <MonthPicker
+            value={dateStatistical}
+            onChange={(date) => setDateStatistical(date)}
+          />
         </View>
 
         <View className="px-20">

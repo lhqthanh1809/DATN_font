@@ -4,10 +4,12 @@ import FilterRoom from "@/pages/Contract/filterRoom";
 import RoomService from "@/services/Room/RoomService";
 import HeaderBack from "@/ui/components/HeaderBack";
 import RoomItem from "@/ui/components/RoomItem";
+import { Home2 } from "@/ui/icon/symbol";
+import EmptyScreen from "@/ui/layouts/EmptyScreen";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 function Holding() {
@@ -19,7 +21,7 @@ function Holding() {
   const [loading, setLoading] = useState(false);
   const route = useRouter();
 
-  const filterBase64Url = useCallback(() => {
+  const filterBase64Url = useMemo(() => {
     const field = JSON.stringify({
       start_date: startDate,
       lease_duration: leaseDuration,
@@ -39,7 +41,7 @@ function Holding() {
       quantity,
       leaseDuration,
     }: {
-      startDate: Date;
+      startDate?: Date;
       quantity: number;
       leaseDuration: number;
     }) => {
@@ -47,9 +49,11 @@ function Holding() {
       const service = new RoomService(lodgingId as string);
       const data = await service.filter({
         lodging_id: lodgingId as string,
-        start_date: formatDateForRequest(startDate),
         lease_duration: leaseDuration,
         quantity: quantity,
+        ...(startDate && {
+          start_date: formatDateForRequest(startDate),
+        }),
       });
       if (isArray(data)) {
         setRooms(data);
@@ -80,11 +84,11 @@ function Holding() {
         }}
       />
       {!loading && rooms.length <= 0 ? (
-        <View className="w-full flex-1 items-center justify-center">
-          <Text className="font-BeVietnamRegular text-mineShaft-200">
-            Hiện không có phòng phù hợp
-          </Text>
-        </View>
+       <EmptyScreen
+          icon={Home2}
+          description="Hãy thử thay đổi bộ lọc hoặc kiểm tra lại kết nối mạng."
+          title="Không tìm thấy phòng nào"
+        />
       ) : (
         <ScrollView className="px-2 flex-1">
           <View className="gap-2 items-center pt-1 pb-3 flex flex-1">
@@ -110,7 +114,7 @@ function Holding() {
                     onPress={() =>
                       room.id &&
                       route.push(
-                        `lodging/${lodgingId}/contract/holding/${room.id}?name=${room.room_code}&price=${room.price}&filter=${filterBase64Url()}` as any
+                        `lodging/${lodgingId}/contract/holding/${room.id}?name=${room.room_code}&price=${room.price}&filter=${filterBase64Url}` as any
                       )
                     }
                   />

@@ -9,11 +9,10 @@ import { router } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Linking, ScrollView, Text, View } from "react-native";
 import BoxInfo from "../BoxInfo";
-import LoadingAnimation from "@/ui/LoadingAnimation";
-import { BlurView } from "expo-blur";
 import useContractStore from "@/store/contract/useContractStore";
 import moment from "moment";
 import useUserStore from "@/store/user/useUserStore";
+import LoadingScreen from "@/ui/layouts/LoadingScreen";
 
 
 const DetailContract: React.FC<{
@@ -97,19 +96,7 @@ const DetailContract: React.FC<{
 
   return (
     <View className="flex-1">
-      {loading && (
-        <View className="absolute inset-0 z-10 items-center justify-center">
-          {/* Tạo nền mờ */}
-          <BlurView
-            className="absolute w-full h-full"
-            intensity={30}
-            tint="dark"
-          />
-
-          {/* Animation Loading */}
-          <LoadingAnimation className="text-white-50" />
-        </View>
-      )}
+      {loading && <LoadingScreen />}
       <ScrollView className="px-3 flex-1">
         <View className="flex-1 gap-2 py-3">
           <DetailItem title="Mã hợp đồng" data={`#${contract?.code ?? ""}`} />

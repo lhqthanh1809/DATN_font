@@ -9,6 +9,7 @@ export default class AuthService extends BaseService {
     phone: string;
     token: string | null;
     password: string;
+    rule: string
   }): Promise<string | IError> {
     try {
       const res: IResponse | IError = await this.https({
@@ -82,12 +83,12 @@ export default class AuthService extends BaseService {
     }
   }
 
-  public async requestOTP(phone: string): Promise<string | IError> {
+  public async requestOTP({phone, token} : {phone: string, token?: string}): Promise<string | IError> {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.requestOtp,
         method: "POST",
-        body: { phone },
+        body: { phone, token },
       });
 
       if (res.hasOwnProperty("message")) {

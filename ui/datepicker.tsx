@@ -62,7 +62,7 @@ function DatePicker({
 
   useEffect(() => {
     if (selectedDates[id] && selectedDates[id] !== date) {
-      setDateLocal(selectedDates[id]);
+      onChange(selectedDates[id]);
     }
   }, [selectedDates[id]]);
 
@@ -84,7 +84,6 @@ function DatePicker({
         disabled={disabled}
         className="z-10 relative flex-1"
         onPress={() => {
-          Keyboard.dismiss();
           setDatePicker(id);
         }}
       >

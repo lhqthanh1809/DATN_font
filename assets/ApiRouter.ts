@@ -18,10 +18,11 @@ export const apiRouter = {
   listTypeLodging: "/lodging_type/list",
   listLodgingByUser: "/lodging/list_by_user",
   createLodging: "/lodging/create",
-  overviewLodging: "lodging/overview",
+  overviewLodging: "/lodging/overview",
   detailLodging: "/lodging/detail/:id",
   updateLodging: "/lodging/update",
   deleteLodging: "/lodging/delete/:id",
+  configLodging: "/lodging/config",
 
   //General
   listProvince: "/general/provinces",
@@ -45,6 +46,7 @@ export const apiRouter = {
   updateLodgingService: "/lodging_service/update",
   deleteLodgingService: "/lodging_service/delete",
   listLodgingServiceByRoom: "/lodging_service/list_by_room",
+
   //Room
   createRoom: "/room/create",
   listRoomByLodging: "/room/list/:lodging_id",
@@ -62,16 +64,17 @@ export const apiRouter = {
   createFinalBill: "/contract/create_final_bill",
   endContract: "/contract/end_contract",
   payAmountByContract: "/contract/pay_amount",
+  listContractByUser: "/contract/list_by_user",
 
   //Feedback
   createFeedback: "/feedback/create",
   listFeedback: "/feedback/list",
   detailFeedback: "/feedback/detail/:id",
   updateStatusFeedback: "/feedback/update_status",
-  listFeedbackByUser: "/feedback/list_by_user",
 
   // Notification
   listNotification: "/notification/list",
+  toggleReadNotification: "/notification/:id/toggle_read",
 
   //Equipment
   listEquipment: "/equipment/list",
@@ -80,19 +83,22 @@ export const apiRouter = {
   updateEquipment: "/equipment/update",
   deleteEquipment: "/equipment/delete",
 
-  //RentalHistory
-  listRentalHistory: "/rental_history/list",
+  //RentalPayment
+  listRentalPayment: "/rent_payment/list",
+  detailRentalPayment: "/rent_payment/detail/:id",
 
-  //RoomUsage
-  listRoomUsageNeedClose: "/room_usage/list_need_close",
-  closeRoomUsage: "/room_usage/close_room_usage",
+  //RoomServiceInvoice
+  listRoomServiceNeedClose: "/room_service_invoice/list_need_close",
+  closeRoomService: "/room_service_invoice/close_room_service",
 
   //ServicePayment
   listServicePayment: "/service_payment/list",
+  detailServicePayment: "/service_payment/detail/:id",
 
 
   //List channel
   listChannel: "channel/list",
+  leaveChannel: "channel/leave",
 
   //Chat
   createChat: "chat/create",
@@ -106,5 +112,12 @@ export const apiRouter = {
   detailWallet: "/wallet/detail/:id",
 
   //Transaction
-  listTransactionByWallet: "/transaction/list_by_wallet"
+  listTransactionByWallet: "/transaction/list_by_wallet",
+
+  //PaymentHistory
+  listPaymentHistory: "/payment_history/list",
+
+  //Invoice
+  listInvoice: "/invoice/list",
+  detailInvoice: "/invoice/detail"
 };

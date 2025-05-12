@@ -1,5 +1,11 @@
 import { IError } from "@/interfaces/ErrorInterface";
-import { ILodging, ILodgingStatistical, IOverviewLodging, IOverviewRoom } from "@/interfaces/LodgingInterface";
+import {
+  ILodging,
+  ILodgingConfig,
+  ILodgingStatistical,
+  IOverviewLodging,
+  IOverviewRoom,
+} from "@/interfaces/LodgingInterface";
 import { BaseHttpService } from "../BaseHttpService";
 import { IResponse } from "@/interfaces/ResponseInterface";
 import { apiRouter } from "@/assets/apiRouter";
@@ -45,7 +51,9 @@ export default class LodgingService extends BaseService {
     }
   }
 
-  public async overview(data: IOverviewLodging): Promise<ILodgingStatistical | IOverviewRoom | IError> {
+  public async overview(
+    data: IOverviewLodging
+  ): Promise<ILodgingStatistical | IOverviewRoom | IError> {
     try {
       const res: IResponse | IError = await this.https({
         method: "POST",
@@ -63,8 +71,7 @@ export default class LodgingService extends BaseService {
     }
   }
 
-
-  public async detail(lodgingId:string): Promise<ILodging | IError> {
+  public async detail(lodgingId: string): Promise<ILodging | IError> {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.detailLodging.replace(":id", lodgingId),
@@ -79,13 +86,13 @@ export default class LodgingService extends BaseService {
     }
   }
 
-  public async update(data:ILodging): Promise<ILodging | IError> {
+  public async update(data: ILodging): Promise<ILodging | IError> {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.updateLodging,
         authentication_requested: true,
         method: "POST",
-        body: data
+        body: data,
       });
 
       if (res.hasOwnProperty("message")) {
@@ -97,10 +104,31 @@ export default class LodgingService extends BaseService {
     }
   }
 
-  public async delete(lodgingId:string): Promise<string | IError> {
+  public async delete(lodgingId: string): Promise<string | IError> {
     try {
       const res: IResponse | IError = await this.https({
         url: apiRouter.deleteLodging.replace(":id", lodgingId),
+        authentication_requested: true,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+      return (res as IResponse).body?.data ?? null;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
+  public async config(data: {
+    lodging_id: string;
+    config: ILodgingConfig;
+  }): Promise<ILodging | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        url: apiRouter.configLodging,
+        method: "POST",
+        body: data,
         authentication_requested: true,
       });
 

@@ -17,7 +17,7 @@ import usePaymentUserStore from "@/store/payment/usePaymentUserStore";
 import { useGeneral } from "@/hooks/useGeneral";
 
 const ModalPaymentUser: React.FC<{
-  actionWhenPaymentSuccess?: (amount: number) => void
+  actionWhenPaymentSuccess?: (amount: number, method: string) => void
 }> = ({actionWhenPaymentSuccess}) => {
   const {user, changeUser} = useGeneral()
   const { hideModal } = useUI();
@@ -42,7 +42,7 @@ const ModalPaymentUser: React.FC<{
           })
         }
         addToast(constant.toast.type.success, "Thanh toán thành công")
-        actionWhenPaymentSuccess && actionWhenPaymentSuccess(formatNumber(amount, "float") ?? 0)
+        actionWhenPaymentSuccess && actionWhenPaymentSuccess(formatNumber(amount, "float") ?? 0, constant.payment.method.transfer)
         hideModal();
       }
     } catch (err) {

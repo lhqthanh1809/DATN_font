@@ -6,10 +6,11 @@ import useLodgingsStore from "@/store/lodging/useLodgingsStore";
 import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import Icon from "@/ui/Icon";
-import { Cross, CrossMedium } from "@/ui/icon/symbol";
+import { Cross, CrossMedium, Trash } from "@/ui/icon/symbol";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
+import LoadingAnimation from "../LoadingAnimation";
 
 const ModalDelete: React.FC<{
   handleConfirmDelete: () => void;
@@ -33,8 +34,8 @@ const ModalDelete: React.FC<{
   return (
     <View className="h-full w-full items-center justify-center">
       <View className="w-full px-6">
-        <Button className="bg-white-50 flex-col px-3 py-7" onPress={() => {}}>
-          <Button
+        <Button className="bg-white-50 flex-col p-6" onPress={() => {}}>
+          {/* <Button
             disabled={loading}
             onPress={() => {
               hideModal();
@@ -42,28 +43,31 @@ const ModalDelete: React.FC<{
             className="absolute right-3 top-3"
           >
             <Icon icon={CrossMedium} />
-          </Button>
+          </Button> */}
 
           <View className="gap-1">
             <Text className="font-BeVietnamSemiBold text-16 text-center">
               {title}
             </Text>
+            <View className="px-5">
+
             <Text className="font-BeVietnamMedium text-center text-mineShaft-500">
               {subTitle}
             </Text>
+            </View>
           </View>
 
-          <View className="w-full gap-2">
+          <View className="w-full gap-3">
             <Button
               disabled={loading}
-              loading={loading}
               onPress={() => {
                 handleDelete();
               }}
-              className="bg-redPower-300 py-3"
+              className="bg-redPower-600 py-3 gap-2 items-center"
             >
-              <Text className="text-mineShaft-950 font-BeVietnamMedium">
-                Xác nhận
+              {loading ? <LoadingAnimation size={18} strokeWidth={2} color="#FBECEC"/> : <Icon icon={Trash} className="text-redPower-100"/>}
+              <Text className="text-redPower-100 font-BeVietnamMedium">
+              {loading ? "Đang xoá..." : "Xác nhận"}
               </Text>
             </Button>
             <Button
@@ -71,9 +75,9 @@ const ModalDelete: React.FC<{
               onPress={() => {
                 hideModal();
               }}
-              className="bg-mineShaft-500 py-3"
+              className="bg-mineShaft-100 py-3"
             >
-              <Text className="text-mineShaft-100 font-BeVietnamMedium">
+              <Text className="text-mineShaft-900 font-BeVietnamMedium">
                 Huỷ bỏ
               </Text>
             </Button>

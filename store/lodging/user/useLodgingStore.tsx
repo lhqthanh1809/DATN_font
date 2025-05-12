@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { ILodging } from "@/interfaces/LodgingInterface";
 import ClientService from "@/services/Client/ClientService";
-import { isArray } from "lodash";
+import { get, isArray } from "lodash";
 import { useUI } from "@/hooks/useUI";
 import { ReactNode } from "react";
 import ModelConfirmDelete from "@/pages/Lodging/ModalConfirmDelete";
@@ -23,7 +23,7 @@ interface LodgingState {
 }
 
 // Khởi tạo Zustand store
-const useLodgingStore = create<LodgingState>((set) => ({
+const useLodgingStore = create<LodgingState>((set, get) => ({
   lodgings: [],
   loading: false,
 
@@ -32,6 +32,7 @@ const useLodgingStore = create<LodgingState>((set) => ({
     const clientService = new ClientService();
     const data = await clientService.listLodgingAndRoomFromContractByUser({
       with_contracts: true,
+      search: get().search.value,
     });
 
     if (isArray(data)) {
@@ -53,13 +54,15 @@ const useLodgingStore = create<LodgingState>((set) => ({
 
   search: {
     value: "",
-    onChange: (text: string) =>
+    onChange: (text: string) => {
       set((state) => ({
         search: {
           ...state.search,
           value: text,
         },
       })),
+        get().fetchLodgings();
+    },
   },
 
   deleteLodging: (lodgingId: string, showModal: (model: ReactNode) => void) => {

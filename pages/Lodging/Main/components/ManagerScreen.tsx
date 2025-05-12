@@ -65,7 +65,7 @@ const ManagerScreen: React.FC<{
     <View className="flex-1 gap-5">
       {loading ? (
         <>
-          {Array(3)
+          {Array(2)
             .fill("")
             .map((_, index) => (
               <LoadPermission key={index} />

@@ -74,7 +74,7 @@ const BoxInfo = ({
   const {genders} = useUserStore()
 
   useEffect(() => {
-    if (startDate) {
+    if (startDate && time) {
       const newEndDate = new Date(startDate);
       newEndDate.setMonth(startDate.getMonth() + time);
       setEndDate((prev) =>
