@@ -23,7 +23,7 @@ function List() {
       setLoading(true);
       const data = await new LodgingService().listByUser();
       if (Array.isArray(data)) {
-        setLodgings(data);
+        setLodgings(data.filter((item) => item.is_enabled));
       }
       setLoading(false);
     };

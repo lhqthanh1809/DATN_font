@@ -39,7 +39,7 @@ const SettingScreen: React.FC<{
             {
               name: "Lịch sử giao dịch",
               icon: ClockRefresh,
-              router: `wallet/${lodging.wallet.id}/transaction`,
+              router: `wallet/${lodging.wallet.id}/transactions`,
             },
           ]
         : []),

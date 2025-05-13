@@ -2,6 +2,7 @@ import {
   IChatHistory,
   ICreateChat,
   IListChat,
+  IUpdateStatusChat,
 } from "@/interfaces/ChatInterface";
 import BaseService from "../BaseService";
 import { IListResponse } from "@/interfaces/GeneralInterface";
@@ -54,16 +55,38 @@ export default class ChatService extends BaseService {
     }
   }
 
-  static getNameSender(message: IChatHistory): string 
-  {
-    if (message.sender_type === constant.object.type.user) {
-      return (message.sender as IUser).full_name ?? "";
+  public async updateStatusChat(
+    data: IUpdateStatusChat
+  ): Promise<IChatHistory | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        method: "POST",
+        authentication_requested: true,
+        body: data,
+        url: apiRouter.updateStatusChat,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+
+      return (res as IResponse).body?.data;
+    } catch (err: any) {
+      return this.returnError(err);
     }
-  
+  }
+
+  static getNameSender(message: IChatHistory, isLastName = false): string {
+    if (message.sender_type === constant.object.type.user) {
+      const fullName = (message.sender as IUser).full_name ?? "";
+      const name = isLastName ? fullName.split(" ").pop() : fullName;
+      return name ?? "";
+    }
+
     if (message.sender_type === constant.object.type.lodging) {
       return "Chủ nhà";
     }
-  
-    return 'Không xác định';
+
+    return "Không xác định";
   }
 }

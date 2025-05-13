@@ -22,21 +22,27 @@ import {
   Linking,
 } from "react-native";
 import DateTimePicker, {
+  DateType,
   useDefaultClassNames,
 } from "react-native-ui-datepicker";
 import Icon from "@/ui/Icon";
 import { Wifi } from "@/ui/icon/symbol";
+import { set } from "lodash";
+import { toDate } from "@/helper/helper";
 
 // Tạo context
 export const UIContext = createContext<UIContextValue | undefined>(undefined);
 
 // Tạo Provider
 export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [openDatePicker, setOpenDatePicker] = useState<string | null>(null);
   const [selectedDates, setSelectedDates] = useState<DatePickerState>({});
-  const [idPicker, setIdPicker] = useState<string | null>(null);
   const [modals, setModals] = useState<ReactNode[]>([]);
   const [isConnected, setConnected] = useState(true);
+  const [date, setDate] = useState<DateType | null>(null);
+  const [isOpenDatePicker, setIsOpenDatePicker] = useState(false);
+  const [onChangeDate, setOnChangeDate] = useState<
+    ((date: Date) => void) | null
+  >(null);
 
   const showModal = (content: ReactNode) => {
     setModals((prev) => [...prev, content]);
@@ -52,19 +58,21 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     });
   };
 
-  const setDatePicker = (id: string) => {
-    setOpenDatePicker(id);
-    setIdPicker(id);
-  };
-
   const closeDatePicker = () => {
     Keyboard.dismiss();
-    setOpenDatePicker(null);
-    setIdPicker(null);
+    setIsOpenDatePicker(false);
+    setOnChangeDate(null);
+    setDate(null);
   };
 
-  const setDate = (id: string, date: Date) => {
-    setSelectedDates((prev) => ({ ...prev, [id]: date }));
+  const openDatePicker = (
+    date: Date | null,
+    callback: (date: Date) => void
+  ) => {
+    Keyboard.dismiss();
+    setDate(date);
+    setIsOpenDatePicker(true);
+    setOnChangeDate(() => callback);
   };
 
   const retryConnection = useCallback(async () => {
@@ -83,22 +91,26 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const dateConvert = toDate(date);
+    onChangeDate && dateConvert && onChangeDate(dateConvert);
+  }, [date]);
+
   return (
     <UIContext.Provider
       value={{
-        openDatePicker,
         selectedDates,
-        setDatePicker,
         closeDatePicker,
-        setDate,
+        // setDate,
         showModal,
         hideModal,
+        openDatePicker,
       }}
     >
       {children}
 
       {/* Hiển thị DateTimePicker nếu có DatePicker đang mở */}
-      {openDatePicker && (
+      {isOpenDatePicker && (
         <TouchableWithoutFeedback onPress={closeDatePicker}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -114,9 +126,9 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
                     mode="single"
                     //   date={selectedDate}
                     locale="vi-VN"
-                    date={idPicker ? selectedDates[idPicker] : undefined}
+                    date={date}
                     onChange={({ date }) => {
-                      setDate(openDatePicker, new Date(date as Date));
+                      setDate(date);
                     }}
                     showOutsideDays={true}
                     navigationPosition={"right"}

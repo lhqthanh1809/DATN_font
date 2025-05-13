@@ -44,6 +44,9 @@ import { createScrollHandler } from "@/utils/scrollHandle";
 import { BlurView } from "expo-blur";
 import { useUI } from "@/hooks/useUI";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { update } from "lodash";
+import { constant } from "@/assets/constant";
+import useToastStore from "@/store/toast/useToastStore";
 
 function Chat() {
   const { id, member_id, member_type } = useLocalSearchParams();
@@ -87,15 +90,25 @@ function Chat() {
       try {
         const echo = await initializeEcho();
         channel = echo.private(`chat.${id}`);
-        channel.listen(
-          `.chat.new-${id}`,
-          (data: IDataRealtime<IChatHistory>) => {
-            changeLastMessage(data.data.channel_id, data.data);
-            if (data.data.sender_id != member_id) {
-              updateMessages(data.data);
-            }
+        channel.listen(`.new`, (payload: IDataRealtime<IChatHistory>) => {
+          changeLastMessage(payload.data.channel_id, payload.data);
+          if (payload.data.sender_id != member_id) {
+            updateMessages(payload.data);
           }
-        );
+        });
+        channel.listen(".update", (payload: IDataRealtime<IChatHistory>) => {
+          const messages = useChatHistoriesStore.getState().messages;
+          const foundMessage = messages.find(
+            (item) => item.id == payload.data.id
+          );
+          if (foundMessage) {
+            updateMessages(payload.data);
+          }
+
+          if (messages[messages.length - 1].id == payload.data.id) {
+            changeLastMessage(payload.data.channel_id, payload.data);
+          }
+        });
       } catch (error) {
         console.error(error);
       }
@@ -104,7 +117,8 @@ function Chat() {
     setupEcho();
     return () => {
       if (channel) {
-        channel.stopListening(`.chat.new-${id}`);
+        channel.stopListening(`.new`);
+        channel.stopListening(".update");
       }
     };
   }, [id, member_id, member_type]);
@@ -145,7 +159,11 @@ function Chat() {
         {loading ? (
           <ScreenMessageLoad />
         ) : messages.length > 0 ? (
-          <ScreenMessage memberId={member_id as string} messages={messages} />
+          <ScreenMessage
+            memberId={member_id as string}
+            messages={messages}
+            memberType={member_type as string}
+          />
         ) : (
           <EmptyMessage />
         )}
@@ -191,7 +209,8 @@ const EmptyMessage = () => {
 const ScreenMessage: React.FC<{
   messages: IChatHistory[];
   memberId: string;
-}> = ({ messages, memberId }) => {
+  memberType: string;
+}> = ({ messages, memberId, memberType }) => {
   const { loadMore, hasMore, loadingMore } = useChatHistoriesStore();
   const { showModal } = useUI();
   const messageRefs = useRef(new Map());
@@ -205,13 +224,20 @@ const ScreenMessage: React.FC<{
         InteractionManager.runAfterInteractions(() => {
           messageRef.measureInWindow(
             (x: number, y: number, width: number, height: number) => {
-              showModal(<ModalMessage message={message} y={y} />);
+              showModal(
+                <ModalMessage
+                  message={message}
+                  y={y}
+                  memberId={memberId}
+                  memberType={memberType}
+                />
+              );
             }
           );
         });
       }
     },
-    [showModal]
+    [showModal, memberId, memberType]
   );
 
   return (
@@ -261,48 +287,78 @@ const ScreenMessage: React.FC<{
               className="w-full"
               style={{ transform: [{ scaleY: -1 }] }}
             >
-              {showTimeNext && (
-                <View className="mb-2 w-full items-center">
-                  <Text className="font-BeVietnamRegular text-gray-500">
-                    {formatTime(message.created_at)}
-                  </Text>
-                </View>
-              )}
-              <View
-                className={`flex-col items-start gap-1 ${
-                  isMe ? "self-end" : "self-start"
-                }`}
-              >
-                {!isMe && (!next || next.sender_id !== message.sender_id) && (
-                  <Text className="font-BeVietnamRegular text-12 pl-6 pt-2">
-                    {ChatService.getNameSender(message)}
-                  </Text>
-                )}
-                <Button
-                  onLongPress={() => isMe && showModalMessage(message)}
-                  ref={(ref) => {
-                    if (ref) messageRefs.current.set(message.id, ref);
-                  }}
-                  className={cn(
-                    "py-4 px-6 rounded-3xl max-w-[80%]",
-                    isMe ? "bg-lime-200" : "bg-white-100",
-                    next && nextSameSender && !showTimeNext
-                      ? isMe
-                        ? "rounded-tr-lg"
-                        : "rounded-tl-lg"
-                      : "",
-                    prev && prevSameSender && !showTimePrev
-                      ? isMe
-                        ? "rounded-br-lg"
-                        : "rounded-bl-lg"
-                      : ""
+              {(isMe && message.status != constant.chat.status.deleted) ||
+              !isMe ? (
+                <>
+                  {showTimeNext && (
+                    <View className="mb-2 w-full items-center">
+                      <Text className="font-BeVietnamRegular text-gray-500">
+                        {formatTime(message.created_at)}
+                      </Text>
+                    </View>
                   )}
-                >
-                  <Text className="font-BeVietnamRegular text-mineShaft-950">
-                    {message.content.text}
-                  </Text>
-                </Button>
-              </View>
+                  <View
+                    className={`flex-col items-start gap-1 ${
+                      isMe ? "self-end" : "self-start"
+                    }`}
+                  >
+                    {!isMe &&
+                      (!next || next.sender_id !== message.sender_id) && (
+                        <Text className="font-BeVietnamRegular text-12 pl-6 pt-2">
+                          {ChatService.getNameSender(message)}
+                        </Text>
+                      )}
+                    <Button
+                      onLongPress={() =>
+                        isMe &&
+                        message.status == constant.chat.status.send &&
+                        showModalMessage(message)
+                      }
+                      ref={(ref) => {
+                        if (ref) messageRefs.current.set(message.id, ref);
+                      }}
+                      className={cn(
+                        "py-4 px-6 rounded-3xl max-w-[80%]",
+                        // Màu nền tin nhắn tùy thuộc vào người gửi
+                        isMe ? "bg-lime-200" : "bg-white-100",
+
+                        // Màu khi tin nhắn bị thu hồi/xoá,
+                        message.status == constant.chat.status.recall &&
+                          "bg-white-50 border-1 border-mineShaft-100",
+
+                        // Nếu tin nhắn tiếp theo cùng người gửi và không hiển thị thời gian
+                        next &&
+                          nextSameSender &&
+                          !showTimeNext &&
+                          (isMe ? "rounded-tr-lg" : "rounded-tl-lg"),
+
+                        // Nếu tin nhắn trước cùng người gửi và không hiển thị thời gian
+                        prev &&
+                          prevSameSender &&
+                          !showTimePrev &&
+                          (isMe ? "rounded-br-lg" : "rounded-bl-lg")
+                      )}
+                    >
+                      <Text
+                        className={cn(
+                          "font-BeVietnamRegular ",
+                          message.status == constant.chat.status.recall
+                            ? "text-mineShaft-700"
+                            : "text-mineShaft-950"
+                        )}
+                      >
+                        {message.status == constant.chat.status.recall
+                          ? `${
+                              isMe
+                                ? "Bạn"
+                                : ChatService.getNameSender(message, true)
+                            } đã thu hồi tin nhắn`
+                          : message.content.text}
+                      </Text>
+                    </Button>
+                  </View>
+                </>
+              ) : null}
             </View>
           );
         })}
@@ -393,14 +449,44 @@ const ScreenMessageLoad = () => {
   );
 };
 
-const ModalMessage: React.FC<{ message: IChatHistory; y: number }> = ({
-  message,
-  y,
-}) => {
+const ModalMessage: React.FC<{
+  message: IChatHistory;
+  y: number;
+  memberId: string;
+  memberType: string;
+}> = ({ message, y, memberId, memberType }) => {
   const insets = useSafeAreaInsets();
-  const screenHeight = Dimensions.get('window').height;
+  const { addToast } = useToastStore();
+  const screenHeight = Dimensions.get("window").height;
   const modalRef = useRef<View>(null);
   const [modalHeight, setModalHeight] = useState(0);
+  const { updateMessages } = useChatHistoriesStore();
+  const { hideModal } = useUI();
+
+  const updateStatus = useCallback(
+    async (status: number) => {
+      try {
+        const result = await new ChatService().updateStatusChat({
+          chat_id: message.id,
+          status: status,
+          member_id: memberId,
+          member_type: memberType,
+        });
+
+        if ("message" in result) throw new Error(result.message);
+
+        updateMessages(result);
+
+        hideModal();
+      } catch (error: any) {
+        addToast(
+          constant.toast.type.error,
+          error.message || "Có lỗi xảy ra, vui lòng thử lại sau"
+        );
+      }
+    },
+    [memberId, memberType]
+  );
 
   // Đo chiều cao modal khi render
   useEffect(() => {
@@ -425,17 +511,23 @@ const ModalMessage: React.FC<{ message: IChatHistory; y: number }> = ({
         className="w-full px-3 items-end gap-2 absolute"
         style={{ top: adjustedTop }}
       >
-        <Button className={cn('py-4 px-6 rounded-3xl max-w-[80%] bg-lime-200')}>
+        <Button className={cn("py-4 px-6 rounded-3xl max-w-[80%] bg-lime-200")}>
           <Text className="font-BeVietnamRegular text-mineShaft-950">
             {message.content.text}
           </Text>
         </Button>
         <View className="bg-white-50 rounded-2xl flex-row px-7 py-3 gap-7">
-          <Button className="flex-col items-center gap-1">
+          <Button
+            className="flex-col items-center gap-1"
+            onPress={() => updateStatus(constant.chat.status.recall)}
+          >
             <Icon icon={ArrowRightSquare} className="text-yellow-400" />
             <Text className="font-BeVietnamRegular">Thu hồi</Text>
           </Button>
-          <Button className="flex-col items-center gap-1">
+          <Button
+            className="flex-col items-center gap-1"
+            onPress={() => updateStatus(constant.chat.status.deleted)}
+          >
             <Icon icon={Trash} className="text-red-600" />
             <Text className="font-BeVietnamRegular">Xoá</Text>
           </Button>

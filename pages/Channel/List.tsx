@@ -31,6 +31,16 @@ const ListChannels: React.FC<{
     changeLastMessage,
   } = useChannelsStore();
 
+  const getLastMessage = useCallback((message: IChatHistory) => {
+    const contentByStatus = {
+      [constant.chat.status.send]: message.content.text,
+      [constant.chat.status.deleted]: message.sender_id == memberId ? "Tin nhắn đã bị xoá" : message.content.text,
+      [constant.chat.status.recall]: "Tin nhắn đã thu hồi",
+    };
+
+    return contentByStatus[message.status];
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       fetchChannels({
@@ -46,9 +56,22 @@ const ListChannels: React.FC<{
       try {
         const echo = await initializeEcho();
         channel = echo.channel(`${memberType}.${memberId}`);
-        channel.listen(`.channels`, (data: IDataRealtime<IChatHistory>) => {
-          changeLastMessage(data.data.channel_id, data.data);
-        });
+        channel.listen(
+          `.channels`,
+          (payload: { data: IChatHistory; extra: any }) => {
+            console.log("payload", payload);
+            const foundChannel = channels.find(
+              (item) => item.id == payload.data.channel_id
+            );
+            if (!foundChannel) return;
+
+            if (payload.extra?.action == "update") {
+              if (payload.data.id == foundChannel.latest_message?.id) {
+                changeLastMessage(payload.data.channel_id, payload.data);
+              }
+            } else changeLastMessage(payload.data.channel_id, payload.data);
+          }
+        );
       } catch (error) {
         console.error(error);
       }
@@ -171,7 +194,7 @@ const ListChannels: React.FC<{
                                     numberOfLines={1}
                                     className="truncate font-BeVietnamRegular text-white-700"
                                   >
-                                    {channel.latest_message?.content.text}
+                                    {getLastMessage(channel.latest_message)}
                                   </Text>
                                 </Text>
                               ) : (

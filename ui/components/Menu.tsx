@@ -8,11 +8,12 @@ import Animated, {
   FadeOutRight,
   LinearTransition,
 } from "react-native-reanimated";
+import { cn } from "@/helper/helper";
 
 interface ItemProps {
   name: string;
   icon: React.ElementType<IIcon>;
-  view: React.ReactNode
+  view: React.ReactNode;
   [key: string]: any;
 }
 
@@ -21,7 +22,6 @@ const Menu: React.FC<{
   onChange: (item: ItemProps) => void;
   active: ItemProps;
 }> = ({ items, onChange, active }) => {
-
   return (
     <View className="py-1 absolute bottom-2 left-0 w-full items-center">
       <View className="bg-mineShaft-950 rounded-full w-fit flex-row p-3">
@@ -30,33 +30,38 @@ const Menu: React.FC<{
             <MotiView
               key={index}
               style={{
-                backgroundColor: active.name === item.name ? "#FDFDFD" : "#0D0F10",
-                borderRadius: 99999,
+                backgroundColor:
+                  active.name === item.name ? "#FDFDFD" : "#0D0F10",
               }}
               layout={LinearTransition.springify().damping(80).stiffness(300)}
-              className="overflow-hidden"
+              className="overflow-hidden rounded-full"
             >
               <Button
                 onPress={() => onChange(item)}
                 className="gap-2 px-4 py-2"
               >
-                <Icon icon={item.icon} className="text-mineShaft-900" />
-                <AnimatePresence>
-                  {active.name === item.name && (
-                    <Animated.Text
-                      style={{ color: "#2A2A2A" }}
-                      entering={FadeInRight.springify()
-                        .damping(40)
-                        .stiffness(300)}
-                      exiting={FadeOutRight.springify()
-                        .damping(40)
-                        .stiffness(300)}
-                      className="font-BeVietnamMedium"
-                    >
-                      {item.name}
-                    </Animated.Text>
+                <Icon
+                  icon={item.icon}
+                  className={cn(
+                    active.name === item.name
+                      ? "text-mineShaft-950"
+                      : "text-white-50"
                   )}
-                </AnimatePresence>
+                />
+                {active.name === item.name && (
+                  <Animated.Text
+                    style={{ color: "#2A2A2A" }}
+                    entering={FadeInRight.springify()
+                      .damping(20)
+                      .stiffness(200)}
+                    // exiting={FadeOutRight.springify()
+                    //   .damping(20)
+                    //   .stiffness(200)}
+                    className="font-BeVietnamMedium"
+                  >
+                    {item.name}
+                  </Animated.Text>
+                )}
               </Button>
             </MotiView>
           );

@@ -6,6 +6,7 @@ import moment from "moment";
 import * as Application from "expo-application";
 import { Platform, StatusBar, Dimensions } from "react-native";
 import { envData } from "@/assets/env";
+import { DateType } from "react-native-ui-datepicker";
 
 // Gộp và làm sạch class tailwind
 export function cn(...inputs: ClassValue[]) {
@@ -318,3 +319,18 @@ export const calcularPers = (part: number, total: number): number => {
   if (total === 0) return 0; // Avoid division by zero
   return (part / total) * 100;
 };
+
+export function toDate(value: DateType): Date | null {
+  if (!value) return null;
+
+  if (value instanceof Date) return value;
+  if (typeof value === 'string' || typeof value === 'number') {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if (typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    return value.toDate(); // Dayjs.toDate()
+  }
+
+  return null;
+}

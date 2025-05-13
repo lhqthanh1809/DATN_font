@@ -1,8 +1,16 @@
 import Button from "@/ui/Button";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
+import { use, useEffect } from "react";
 import { Image, Text, View } from "react-native";
 
 export default function NotFoundScreen() {
+  const path = usePathname();
+  
+  useEffect(() => {
+    console.log("Not found path: ", path);
+  }, [path]);
+
+
   return (
     <View className="flex-1 items-center justify-center bg-white-50 flex-col gap-8">
       <View className="w-full items-center h-72 justify-center">

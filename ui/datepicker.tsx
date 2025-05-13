@@ -44,27 +44,7 @@ function DatePicker({
   required,
   prefix,
 }: Props) {
-  const { selectedDates, setDatePicker, setDate } = useUI();
-  const [date, setDateLocal] = useState<Date | null>(value);
-  const id = useMemo(() => {
-    return uuid.v4();
-  }, []);
-
-  useEffect(() => {
-    if (!date) return;
-    onChange && onChange(date);
-  }, [date]);
-
-  useEffect(() => {
-    if (!value) return;
-    setDate(id, value);
-  }, [value]);
-
-  useEffect(() => {
-    if (selectedDates[id] && selectedDates[id] !== date) {
-      onChange(selectedDates[id]);
-    }
-  }, [selectedDates[id]]);
+  const { openDatePicker } = useUI();
 
   return (
     <View className="flex gap-2 flex-1">
@@ -84,7 +64,7 @@ function DatePicker({
         disabled={disabled}
         className="z-10 relative flex-1"
         onPress={() => {
-          setDatePicker(id);
+          openDatePicker(value, onChange ? onChange : (date: Date) => {});
         }}
       >
         <View

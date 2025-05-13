@@ -103,6 +103,7 @@ export const apiRouter = {
   //Chat
   createChat: "chat/create",
   listChat: "chat/list",
+  updateStatusChat: "chat/update_status",
 
   //Payment
   paymentByContract: "/payment/payment_by_contract",

@@ -90,6 +90,14 @@ export const constant = {
 
   limit: 10,
 
+  chat: {
+    status: {
+      send: 1,
+      deleted: 2,
+      recall: 3
+    }
+  },
+
   toast: {
     type: {
       success: 1,

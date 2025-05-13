@@ -9,6 +9,7 @@ import Dropdown from "@/ui/Dropdown";
 import Scan from "@/ui/Scan";
 import { convertStringToDate } from "@/helper/helper";
 import useUserStore from "@/store/user/useUserStore";
+import { set } from "lodash";
 
 interface BoxInfoProps {
   name: string;
@@ -125,7 +126,9 @@ const BoxInfo = ({
         <DatePicker
           disabled={disabled.includes("end_date")}
           value={endDate}
-          onChange={(date) => setEndDate(date)}
+          onChange={(date) => {
+            setEndDate(date);
+          }}
           label="Ngày kết thúc"
         />
       </View>
