@@ -12,10 +12,13 @@ import { cn } from "@/helper/helper";
 import ImageViewBox from "@/ui/ImageViewBox";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import DetailItem from "@/ui/components/DetailItem";
+import useToastStore from "@/store/toast/useToastStore";
 
 function Detail() {
   const { id } = useLocalSearchParams();
   const [feedback, setFeedback] = useState<IFeedback | null>(null);
+
+  const { addToast } = useToastStore();
 
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -31,6 +34,33 @@ function Detail() {
     setFeedback(data as IFeedback);
 
     setLoading(false);
+  }, [id]);
+
+  const handleDelete = useCallback(async () => {
+    setProcessing(true);
+    try {
+      const result = await feedbackService.delete(id as string);
+
+      if (result && result.hasOwnProperty("message")) {
+        return;
+      }
+
+      addToast(
+        constant.toast.type.success,
+        "Đã thu hồi đóng góp/phản hồi thành công"
+      );
+
+      if (router.canGoBack()) {
+        router.back();
+      }
+    } catch (error: any) {
+      addToast(
+        constant.toast.type.error,
+        error.message || "Có lỗi xảy ra trong quá trình thực hiện"
+      );
+    } finally {
+      setProcessing(false);
+    }
   }, [id]);
 
   useEffect(() => {
@@ -63,13 +93,23 @@ function Detail() {
       <View className="p-3 flex bg-white-50">
         <View className="flex-row gap-2">
           <Button
-            className="flex-1 bg-white-50 border-1 border-lime-400 py-4"
+            className={cn(
+              "flex-1 bg-white-50 border-1 border-lime-400 py-4",
+              feedback?.status === constant.feedback.status.submitted &&
+                "bg-lime-400"
+            )}
             onPress={() => {
-              router.push(`/feedback`);
+              feedback?.status === constant.feedback.status.submitted
+                ? handleDelete()
+                : router.push(`/feedback`);
             }}
           >
-            <Text className="text-mineShaft-900 text-14 font-BeVietnamMedium">
-              Xem đóng góp/phản hồi khác
+            <Text
+              className={cn("text-mineShaft-950 text-14 font-BeVietnamMedium")}
+            >
+              {feedback?.status === constant.feedback.status.submitted
+                ? "Thu hồi đóng góp/phản hồi"
+                : "Xem đóng góp/phản hồi khác"}
             </Text>
           </Button>
         </View>

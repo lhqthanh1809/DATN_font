@@ -1,4 +1,4 @@
-import { Href, SplashScreen, Stack, usePathname, useRouter } from "expo-router";
+import { Href, router, SplashScreen, Stack, usePathname, useRouter } from "expo-router";
 import "../global.css";
 import {
   AppState,
@@ -27,6 +27,7 @@ import { UIProvider } from "@/providers/UIProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IUser } from "@/interfaces/UserInterface";
 import { Image } from "react-native";
+import NotificationService from "@/services/Notification/NotificationService";
 
 export default function RootLayout() {
   const [user, setUser] = useState<IUser | null>(null);
@@ -86,10 +87,9 @@ export default function RootLayout() {
   const handlePushData = useCallback(
     async (response: Notifications.NotificationResponse) => {
       if (response.notification && response.notification.request.content.data) {
-        console.log(
-          "📌 Push data nhận được:",
-          response.notification.request.content.data
-        );
+        const data = response.notification.request.content.data;
+        new NotificationService().toggleRead(data.id as string);
+        router.push(data.end_point as Href);
       }
     },
     []

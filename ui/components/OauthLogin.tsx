@@ -11,15 +11,13 @@ WebBrowser.maybeCompleteAuthSession();
 
 function OAuthLogin() {
   const [request, response, promptAsync] = GoogleAuth.useAuthRequest({
+    clientId: "267231850666-tl04drsb4aaqjel2bg8sid8g6d4d0f26.apps.googleusercontent.com",
     androidClientId:
       "267231850666-fjeimq8bmugl4j03p6u7pr82rrj3kepf.apps.googleusercontent.com",
     iosClientId:
       "267231850666-uq13oqnnfo08m2msjle975tagvclbvqq.apps.googleusercontent.com",
-
     webClientId:
       "267231850666-tl04drsb4aaqjel2bg8sid8g6d4d0f26.apps.googleusercontent.com",
-      redirectUri: 'https://auth.expo.io/@thanh18092003/DoAnTotNghiep',
-    scopes: ["profile", "email"],
   });
 
   return (

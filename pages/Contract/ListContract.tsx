@@ -111,13 +111,15 @@ const ListContract: React.FC<{
   }, [search]);
 
   return (
-    <View className="flex-1 pt-3 gap-2">
-      <SearchAndSegmentedControl
-        dataObject={reference.contract.status}
-        onChangeSearch={(search) => setSearch(search)}
-        onChangeStatus={(status) => setStatusActive(status)}
-        placeHolder="Tìm kiếm theo mã hợp đồng..."
-      />
+    <View className="flex-1 gap-2">
+      <View className="py-3 bg-white-50">
+        <SearchAndSegmentedControl
+          dataObject={reference.contract.status}
+          onChangeSearch={(search) => setSearch(search)}
+          onChangeStatus={(status) => setStatusActive(status)}
+          placeHolder="Tìm kiếm theo mã hợp đồng..."
+        />
+      </View>
 
       {!loading && contracts.length <= 0 ? (
         <EmptyScreen
@@ -141,7 +143,7 @@ const ListContract: React.FC<{
             hasMore: hasMore,
           })}
         >
-          <View className="gap-3 items-center flex-1 py-3">
+          <View className="gap-3 items-center flex-1 py-2">
             {loading
               ? Array(2)
                   .fill("")
@@ -279,6 +281,9 @@ const ContractItem: React.FC<{
   return (
     <Button
       key={contract.id}
+      onPress={() =>
+        router.push(`/lodging/${lodgingId}/contract/detail/${contract.id}`)
+      }
       className={cn(
         "w-full bg-white-50 rounded-xl p-4 gap-2 border-1 shadow-soft-md flex-col items-start",
         contract.due_months && contract.due_months > 1
@@ -352,29 +357,18 @@ const ContractItem: React.FC<{
         </View>
       </View>
 
-      <View className="w-full px-11">
-        <Divide className="h-0.25" />
-      </View>
-
       {/* Footer */}
-      <View className="w-full flex-row gap-2">
-        <Button
-          className=" flex-1 border-1 border-lime-500 px-4 py-2"
-          onPress={() => {
-            router.push(`/lodging/${lodgingId}/contract/detail/${contract.id}`);
-          }}
-        >
-          <Text className="font-BeVietnamMedium text-mineShaft-950">
-            Xem chi tiết
-          </Text>
-        </Button>
-        {contract.status === constant.contract.status.pending ? (
-          <ButtonCancelContract />
-        ) : contract.status === constant.contract.status.cancel ||
-          contract.status === constant.contract.status.finished ? null : (
-          !!contract.due_months && <ButtonPayment onPress={handleOpenPayment} />
-        )}
-      </View>
+
+      {!!contract.due_months && (
+        <>
+          <View className="w-full px-11">
+            <Divide className="h-0.25" />
+          </View>
+          <View className="w-full flex-row gap-2">
+            <ButtonPayment onPress={handleOpenPayment} />
+          </View>
+        </>
+      )}
     </Button>
   );
 };

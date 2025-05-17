@@ -71,6 +71,7 @@ export const apiRouter = {
   listFeedback: "/feedback/list",
   detailFeedback: "/feedback/detail/:id",
   updateStatusFeedback: "/feedback/update_status",
+  deleteFeedback: "/feedback/delete/:id",
 
   // Notification
   listNotification: "/notification/list",

@@ -88,6 +88,24 @@ export default class FeedbackService extends BaseService {
     }
   }
 
+  public async delete(id: string): Promise<string | IError> {
+    try {
+      const res: IResponse = await this.https({
+        url: apiRouter.deleteFeedback.replace(":id", id),
+        method: "DELETE",
+        authentication_requested: true,
+      });
+
+      if ("message" in res) {
+        return res as IError;
+      }
+
+      return res.body?.data;
+    } catch (error: any) {
+      return this.returnError(error);
+    }
+  }
+
   public getReferenceToStatus(status: number) {
     return status in reference.feedback.status
       ? reference.feedback.status[

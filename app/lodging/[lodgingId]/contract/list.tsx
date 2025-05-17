@@ -7,7 +7,7 @@ function Contract() {
   const { lodgingId } = useLocalSearchParams();
 
   return (
-    <View className="flex-1 bg-white-50">
+    <View className="flex-1 bg-gray-100">
       <HeaderBack title={`Danh sách hợp đồng`} />
       <ListContract lodgingId={lodgingId as string} />
     </View>
