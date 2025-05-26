@@ -6,13 +6,26 @@ interface IIcon {
   className?: string;
   currentColor?: string;
   strokeWidth?: number;
+  viewBox?: string;
+  width?: number | string;
+  height?: number | string;
 }
 
 const Icon: React.FC<{
   icon: React.ElementType<IIcon>;
   className?: string;
   strokeWidth?: number;
-}> = ({ icon: IconComponent, className, strokeWidth }) => {
+  viewBox?: string;
+  width?: number | string;
+  height?: number | string;
+}> = ({
+  icon: IconComponent,
+  className,
+  strokeWidth,
+  viewBox,
+  width,
+  height,
+}) => {
   const { getColor } = useTailwindColor();
   const classNameIcon = cn("text-mineShaft-600", className);
   const textColorMatch = classNameIcon.match(/\btext-(\w+)-(\d+)\b/);
@@ -23,6 +36,9 @@ const Icon: React.FC<{
       className={classNameIcon}
       currentColor={getColor(textColor)}
       strokeWidth={strokeWidth}
+      viewBox={viewBox}
+      width={width}
+      height={height}
     />
   );
 };

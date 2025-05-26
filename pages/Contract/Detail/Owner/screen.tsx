@@ -13,22 +13,42 @@ import useContractStore from "@/store/contract/useContractStore";
 import moment from "moment";
 import useUserStore from "@/store/user/useUserStore";
 import LoadingScreen from "@/ui/layouts/LoadingScreen";
-
+import { useUI } from "@/hooks/useUI";
+import ModalExtensionContract from "@/ui/components/ModalExtensionContract";
+import { IRoom } from "@/interfaces/RoomInterface";
 
 const DetailContract: React.FC<{
   id: string;
   lodgingId: string;
 }> = ({ id, lodgingId }) => {
+  const { showModal } = useUI();
   const { addToast } = useToastStore();
-  const {genders} = useUserStore()
-  const { loading, loadingProcess, contract, fetchContract, updateContract } =
-    useContractStore();
+  const { genders } = useUserStore();
+  const {
+    loading,
+    loadingProcess,
+    contract,
+    fetchContract,
+    updateContract,
+    setContract,
+  } = useContractStore();
   const makeCall = useCallback((phoneNumber: string) => {
     const url = `tel:${phoneNumber}`;
     Linking.openURL(url).catch((err) =>
       addToast(constant.toast.type.error, "Không thể mở trình gọi điện")
     );
   }, []);
+
+  const openExtensionModal = useCallback(() => {
+    if (!contract) return;
+    showModal(
+      <ModalExtensionContract
+        contract={contract}
+        setContract={setContract}
+        room={contract.room as IRoom}
+      />
+    );
+  }, [contract]);
 
   const buttonActiveSection = useCallback(() => {
     if (!contract) return;
@@ -52,7 +72,9 @@ const DetailContract: React.FC<{
             <Button
               disabled={loadingProcess}
               loading={loadingProcess}
-              onPress={() => { router.push(`/lodging/${lodgingId}/contract/update/${id}`)}}
+              onPress={() => {
+                router.push(`/lodging/${lodgingId}/contract/update/${id}`);
+              }}
               className="flex-1 bg-lime-400 py-4"
             >
               <Text className="text-mineShaft-900 text-14 font-BeVietnamMedium">
@@ -60,6 +82,30 @@ const DetailContract: React.FC<{
               </Text>
             </Button>
           )}
+        </>
+      );
+    }
+
+    if (contract.status == constant.contract.status.overdue) {
+      return (
+        <>
+          <Button
+            onPress={() =>
+              router.push(
+                `/lodging/${lodgingId}/contract/delete/${contract.id}`
+              )
+            }
+            className="flex-1 bg-redPower-600 py-4"
+          >
+            <Text className="text-redPower-100 text-14 font-BeVietnamMedium">
+              Kết thúc hợp đồng
+            </Text>
+          </Button>
+          <Button onPress={openExtensionModal} className="flex-1 bg-lime-400 py-4">
+            <Text className="text-mineShaft-900 text-14 font-BeVietnamMedium">
+              Gia hạn hợp đồng
+            </Text>
+          </Button>
         </>
       );
     }
@@ -82,7 +128,12 @@ const DetailContract: React.FC<{
     }
 
     return (
-      <Button onPress={() => router.push(`/lodging/${lodgingId}/contract/delete/${contract.id}`)} className="flex-1 bg-lime-400 py-4">
+      <Button
+        onPress={() =>
+          router.push(`/lodging/${lodgingId}/contract/delete/${contract.id}`)
+        }
+        className="flex-1 bg-lime-400 py-4"
+      >
         <Text className="text-mineShaft-900 text-14 font-BeVietnamMedium">
           Kết thúc hợp đồng
         </Text>

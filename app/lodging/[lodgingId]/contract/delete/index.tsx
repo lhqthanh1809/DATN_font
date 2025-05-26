@@ -35,21 +35,32 @@ function Delete() {
   const contractService = new ContractService();
 
   const fetchContract = useCallback(async () => {
-    const data: IListContract = {
+    const requestData = (status: number) => ({
       lodging_id: lodgingId as string,
-      status: constant.contract.status.active,
-    };
-
+      status,
+    });
     setLoading(true);
 
-    const result = await contractService.listContract(data);
+    const [activeContracts, overdueContracts] = await Promise.all([
+      contractService.listContract(
+        requestData(constant.contract.status.active)
+      ),
+      contractService.listContract(
+        requestData(constant.contract.status.overdue)
+      ),
+    ]);
 
-    if ("message" in result) {
-      addToast(constant.toast.type.error, result.message);
+    if ("message" in activeContracts || "message" in overdueContracts) {
+      if ("message" in activeContracts) {
+        addToast(constant.toast.type.error, activeContracts.message);
+      }
+      if ("message" in overdueContracts) {
+        addToast(constant.toast.type.error, overdueContracts.message);
+      }
       return;
     }
 
-    setContracts(result.data as IContract[]);
+    setContracts([...overdueContracts.data, ...activeContracts.data]);
 
     setLoading(false);
   }, [lodgingId]);

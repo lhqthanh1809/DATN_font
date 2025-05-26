@@ -204,7 +204,30 @@ export default class ContractService extends BaseService {
         return res as IError;
       }
 
-      return ((res as IResponse).body as IListResponse<IContract>)|| null;
+      return ((res as IResponse).body as IListResponse<IContract>) || null;
+    } catch (err: any) {
+      return this.returnError(err);
+    }
+  }
+
+  public async extension(data: {
+    contract_id: string;
+    end_data?: string;
+    duration?: number;
+  }): Promise<IContract | IError> {
+    try {
+      const res: IResponse | IError = await this.https({
+        method: "POST",
+        authentication_requested: true,
+        url: apiRouter.extensionContract,
+        body: data,
+      });
+
+      if (res.hasOwnProperty("message")) {
+        return res as IError;
+      }
+
+      return (res as IResponse).body?.data || null;
     } catch (err: any) {
       return this.returnError(err);
     }

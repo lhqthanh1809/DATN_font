@@ -39,7 +39,7 @@ function DatePicker({
   className,
   icon,
   value,
-  placeHolder = "",
+  placeHolder = "dd/mm/yyyy",
   disabled = false,
   required,
   prefix,

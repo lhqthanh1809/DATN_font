@@ -505,7 +505,7 @@ const ModalMessage: React.FC<{
 
   return (
     <View className="w-screen h-screen">
-      <BlurView className="absolute w-full h-full" intensity={40} tint="dark" />
+      <BlurView className="absolute w-full h-full" intensity={60} tint="dark" />
       <View
         ref={modalRef}
         className="w-full px-3 items-end gap-2 absolute"

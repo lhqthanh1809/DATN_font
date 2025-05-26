@@ -1,6 +1,6 @@
 import { constant } from "@/assets/constant";
 import { reference } from "@/assets/reference";
-import { cn, convertToNumber } from "@/helper/helper";
+import { cn, convertToNumber, getTimezone } from "@/helper/helper";
 import { useUI } from "@/hooks/useUI";
 import { IContract, IListContract } from "@/interfaces/ContractInterface";
 import ContractService from "@/services/Contract/ContractService";
@@ -16,7 +16,7 @@ import { router, useFocusEffect } from "expo-router";
 import { isArray } from "lodash";
 import moment from "moment";
 import { Skeleton } from "moti/skeleton";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import axios from "axios";
 import { createScrollHandler } from "@/utils/scrollHandle";
@@ -93,13 +93,12 @@ const ListContract: React.FC<{
     useCallback(() => {
       const source = axios.CancelToken.source();
       setSourceAxios(source);
-
       fetchContract(source.token);
 
       return () => {
         source.cancel("Hủy request do mất focus hoặc dữ liệu thay đổi");
       };
-    }, [])
+    }, [statusActive])
   );
 
   useEffect(() => {
@@ -278,6 +277,13 @@ const ContractItem: React.FC<{
     }
   }, [contract, startDate]);
 
+  const daysToContractDeadline = useMemo(() => {
+    const today = moment().tz(getTimezone()).startOf("day");
+    const end = endDate.clone().tz(getTimezone()).endOf("day"); // thêm .tz ở đây!
+    return end.diff(today, "days");
+
+  }, [endDate]);
+
   return (
     <Button
       key={contract.id}
@@ -288,6 +294,8 @@ const ContractItem: React.FC<{
         "w-full bg-white-50 rounded-xl p-4 gap-2 border-1 shadow-soft-md flex-col items-start",
         contract.due_months && contract.due_months > 1
           ? "border-redPower-600"
+          : daysToContractDeadline <= 5 && daysToContractDeadline >= 0
+          ? "border-happyOrange-600"
           : "border-white-100"
       )}
     >
@@ -311,7 +319,11 @@ const ContractItem: React.FC<{
         {/* Status */}
         <View className={cn("rounded-full items-center px-4 py-2", status.bg)}>
           <Text className={cn("font-BeVietnamMedium", status.text)}>
-            {status.name}
+            {`${status.name} ${
+              daysToContractDeadline <= 5 && daysToContractDeadline >= 0
+                ? `(${daysToContractDeadline} ngày)`
+                : ""
+            }`}
           </Text>
         </View>
       </View>

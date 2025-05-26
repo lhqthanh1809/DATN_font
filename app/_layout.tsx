@@ -1,4 +1,10 @@
-import { Href, router, SplashScreen, Stack, usePathname, useRouter } from "expo-router";
+import {
+  Href,
+  router,
+  SplashScreen,
+  Stack,
+  useRouter,
+} from "expo-router";
 import "../global.css";
 import {
   AppState,
@@ -10,7 +16,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { env, getDeviceID } from "@/helper/helper";
@@ -19,10 +25,7 @@ import { GeneralProvider } from "@/providers/GeneralProvider";
 import { useGeneral } from "@/hooks/useGeneral";
 import UserService from "@/services/User/UserService";
 import * as Notifications from "expo-notifications";
-import registerNNPushToken, {
-  getPushDataObject,
-  registerIndieID,
-} from "native-notify";
+import { registerIndieID } from "native-notify";
 import { UIProvider } from "@/providers/UIProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IUser } from "@/interfaces/UserInterface";
@@ -35,8 +38,6 @@ export default function RootLayout() {
   const localStorage = new LocalStorage();
   const route = useRouter();
   const [page, setPage] = useState<Href | null>(null);
-  const pathName = usePathname();
-  const [hasHandledPush, setHasHandledPush] = useState(false);
 
   // Load fonts
   const [fontsLoaded] = useFonts({
@@ -132,26 +133,13 @@ export default function RootLayout() {
 
   //Push notification
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === "active") {
-        // handlePushData();
-        setHasHandledPush(false);
-      }
-    };
-
-    const appStateListener = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
-
     const responseListener =
       Notifications.addNotificationResponseReceivedListener(handlePushData);
 
     return () => {
-      appStateListener.remove();
       responseListener.remove();
     };
-  }, [hasHandledPush]);
+  }, []);
 
   useEffect(() => {
     if (!loading && fontsLoaded && page) {
@@ -203,7 +191,7 @@ const Container = () => {
       }}
     >
       <View className="flex-1 bg-white-50 relative" ref={containerRef}>
-        <StatusBar barStyle={"dark-content"} backgroundColor={"#FFF"}/>
+        <StatusBar barStyle={"dark-content"} backgroundColor={"#FFF"} />
         <Stack
           screenOptions={{
             headerShown: false,

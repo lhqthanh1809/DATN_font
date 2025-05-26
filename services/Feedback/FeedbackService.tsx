@@ -13,17 +13,16 @@ import { IResponse } from "@/interfaces/ResponseInterface";
 import { IListResponse } from "@/interfaces/GeneralInterface";
 
 export default class FeedbackService extends BaseService {
-  public async createFeedback(
-    data: ICreateFeedback
-  ): Promise<IFeedback | IError> {
+  public async createFeedback(data: FormData): Promise<IFeedback | IError> {
     try {
       const res = await this.https({
         url: apiRouter.createFeedback,
         method: "POST",
         body: data,
         authentication_requested: true,
+        formData_requested: true,
       });
-      if (!res || res.status >= HttpStatusCode.BadRequest) {
+      if ("message" in res) {
         return this.getErrorResponse(res);
       }
       return res.body?.data;

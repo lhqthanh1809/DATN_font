@@ -32,8 +32,13 @@ import LoadingAnimation from "@/ui/LoadingAnimation";
 import EmptyScreen from "@/ui/layouts/EmptyScreen";
 
 const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
-  const { feedbacks, setFeedbacks, addFeedback, updateFeedback } =
-    useFeedbackStore();
+  const {
+    feedbacks,
+    setFeedbacks,
+    addFeedback,
+    updateFeedback,
+    removeFeedback,
+  } = useFeedbackStore();
 
   const limit = constant.limit;
 
@@ -143,6 +148,9 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
             ) {
               updateFeedback(payload.data);
             }
+          })
+          .listen(".delete", (payload: IDataRealtime<IFeedback>) => {
+            removeFeedback(payload.data);
           });
       } catch (error) {
         console.error(error);
@@ -154,6 +162,7 @@ const ListFeedback = ({ lodgingId }: { lodgingId: string }) => {
       if (channel) {
         channel.stopListening(".new");
         channel.stopListening(".update");
+        channel.stopListening(".delete");
       }
     };
   }, [lodgingId]);

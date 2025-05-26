@@ -14,6 +14,24 @@ import ClientService from "@/services/Client/ClientService";
 import { router, useLocalSearchParams } from "expo-router";
 import { ICreateFeedback } from "@/interfaces/FeedbackInterface";
 import FeedbackService from "@/services/Feedback/FeedbackService";
+import * as Yup from "yup";
+import useToastStore from "@/store/toast/useToastStore";
+import { constant } from "@/assets/constant";
+
+const schema = Yup.object().shape({
+  title: Yup.string().required("Tiêu đề là bắt buộc"),
+  content: Yup.string().required("Nội dung là bắt buộc"),
+  lodging: Yup.object()
+    .required("Nhà trọ góp ý là bắt buột")
+    .shape({
+      id: Yup.string().required("Nhà trọ không hợp lệ"),
+    }),
+  room: Yup.object()
+    .required("Phòng trọ góp ý là bắt buột")
+    .shape({
+      id: Yup.string().required("Phòng trọ không hợp lệ"),
+    }),
+});
 
 function Create() {
   const { room_id, lodging_id } = useLocalSearchParams();
@@ -21,6 +39,7 @@ function Create() {
   const [content, setContent] = useState("");
   const [lodging, setLodging] = useState<ILodging | null>(null);
   const [room, setRoom] = useState<IRoom | null>(null);
+  const { addToast } = useToastStore();
 
   //Data được fetch từ API
   const [lodgings, setLodgings] = useState<ILodging[]>([]);
@@ -45,39 +64,61 @@ function Create() {
   }, []);
 
   const handleSendFeedback = useCallback(async () => {
-    if (!title || !content || !lodging || !room || !room.id || !lodging.id)
-      return;
     setProcessing(true);
-    const images = selectPhotos.filter((item) =>
-      typeof item === "string" ? item : item.mediaType === "photo"
-    );
+
     try {
-      const imagesBase64 = await Promise.all(
-        images.map(async (item) => {
-          if (typeof item != "string") {
-            const base64 = await FileSystem.readAsStringAsync(item.uri, {
-              encoding: FileSystem.EncodingType.Base64,
-            });
-            const extension = item.filename.split(".")[1].toLocaleLowerCase();
-            return `data:image/${extension};base64,${base64}`;
-          }
-          return item;
-        })
+      await schema.validate(
+        {
+          content,
+          title,
+          lodging,
+          room,
+        },
+        { abortEarly: false }
       );
-      let dataReq: ICreateFeedback = {
-        room_id: room.id,
-        title: title,
-        content: content,
-        lodging_id: lodging.id,
-      };
-      if (imagesBase64.length > 0) {
-        dataReq = { ...dataReq, images: imagesBase64 };
+
+      if (!room?.id || !lodging?.id) return;
+      const formData = new FormData();
+
+      const images = selectPhotos.filter((item) =>
+        typeof item === "string" ? item : item.mediaType === "photo"
+      );
+
+      for (const item of images) {
+        if (typeof item !== "string") {
+          const response = await fetch(item.uri);
+          const blob = await response.blob();
+          formData.append("images[]", {
+            uri: item.uri,
+            type: blob.type,
+            name: item.filename,
+          } as any);
+        } else {
+          formData.append("images[]", item);
+        }
       }
-      const res = await feedbackService.createFeedback(dataReq);
-      if (!("message" in res)) {
-        router.back();
+
+      formData.append("room_id", room.id)
+      formData.append("title", title)
+      formData.append("content", content)
+      formData.append("lodging_id", lodging.id)
+
+      const res = await feedbackService.createFeedback(formData);
+      if ("message" in res) {
+        throw new Error(res.message);
       }
-    } catch (error) {
+      router.back();
+    } catch (err: any) {
+      if (err instanceof Yup.ValidationError) {
+        err.inner.forEach((e) => {
+          addToast(constant.toast.type.error, e.message);
+        });
+      } else {
+        addToast(
+          constant.toast.type.error,
+          err.message || "Đã có lỗi xảy ra, vui lòng thử lại"
+        );
+      }
     } finally {
       setProcessing(false);
     }
@@ -91,11 +132,12 @@ function Create() {
   }, [lodging]);
 
   useEffect(() => {
-    if(lodgings.length <= 0 || rooms.length <= 0 || !lodging_id || !room_id) return
-    
-    setLodging(lodgings.find(item => item.id == lodging_id) ?? lodging)
-    setRoom(rooms.find(item => item.id == room_id) ?? room)
-  }, [lodging_id, lodgings, rooms, room_id])
+    if (lodgings.length <= 0 || rooms.length <= 0 || !lodging_id || !room_id)
+      return;
+
+    setLodging(lodgings.find((item) => item.id == lodging_id) ?? lodging);
+    setRoom(rooms.find((item) => item.id == room_id) ?? room);
+  }, [lodging_id, lodgings, rooms, room_id]);
 
   useEffect(() => {
     fetchLodgings();
@@ -128,6 +170,7 @@ function Create() {
             options={rooms}
           />
           <Input
+            required
             value={title}
             onChange={(text) => setTitle(text)}
             label="Tiêu đề"
@@ -135,6 +178,7 @@ function Create() {
           />
           <View className="flex-1">
             <TextArea
+              required
               classNameInput="min-h-40"
               placeHolder="Nhập nội dung đóng góp..."
               value={content}

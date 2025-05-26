@@ -12,9 +12,17 @@ import { cn } from "@/helper/helper";
 import ImageViewBox from "@/ui/ImageViewBox";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import DetailItem from "@/ui/components/DetailItem";
+import { useUI } from "@/hooks/useUI";
+import { BlurView } from "expo-blur";
+import Icon from "@/ui/Icon";
+import { Warning } from "@/ui/icon/symbol";
+import { Channel } from "@ably/laravel-echo";
+import { initializeEcho } from "@/utils/echo";
+import { IDataRealtime } from "@/interfaces/GeneralInterface";
 
 function Detail() {
   const { id, lodgingId } = useLocalSearchParams();
+  const { showModal } = useUI();
   const [feedback, setFeedback] = useState<IFeedback | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -69,6 +77,30 @@ function Detail() {
     fetchFeedback();
   }, []);
 
+  useEffect(() => {
+    let channel: Channel | null = null;
+    const setupEcho = async () => {
+      try {
+        const echo = await initializeEcho();
+        channel = echo.private(`feedback.lodging.${lodgingId}`);
+        channel.listen(".delete", (payload: IDataRealtime<IFeedback>) => {
+          if (payload.data.id == id) {
+            showModal(<ModalHasDeletedFeedback />);
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    setupEcho();
+    return () => {
+      if (channel) {
+        channel.stopListening(".delete");
+      }
+    };
+  }, [lodgingId, id]);
+
   return (
     <Layout title="Đóng góp ý kiến">
       {loading && (
@@ -83,12 +115,15 @@ function Detail() {
           <View className="flex-1">
             <DetailItem title="Nội dung" data={feedback?.body.content} />
           </View>
-          <Button className="flex gap-1 px-4 py-3 border-1 border-mineShaft-100 rounded-2xl bg-white-50 shadow-sm shadow-mineShaft-950/10 flex-col items-start">
-            <ImageViewBox
-              label="Ảnh đính kèm"
-              value={feedback?.body.images ?? []}
-            />
-          </Button>
+
+          {feedback && feedback.body.images && feedback.body.images.length > 0 && (
+            <Button className="flex gap-1 px-4 py-3 border-1 border-mineShaft-100 rounded-2xl bg-white-50 shadow-sm shadow-mineShaft-950/10 flex-col items-start">
+              <ImageViewBox
+                label="Ảnh đính kèm"
+                value={feedback?.body.images ?? []}
+              />
+            </Button>
+          )}
         </View>
       </ScrollView>
       <View className="p-3 flex bg-white-50">
@@ -127,7 +162,7 @@ function Detail() {
             <Button
               className="flex-1 bg-white-50 border-1 border-lime-400 py-4"
               onPress={() => {
-                router.push(`/lodging/${lodgingId}?slugTab=feedback`)
+                router.push(`/lodging/${lodgingId}?slugTab=feedback`);
               }}
             >
               <Text className="text-mineShaft-900 text-14 font-BeVietnamMedium">
@@ -141,5 +176,44 @@ function Detail() {
   );
 }
 
+const ModalHasDeletedFeedback = () => {
+  const { hideModal } = useUI();
+  return (
+    <Button className="absolute inset-0 z-10 items-center justify-center">
+      <BlurView className="absolute w-full h-full" intensity={20} tint="dark" />
+
+      <View className="w-full p-8">
+        <View className="bg-white-50 p-6 rounded-2xl gap-6 items-center">
+          <Icon
+            icon={Warning}
+            className="text-happyOrange-600"
+            width={50}
+            height={50}
+            viewBox="0 0 25 25"
+          />
+          <View className="items-center gap-3">
+            <Text className="font-BeVietnamSemiBold text-16">
+              Phản hồi/ Góp ý đã bị thu hồi
+            </Text>
+
+            <Text className="text-center font-BeVietnamRegular">
+              Phản hồi không khả dụng do đã bị thu hồi bởi người gửi
+            </Text>
+          </View>
+
+          <Button
+            className="bg-lime-400 py-3 w-full"
+            onPress={() => {
+              hideModal();
+              router.canGoBack() ? router.back() : router.push("/");
+            }}
+          >
+            <Text className="font-BeVietnamMedium">Quay lại </Text>
+          </Button>
+        </View>
+      </View>
+    </Button>
+  );
+};
 
 export default Detail;

@@ -6,12 +6,15 @@ const Warning: React.FC<IIcon> = ({
   className,
   currentColor,
   strokeWidth = 1.5,
+  viewBox = "0 0 24 24",
+  width = "24",
+  height = "24",
 }) => {
   return (
     <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width={width}
+      height={height}
+      viewBox={viewBox}
       fill="none"
       className={className}
     >

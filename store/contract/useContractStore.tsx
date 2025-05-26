@@ -12,8 +12,13 @@ interface IContractStore {
   contract: IContract | null;
   loading: boolean;
   loadingProcess: boolean;
+  setContract: (contract: IContract) => void;
   fetchContract: (id: string) => void;
-  updateContract: (contract: IContract, lodgingId: string, goBack?: boolean) => void;
+  updateContract: (
+    contract: IContract,
+    lodgingId: string,
+    goBack?: boolean
+  ) => void;
 }
 
 const useContractStore = create<IContractStore>((set, get) => ({
@@ -53,15 +58,19 @@ const useContractStore = create<IContractStore>((set, get) => ({
         return;
       }
 
-      addToast(constant.toast.type.success, "Cập nhập hợp đồng thành công!")
+      addToast(constant.toast.type.success, "Cập nhập hợp đồng thành công!");
       set({ contract: result as IContract });
-      if(goBack){
-        router.back()
+      if (goBack) {
+        router.back();
       }
     } catch (err) {
     } finally {
       set({ loadingProcess: false });
     }
+  },
+
+  setContract: (contract) => {
+    set({ contract });
   },
 }));
 

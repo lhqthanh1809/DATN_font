@@ -13,13 +13,21 @@ import ImageViewBox from "@/ui/ImageViewBox";
 import LoadingAnimation from "@/ui/LoadingAnimation";
 import DetailItem from "@/ui/components/DetailItem";
 import useToastStore from "@/store/toast/useToastStore";
+import { useUI } from "@/hooks/useUI";
+import { BlurView } from "expo-blur";
+import Icon from "@/ui/Icon";
+import { Warning } from "@/ui/icon/symbol";
+import { Channel } from "@ably/laravel-echo";
+import { initializeEcho } from "@/utils/echo";
+import { useGeneral } from "@/hooks/useGeneral";
+import { IDataRealtime } from "@/interfaces/GeneralInterface";
+import useFeedbackStore from "@/store/feedback/useFeedbackStore";
 
 function Detail() {
+  const { user } = useGeneral();
   const { id } = useLocalSearchParams();
   const [feedback, setFeedback] = useState<IFeedback | null>(null);
-
   const { addToast } = useToastStore();
-
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const feedbackService = new FeedbackService();
@@ -63,9 +71,38 @@ function Detail() {
     }
   }, [id]);
 
+  const updateRealtime = useCallback(
+    (payload: IDataRealtime<IFeedback>) => {
+      if (payload.data.id == id) {
+        setFeedback(payload.data);
+      }
+    },
+    [id]
+  );
+
   useEffect(() => {
     fetchFeedback();
   }, []);
+
+  useEffect(() => {
+    let channel: Channel | null = null;
+    const setupEcho = async () => {
+      try {
+        const echo = await initializeEcho();
+        channel = echo.private(`feedback.user.${user?.id}`);
+        channel.listen(".update", updateRealtime);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    setupEcho();
+    return () => {
+      if (channel) {
+        channel.stopListening(".update");
+      }
+    };
+  }, [user, user?.id]);
 
   return (
     <Layout title="Đóng góp ý kiến">
@@ -82,17 +119,23 @@ function Detail() {
           <View className="flex-1">
             <DetailItem title="Nội dung" data={feedback?.body.content} />
           </View>
-          <Button className="flex gap-1 px-4 py-3 border-1 border-mineShaft-100 rounded-2xl bg-white-50 shadow-sm shadow-mineShaft-950/10 flex-col items-start">
-            <ImageViewBox
-              label="Ảnh đính kèm"
-              value={feedback?.body.images ?? []}
-            />
-          </Button>
+          {feedback &&
+            feedback.body.images &&
+            feedback.body.images.length > 0 && (
+              <Button className="flex gap-1 px-4 py-3 border-1 border-mineShaft-100 rounded-2xl bg-white-50 shadow-sm shadow-mineShaft-950/10 flex-col items-start">
+                <ImageViewBox
+                  label="Ảnh đính kèm"
+                  value={feedback?.body.images ?? []}
+                />
+              </Button>
+            )}
         </View>
       </ScrollView>
       <View className="p-3 flex bg-white-50">
         <View className="flex-row gap-2">
           <Button
+            disabled={processing}
+            loading={processing}
             className={cn(
               "flex-1 bg-white-50 border-1 border-lime-400 py-4",
               feedback?.status === constant.feedback.status.submitted &&

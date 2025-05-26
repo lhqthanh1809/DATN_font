@@ -55,7 +55,7 @@ export const apiRouter = {
   filterRoom: "/room/filter",
   deleteRoom: "/room/delete",
 
-  //CreateContract
+  //Contract
   createContract: "/contract/create",
   listContract: "/contract/list",
   detailContract: "/contract/detail/:id",
@@ -65,6 +65,7 @@ export const apiRouter = {
   endContract: "/contract/end_contract",
   payAmountByContract: "/contract/pay_amount",
   listContractByUser: "/contract/list_by_user",
+  extensionContract: "/contract/extension",
 
   //Feedback
   createFeedback: "/feedback/create",

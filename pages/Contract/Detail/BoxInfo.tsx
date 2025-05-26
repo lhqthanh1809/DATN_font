@@ -52,7 +52,7 @@ const BoxInfo = ({
       <Input
         type="number"
         value={time.toString()}
-        label="Thời gian thuê dự kiến"
+        label="Thời gian thuê"
         suffix={<Label label="tháng" />}
         disabled
       />

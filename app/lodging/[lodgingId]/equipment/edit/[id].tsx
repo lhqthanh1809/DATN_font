@@ -124,7 +124,7 @@ function UpdateEquipment() {
               className="flex-1 bg-red-600 py-4"
             >
               <Text className="text-white-50 text-16 font-BeVietnamSemiBold">
-                Xoá phòng
+                Xoá trang thiết bị
               </Text>
             </Button>
             <Button
