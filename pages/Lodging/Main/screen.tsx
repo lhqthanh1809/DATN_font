@@ -96,7 +96,7 @@ const HomeScreen: React.FC<{
           tabs={tabs}
           renderKey="name"
           onChange={(tab) => setTab(tab)}
-          className="mx-6 bg-[#f6f4fc]"
+          className="mx-6 bg-[#ececec]"
         />
       </View>
       <ScrollView

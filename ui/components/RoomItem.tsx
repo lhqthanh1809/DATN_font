@@ -32,7 +32,7 @@ const RoomItem: React.FC<{
           {item.room_code}
         </Text>
 
-        <Text className="font-BeVietnamBold text-18 text-lime-400">
+        <Text className="font-BeVietnamBold text-18 text-lime-600">
           {`${convertToNumber(item.price?.toString() ?? "0")} đ`}
         </Text>
       </View>

@@ -12,7 +12,6 @@ export default class BaseService {
   });
 
   constructor() {
-    // Cài interceptor vào đây luôn
     this._api.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
@@ -27,7 +26,7 @@ export default class BaseService {
             // originalRequest.url != apiRouter.refreshToken
         ) {
           
-          originalRequest._retry = true;
+          // originalRequest._retry = true;
           const localStorage = new LocalStorage();
           try {
             // Gọi API refresh
@@ -39,7 +38,7 @@ export default class BaseService {
                 "Content-Type": "application/json",
               }
             })
-            console.log("refreshRes: ", refreshRes);
+            // console.log("refreshRes: ", refreshRes);
 
             if (refreshRes.status < 200 || refreshRes.status >= 300) {
               throw new Error(`Refresh token failed with status: ${refreshRes.status}`);

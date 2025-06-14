@@ -1,14 +1,35 @@
 import { constant } from "@/assets/constant";
 import { env, formatDateForRequest, formatNumber } from "@/helper/helper";
+import { ICreateContract } from "@/interfaces/ContractInterface";
 import BoxInfo from "@/pages/Contract/BoxInfo";
 import BoxPrice from "@/pages/Contract/Create/BoxPrice";
 import ContractService from "@/services/Contract/ContractService";
+import useToastStore from "@/store/toast/useToastStore";
 import useUserStore from "@/store/user/useUserStore";
 import Button from "@/ui/Button";
 import Layout from "@/ui/layouts/Layout";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import * as Yup from "yup";
+
+const schema = Yup.object().shape({
+  address: Yup.string().required("Vui lòng nhập địa chỉ"),
+  phone: Yup.string()
+    .required("Số điện thoại là bắt buộc")
+    .matches(/^0[0-9]{9}$/, "Số điện thoại không hợp lệ"),
+  date_of_birth: Yup.date().required("Vui lòng chọn ngày sinh khách đứng tên"),
+  full_name: Yup.string().required("Vui lòng nhập họ tên"),
+  deposit_amount: Yup.number().required("Vui lòng nhập số tiền đặt cọc"),
+  gender: Yup.string().required("Vui lòng chọn giới tính"),
+  identity_card: Yup.string()
+    .required("Vui lòng nhập số CMND/CCCD")
+    .length(12, "Số CMND/CCCD phải có 12 chữ số"),
+  lease_duration: Yup.number(),
+  quantity: Yup.number().required("Vui lòng nhập số lượng người thuê"),
+  room_id: Yup.string().required("Vui lòng chọn phòng"),
+  start_date: Yup.date().required("Vui lòng chọn ngày bắt đầu"),
+});
 
 function CreateContract() {
   const { roomId, name, price, filter } = useLocalSearchParams();
@@ -24,31 +45,54 @@ function CreateContract() {
   const [identityCard, setIdentityCard] = useState("");
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [depositAmount, setDepositAmount] = useState<string>(price as string);
-
   const [gender, setGender] = useState(genders[0]);
+
+  const { addToast } = useToastStore();
 
   const handleCreateContract = useCallback(async () => {
     setLoading(true);
-    const data = await new ContractService().createContract({
-      address,
-      phone,
-      date_of_birth: formatDateForRequest(birthDay),
-      end_date: formatDateForRequest(endDate),
-      full_name: nameCustom,
-      deposit_amount: formatNumber(depositAmount, "float") || 0,
-      gender: gender.value,
-      identity_card: identityCard,
-      lease_duration: time,
-      quantity,
-      room_id: roomId as string,
-      start_date: formatDateForRequest(startDate),
-      status: constant.contract.status.active,
-    });
 
-    if (!data || !("message" in data)) {
+    try {
+      const data: ICreateContract = {
+        address,
+        phone,
+        date_of_birth: formatDateForRequest(birthDay),
+        end_date: formatDateForRequest(endDate),
+        full_name: nameCustom,
+        deposit_amount: formatNumber(depositAmount, "float") || 0,
+        gender: gender.value,
+        identity_card: identityCard,
+        lease_duration: time,
+        quantity,
+        room_id: roomId as string,
+        start_date: formatDateForRequest(startDate),
+        status: constant.contract.status.active,
+      };
+
+      await schema.validate(data, { abortEarly: false });
+      const result = await new ContractService().createContract(data);
+
+      if (!result || "message" in result) {
+        throw new Error(
+          result.message || "Tạo hợp đồng không thành công, vui lòng thử lại"
+        );
+      }
+
       router.back();
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        error.errors.forEach((err) => {
+          addToast(constant.toast.type.error, err);
+        });
+      } else {
+        addToast(
+          constant.toast.type.error,
+          (error as Error).message || "Đã có lỗi xảy ra, vui lòng thử lại"
+        );
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [
     roomId,
     nameCustom,
@@ -100,6 +144,17 @@ function CreateContract() {
                 startDate,
                 name: nameCustom,
                 setName: setNameCustom,
+                required: [
+                  "name",
+                  "phone",
+                  "quantity",
+                  "time",
+                  "start_date",
+                  "birthday",
+                  "id_card",
+                  "end_date",
+                  "address",
+                ],
               }}
             />
             <BoxPrice

@@ -6,7 +6,7 @@ import HeaderBack from "@/ui/components/HeaderBack";
 import RoomItem from "@/ui/components/RoomItem";
 import { Home2 } from "@/ui/icon/symbol";
 import EmptyScreen from "@/ui/layouts/EmptyScreen";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -56,9 +56,12 @@ function Create() {
     [lodgingId]
   );
 
-  useEffect(() => {
-    fetchRoom({ leaseDuration, quantity });
-  }, []);
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchRoom({ leaseDuration, quantity });
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-white-50">

@@ -6,7 +6,7 @@ import HeaderBack from "@/ui/components/HeaderBack";
 import RoomItem from "@/ui/components/RoomItem";
 import { Home2 } from "@/ui/icon/symbol";
 import EmptyScreen from "@/ui/layouts/EmptyScreen";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { isArray } from "lodash";
 import { Skeleton } from "moti/skeleton";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -27,13 +27,12 @@ function Holding() {
       lease_duration: leaseDuration,
       quantity: quantity,
     });
-  
-    return btoa(field)
-      .replace(/\+/g, "-")  
-      .replace(/\//g, "_")  
-      .replace(/=+$/, "");  
-  }, [startDate, quantity, leaseDuration]);
 
+    return btoa(field)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }, [startDate, quantity, leaseDuration]);
 
   const fetchRoom = useCallback(
     async ({
@@ -64,9 +63,11 @@ function Holding() {
   );
 
   // useEffect(() => console.log(quantity), [quantity])
-  useEffect(() => {
-    fetchRoom({ startDate, quantity, leaseDuration });
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchRoom({ startDate, quantity, leaseDuration });
+    }, [])
+  );
   return (
     <View className="flex-1 bg-white-50">
       <HeaderBack title="Cọc giữ chỗ" />
@@ -84,7 +85,7 @@ function Holding() {
         }}
       />
       {!loading && rooms.length <= 0 ? (
-       <EmptyScreen
+        <EmptyScreen
           icon={Home2}
           description="Hãy thử thay đổi bộ lọc hoặc kiểm tra lại kết nối mạng."
           title="Không tìm thấy phòng nào"

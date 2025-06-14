@@ -96,20 +96,20 @@ function ListRoom() {
                 className={cn(
                   "rounded-xl py-3",
                   room.status === constant.room.status.filled
-                    ? "bg-white-50"
+                    ? "bg-red-100"
                     : room.status === constant.room.status.fixing
                     ? "bg-yellow-100"
-                    : "bg-red-100"
+                    : "bg-lime-50"
                 )}
               >
                 <Text
                   className={cn(
                     "font-BeVietnamRegular text-center",
                     room.status === constant.room.status.filled
-                      ? "text-lime-600"
+                      ? "text-red-600"
                       : room.status === constant.room.status.fixing
                       ? "text-yellow-600"
-                      : "text-red-600"
+                      : "text-lime-600"
                   )}
                 >
                   {`Trạng thái  `}
@@ -117,10 +117,10 @@ function ListRoom() {
                     className={cn(
                       "font-BeVietnamSemiBold text-center",
                       room.status === constant.room.status.filled
-                        ? "text-lime-600"
+                        ? "text-red-600"
                         : room.status === constant.room.status.fixing
                         ? "text-yellow-600"
-                        : "text-red-600"
+                        : "text-lime-600"
                     )}
                   >
                     {`"${
@@ -194,7 +194,7 @@ function ListRoom() {
         ) : (
         <ScrollView
           keyboardShouldPersistTaps="never"
-          className="px-3 flex-grow bg-white-50"
+          className="px-3 flex-grow bg-gray-100"
         >
           <View className="gap-2 items-center py-3 flex-1">
             {loading

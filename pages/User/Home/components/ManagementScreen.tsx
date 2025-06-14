@@ -67,8 +67,8 @@ const ManagementScreen = () => {
           onPressAdd: () => router.push("/lodging/create"),
         })}
       >
-        <ScrollView className="flex-1 px-3">
-          <View className="flex-1 gap-3 py-3">
+        <ScrollView className="flex-1 px-3 bg-white-50">
+          <View className="flex-1 gap-3 py-3 ">
             {loading
               ? Array(3)
                   .fill("")
@@ -111,7 +111,7 @@ const LodgingItem: React.FC<{
           : addToast(constant.toast.type.error, "Nhà cho thuê không khả dụng");
       }}
       onDelete={() => deleteLodging(item.id ?? "", showModal)}
-      className="p-4 shadow-soft-xs border-1 border-white-100 bg-white-50 flex-col gap-2"
+      className="p-4 shadow-soft-xs border-1 border-white-200 bg-white-50 flex-col gap-2"
     >
       <View className="flex-row items-center justify-between w-full">
         <View className="flex-row items-center gap-2 flex-1">
@@ -130,7 +130,7 @@ const LodgingItem: React.FC<{
           />
         </View>
 
-        <View className="bg-lime-400 rounded-full p-2">
+        <View className="bg-lime-500 rounded-full p-2">
           <Text className="text-12 font-BeVietnamMedium text-white-50">
             {item.type?.name ?? reference.undefined.name}
           </Text>

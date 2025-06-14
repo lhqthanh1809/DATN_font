@@ -19,9 +19,11 @@ import { Search } from "@/ui/icon/active";
 import { ChevronRight, Home2, Receipt } from "@/ui/icon/symbol";
 import Input from "@/ui/Input";
 import LoadingAnimation from "@/ui/LoadingAnimation";
+import MonthPicker from "@/ui/MonthPicker";
 import axios from "axios";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { debounce } from "lodash";
+import moment from "moment";
 import { Skeleton } from "moti/skeleton";
 import React, {
   useCallback,
@@ -49,6 +51,8 @@ const tabs = [
 ];
 
 function Invoice() {
+  const { typeInvoice, time } = useLocalSearchParams();
+
   const { lodgingId } = useLocalSearchParams();
   const { addToast } = useToastStore();
   const invoiceService = new InvoiceService();
@@ -61,10 +65,17 @@ function Invoice() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [offset, setOffset] = useState(0);
   const limit = constant.limit;
+
   const [search, setSearch] = useState("");
+  const [timeBilling, setTimeBilling] = useState<Date | null>(
+    time ? moment(time).toDate() : null
+  );
+
   const [sourceAxios, setSourceAxios] = useState(axios.CancelToken.source());
   const [ready, setReady] = useState(false);
-  const [tab, setTab] = useState(tabs[0]);
+  const [tab, setTab] = useState(
+    tabs.find((item) => item.value === typeInvoice) || tabs[0]
+  );
 
   const fetchInvoice = useCallback(
     async (cancelToken: any, loadMore: boolean = false) => {
@@ -80,6 +91,10 @@ function Invoice() {
             type: tab.value,
             status: tabInvoice.value,
             room_code: search,
+            ...(timeBilling && {
+              month: timeBilling.getMonth() + 1,
+              year: timeBilling.getFullYear(),
+            }),
           },
           cancelToken
         );
@@ -102,7 +117,7 @@ function Invoice() {
         loadMore ? setLoadingMore(false) : setLoading(false);
       }
     },
-    [lodgingId, tab, tabInvoice, search, offset, hasMore, limit]
+    [lodgingId, tab, tabInvoice, search, offset, hasMore, limit, timeBilling]
   );
 
   // Debounced search handler
@@ -112,7 +127,7 @@ function Invoice() {
     }, 100);
 
     return () => clearTimeout(delayDebounce);
-  }, [search]);
+  }, [search, timeBilling]);
 
   useEffect(() => {
     if (ready && sourceAxios) {
@@ -140,32 +155,69 @@ function Invoice() {
   };
 
   return (
-    <View className="flex-1 bg-white-50">
+    <View className="flex-1 bg-gray-100">
       <HeaderBack title="Danh sách hoá đơn" />
-      <View className="p-3">
-        <Input
-          value={search}
-          onChange={setSearch}
-          placeHolder="Tìm theo tên phòng..."
-          prefix={<Icon icon={Search} />}
-        />
+      {/* Filter */}
+      <View className="bg-white-50 py-3 gap-2">
+        <View className="px-3">
+          <Input
+            value={search}
+            onChange={setSearch}
+            placeHolder="Tìm theo tên phòng..."
+            prefix={<Icon icon={Search} />}
+          />
+        </View>
+        <View className="">
+          <TabsLine
+            tabs={tabsInvoice}
+            active={tabInvoice}
+            onChange={(tab) => {
+              setLoading(true);
+              setTabInvoice(tab);
+            }}
+          />
+        </View>
+
+        {/* Tab cho các dạng hoá đơn dịch vụ/phòng  */}
+        <View
+          className="flex-row relative border-white-100 gap-2 px-3"
+          style={{ borderBottomWidth: 1 }}
+        >
+          {tabs.map((item, index) => (
+            <Button
+              className={cn(
+                "py-3 flex-1 bg-white-50 border-1",
+                item === tab ? "border-lime-400" : "border-white-300"
+              )}
+              key={item.name}
+              onPress={() => setTab(item)}
+            >
+              <Text
+                style={{
+                  fontSize: 13,
+                }}
+                className={cn(
+                  "font-BeVietnamMedium",
+                  item === tab ? "text-lime-600" : "text-mineShaft-950"
+                )}
+              >
+                {item.name}
+              </Text>
+            </Button>
+          ))}
+        </View>
+        <View className="px-3">
+          <MonthPicker
+            showIcon
+            value={timeBilling}
+            onChange={(date) => {
+              setTimeBilling(date);
+            }}
+          />
+
+          
+        </View>
       </View>
-      <TabsLine
-        tabs={tabsInvoice}
-        active={tabInvoice}
-        onChange={(tab) => {
-          setLoading(true);
-          setTabInvoice(tab);
-        }}
-      />
-      <TabsLine
-        tabs={tabs}
-        active={tab}
-        onChange={(tab) => {
-          setLoading(true);
-          setTab(tab);
-        }}
-      />
 
       {!loading && invoices.length <= 0 ? (
         <InvoiceEmpty />

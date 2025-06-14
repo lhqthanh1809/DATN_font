@@ -129,7 +129,7 @@ const ListContract: React.FC<{
       ) : (
         <ScrollView
           keyboardShouldPersistTaps="never"
-          className="px-3 flex-grow flex-1"
+          className="px-3 flex-grow flex-1 bg-gray-100"
           contentContainerStyle={{
             paddingBottom: 12,
           }}
@@ -253,11 +253,13 @@ const ContractItem: React.FC<{
     );
   }, [showModal, openPaymentModal, contract, handleWhenPaymentSuccess]);
 
-  const statusSub = useCallback(() => {
+  const statusSub = useMemo(() => {
     switch (contract.status) {
       case constant.contract.status.pending: {
         const daysDiff = moment(startDate).diff(moment(), "days");
-        return `Sắp chuyển vào (${daysDiff} ngày)`;
+        if (daysDiff < 0) {
+          return `Hợp đồng đã trễ (${Math.abs(daysDiff)} ngày)`;
+        } else return `Sắp chuyển vào (${daysDiff} ngày)`;
       }
       case constant.contract.status.finished:
         return "Hợp đồng đã kết thúc";
@@ -277,11 +279,41 @@ const ContractItem: React.FC<{
     }
   }, [contract, startDate]);
 
+  const icon = useMemo(() => {
+    if (contract.due_months) {
+      return contract.due_months <= 1
+        ? {
+            icon: Warning,
+            text: "text-happyOrange-600",
+            bg: "bg-happyOrange-100",
+          }
+        : {
+            icon: Error,
+            text: "text-redPower-600",
+            bg: "bg-redPower-100",
+          };
+    }
+
+    const daysDiff = moment(startDate).diff(moment(), "days");
+    if (daysDiff < 0 && contract.status === constant.contract.status.pending) {
+      return {
+        icon: Error,
+        text: "text-redPower-600",
+        bg: "bg-redPower-100",
+      };
+    }
+
+    return {
+      icon: CheckCircle,
+      text: "text-lime-500",
+      bg: "bg-lime-100",
+    };
+  }, [contract]);
+
   const daysToContractDeadline = useMemo(() => {
     const today = moment().tz(getTimezone()).startOf("day");
     const end = endDate.clone().tz(getTimezone()).endOf("day"); // thêm .tz ở đây!
     return end.diff(today, "days");
-
   }, [endDate]);
 
   return (
@@ -294,7 +326,7 @@ const ContractItem: React.FC<{
         "w-full bg-white-50 rounded-xl p-4 gap-2 border-1 shadow-soft-md flex-col items-start",
         contract.due_months && contract.due_months > 1
           ? "border-redPower-600"
-          : daysToContractDeadline <= 5 && daysToContractDeadline >= 0
+          : daysToContractDeadline <= 5 && daysToContractDeadline >= 0 && contract.status === constant.contract.status.active
           ? "border-happyOrange-600"
           : "border-white-100"
       )}
@@ -320,7 +352,9 @@ const ContractItem: React.FC<{
         <View className={cn("rounded-full items-center px-4 py-2", status.bg)}>
           <Text className={cn("font-BeVietnamMedium", status.text)}>
             {`${status.name} ${
-              daysToContractDeadline <= 5 && daysToContractDeadline >= 0
+              daysToContractDeadline <= 5 &&
+              daysToContractDeadline >= 0 &&
+              contract.status === constant.contract.status.pending
                 ? `(${daysToContractDeadline} ngày)`
                 : ""
             }`}
@@ -349,23 +383,8 @@ const ContractItem: React.FC<{
         </View>
 
         <View className="flex-row items-center gap-2">
-          <Icon
-            icon={
-              contract.due_months
-                ? contract.due_months <= 1
-                  ? Warning
-                  : Error
-                : CheckCircle
-            }
-            className={cn(
-              contract.due_months
-                ? contract.due_months <= 1
-                  ? "text-happyOrange-600"
-                  : "text-redPower-600"
-                : "text-lime-500"
-            )}
-          />
-          <Text className="font-BeVietnamRegular">{statusSub()}</Text>
+          <Icon icon={icon.icon} className={cn(icon.text)} />
+          <Text className="font-BeVietnamRegular">{statusSub}</Text>
         </View>
       </View>
 

@@ -60,7 +60,7 @@ function EndContract() {
       <HeaderBack title={`Kết thúc hợp đồng - #${code}`} />
       {loading && <LoadingScreen />}
       <ScrollView className="flex-1 p-3">
-        <View className="gap-3 flex-1">
+        <View className="gap-3">
           <View className="w-full bg-white-50 rounded-xl p-2 py-3 gap-2 border-1 shadow-soft-md flex-col border-white-100 items-center">
             <Text className="font-BeVietnamSemiBold">
               Kết thúc hợp đồng cho phòng {room_code}
@@ -68,18 +68,20 @@ function EndContract() {
           </View>
 
           <Box
-            title="Ngày kết thúc hợp đồng"
+            title="Ngày kết thúc hợp đồng thực tế"
             description="Là ngày khách thuê muốn rời đi"
           >
-            <DatePicker
-              required
-              label="Ngày khách rời đi"
-              value={endDate}
-              onChange={(date) => {
-                setEndDate(date);
-              }}
-              disabled
-            />
+            <View className="flex-1">
+            </View>
+              <DatePicker
+                required
+                label="Ngày khách rời đi"
+                value={endDate}
+                onChange={(date) => {
+                  setEndDate(date);
+                }}
+                disabled
+              />
           </Box>
 
           <BoxWorkToDo

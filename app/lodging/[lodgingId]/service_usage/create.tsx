@@ -77,7 +77,7 @@ const Create = () => {
   }, [active]);
 
   return (
-    <View className="flex-1 bg-white-50">
+    <View className="flex-1 bg-gray-100">
       <HeaderBack title="Chốt dịch vụ tháng" />
 
       {!loading && roomUsages.length <= 0 ? (

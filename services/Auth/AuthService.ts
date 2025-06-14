@@ -28,7 +28,7 @@ export default class AuthService extends BaseService {
   }
 
   public async register(data: {
-    email: string;
+    email?: string;
     phone: string;
     token: string | null;
     password: string;

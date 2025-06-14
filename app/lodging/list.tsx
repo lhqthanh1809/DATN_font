@@ -50,7 +50,7 @@ function List() {
             title="Không tìm thấy nhà trọ phù hợp"
           />
         ) : (
-          <ScrollView className="px-3 flex-grow bg-white-50">
+          <ScrollView className="px-3 flex-grow">
             <View className="gap-3 items-center py-3 flex-1">
               {loading
                 ? Array(3)

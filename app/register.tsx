@@ -1,8 +1,10 @@
 import Button from "@/ui/Button";
 import Input from "@/ui/Input";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Text,
   View,
@@ -25,7 +27,6 @@ import { IUser } from "@/interfaces/UserInterface";
 import * as Yup from "yup";
 
 const schema = Yup.object().shape({
-  email: Yup.string().email("Email không hợp lệ").required("Email là bắt buột"),
   phone: Yup.string()
     .required("Số điện thoại là bắt buộc")
     .matches(/^0[0-9]{9}$/, "Số điện thoại không hợp lệ"),
@@ -38,13 +39,11 @@ function RegisterScreen() {
   const { changeUser } = useGeneral();
   const route = useRouter();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const userServer = new UserService();
 
-  const handleInputEmail = useCallback((text: string) => setEmail(text), []);
   const handleInputPhone = useCallback((text: string) => setPhone(text), []);
   const handleInputPassword = useCallback(
     (text: string) => setPassword(text),
@@ -62,13 +61,11 @@ function RegisterScreen() {
       await schema.validate(
         {
           phone,
-          email,
           password,
         },
         { abortEarly: false }
       );
       const result: IError | string = await new AuthService().register({
-        email,
         password: encrypt(password),
         phone,
         token: await getDeviceID(),
@@ -110,18 +107,21 @@ function RegisterScreen() {
     } finally {
       setLoading(false);
     }
-  }, [password, email, phone, confirmPass]);
+  }, [password, phone, confirmPass]);
 
   return (
     <BackView>
-      <KeyboardAvoidingView
+      <Pressable
         className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
       >
-        <ScrollView
+        {/* <ScrollView
           className="pt-8"
           contentContainerStyle={{ paddingBottom: 26 }}
         >
+        </ScrollView> */}
           <View
             style={{
               flex: 1,
@@ -144,11 +144,6 @@ function RegisterScreen() {
                   onChange={handleInputPhone}
                   label="Số điện thoại"
                   type="phone"
-                />
-                <Input
-                  value={email}
-                  onChange={handleInputEmail}
-                  label="Email"
                 />
                 <Input
                   value={password}
@@ -195,8 +190,7 @@ function RegisterScreen() {
               <OAuthLogin />
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      </Pressable>
     </BackView>
   );
 }

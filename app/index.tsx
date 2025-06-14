@@ -20,7 +20,7 @@ function Index() {
   const { user } = useGeneral();
   useFocusEffect(
     useCallback(() => {
-      if (!user) return;
+      if (!user) return router.navigate("/login");
 
       const task = InteractionManager.runAfterInteractions(() => {
         if (user?.rule === "manager") router.navigate("/lodging");

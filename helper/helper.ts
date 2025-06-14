@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import Constants from "expo-constants";
 import CryptoJS from "crypto-js";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import * as Application from "expo-application";
 import { Platform, StatusBar, Dimensions } from "react-native";
 import { envData } from "@/assets/env";
@@ -177,6 +177,12 @@ export const getDimensionsDevice = () => {
   };
 };
 
+export const getShortWeekday = (dateString: moment.Moment) => {
+  const date = dateString.day();
+  const weekdays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+  return weekdays[date];
+}
+
 export const formatTime = (dateString: string) => {
   const now = moment();
   const date = moment(dateString);
@@ -184,7 +190,7 @@ export const formatTime = (dateString: string) => {
   if (now.isSame(date, "day")) {
     return date.format("HH:mm"); // Trong ngày
   } else if (now.isSame(date, "week")) {
-    return date.format("dddd HH:mm"); // Trong cùng tuần
+    return `${getShortWeekday(date)} ${date.format("HH:mm")}`;
   } else if (now.isSame(date, "year")) {
     return date.format("DD/MM HH:mm"); // Trong cùng năm nhưng khác tuần
   } else {

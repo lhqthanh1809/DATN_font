@@ -19,6 +19,7 @@ import { Wallet } from "@/ui/icon/finance";
 import { Cube } from "@/ui/icon/shapes";
 import { Home2 } from "@/ui/icon/symbol";
 import MonthPicker from "@/ui/MonthPicker";
+import { Href, router } from "expo-router";
 
 interface OverviewItem {
   name: keyof IOverviewRoom;
@@ -220,7 +221,7 @@ const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
       const unpaid = total - paid;
 
       return (
-        <View className="border-1 border-lime-700 rounded-xl py-2 px-4 mb-2">
+        <Button onPress={() => router.push(`/lodging/${lodgingId}/invoice?typeInvoice=${type === "room" ? "rent" : type}&time=${dateStatistical.toISOString()}` as Href)} className="flex-col items-stretch gap-0 border-1 border-lime-700 rounded-xl py-2 px-4 mb-2">
           <View className="flex-row justify-between items-center">
             <View className="flex-row items-center">
               <View className="flex-row">
@@ -275,7 +276,7 @@ const StatisticalScreen: React.FC<{ lodgingId: string }> = React.memo(
               )}
             </View>
           </View>
-        </View>
+        </Button>
       );
     };
 

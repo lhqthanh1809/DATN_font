@@ -13,6 +13,7 @@ function BackView({
   const route = useRouter();
   return (
     <GestureRecognizer
+    
       onSwipeRight={() => route.back()}
       className={cn("flex-1 bg-white-50", className)}
     >

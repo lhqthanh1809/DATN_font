@@ -46,6 +46,19 @@ interface BoxInfoProps {
     | "end_date"
     | "gender"
   )[];
+
+  required?: (
+    | "address"
+    | "name"
+    | "phone"
+    | "quantity"
+    | "time"
+    | "start_date"
+    | "birthday"
+    | "id_card"
+    | "end_date"
+    | "gender"
+  )[];
 }
 
 const BoxInfo = ({
@@ -70,6 +83,16 @@ const BoxInfo = ({
   gender,
   setGender,
   disabled = [],
+  required = [
+    "name",
+    "phone",
+    "quantity",
+    "time",
+    "start_date",
+    "birthday",
+    "id_card",
+    "end_date",
+  ]
 }: BoxInfoProps) => {
 
   const {genders} = useUserStore()
@@ -109,7 +132,7 @@ const BoxInfo = ({
       <Input
         type="number"
         value={time.toString()}
-        required
+        required={required.includes("time")}
         disabled={disabled.includes("time")}
         label="Thời gian thuê dự kiến"
         suffix={<Label label="tháng" />}
@@ -117,7 +140,7 @@ const BoxInfo = ({
       />
       <View className="flex-row gap-2">
         <DatePicker
-          required
+          required={required.includes("start_date")}
           disabled
           value={startDate}
           onChange={(date) => setStartDate(date)}
@@ -141,7 +164,7 @@ const BoxInfo = ({
         value={identityCard}
         disabled={disabled.includes("id_card")}
         onChange={(value) => setIdentityCard(value)}
-        required
+        required={required.includes("id_card")}
         label="Căn cước công dân"
         type="code"
         suffix={<Scan onChange={handleDataScanner} />}
@@ -149,7 +172,7 @@ const BoxInfo = ({
       <View className="flex-row gap-2">
         <View className="flex-1">
           <Input
-            required
+            required={required.includes("name")}
             disabled={disabled.includes("name")}
             label="Họ tên khách"
             placeHolder="Nhập họ tên khách"
@@ -159,7 +182,7 @@ const BoxInfo = ({
         </View>
         <View className="flex-1 ">
           <Input
-            required
+            required={required.includes("phone")}
             disabled={disabled.includes("phone")}
             label="Số điện thoại"
             placeHolder="Số điện thoại"
@@ -180,16 +203,18 @@ const BoxInfo = ({
         options={genders}
         optionKey="name"
         label="Giới tính"
+        required={required.includes("gender")}
       />
       <DatePicker
         value={birthDay}
         disabled={disabled.includes("birthday")}
         onChange={(date) => setBirthDay(date)}
-        required
+        required={required.includes("birthday")}
         label="Ngày sinh"
       />
       <Input
         disabled={disabled.includes("address")}
+        required={required.includes("address")}
         value={address}
         onChange={(value) => setAddress(value)}
         label="Địa chỉ"
@@ -198,7 +223,7 @@ const BoxInfo = ({
         disabled={disabled.includes("quantity")}
         value={quantity.toString()}
         onChange={(value) => setQuantity(value ? parseInt(value) : 0)}
-        required
+        required={required.includes("quantity")}
         label="Tổng số thành viên"
         type="number"
         suffix={<Label label="người" />}

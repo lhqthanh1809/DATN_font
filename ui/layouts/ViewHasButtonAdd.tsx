@@ -82,7 +82,7 @@ const ViewHasButtonAdd: React.FC<{
         const { width, height } = event.nativeEvent.layout;
         setParentSize({ width, height });
       }}
-      className={cn("flex-1 bg-white-50", className)}
+      className={cn("flex-1 bg-gray-100", className)}
     >
       {children}
       <GestureDetector gesture={pan}>

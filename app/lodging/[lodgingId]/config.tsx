@@ -5,11 +5,12 @@ import LodgingService from "@/services/Lodging/LodgingService";
 import useToastStore from "@/store/toast/useToastStore";
 import Button from "@/ui/Button";
 import HeaderBack from "@/ui/components/HeaderBack";
+import RadioCard from "@/ui/components/RadioCard";
 import Input from "@/ui/Input";
 import Layout from "@/ui/layouts/Layout";
 import LoadingScreen from "@/ui/layouts/LoadingScreen";
 import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 function ConfigLodging() {
@@ -20,6 +21,8 @@ function ConfigLodging() {
   const [processing, setProcessing] = useState(false);
   const lodgingService = new LodgingService();
   const { addToast } = useToastStore();
+
+  const isShared = useMemo(() => config?.allow_shared_room ?? true, [config?.allow_shared_room]);
 
   const fetchLodging = useCallback(async () => {
     setLoading(true);
@@ -44,7 +47,8 @@ function ConfigLodging() {
       if (!config) return;
 
       setConfig((prev) => {
-        return { ...prev, [key]: value };
+        if (!prev) return prev;
+        return { ...prev, [key]: value } as ILodgingConfig;
       });
     },
     [lodging, config]
@@ -99,6 +103,29 @@ function ConfigLodging() {
                 Đây là mật khẩu mặc định được tạo khi lập hợp đồng cho khách
                 thuê chưa có tài khoản trong hệ thống
               </Text>
+            </View>
+          </View>
+
+          <View className="flex-1 gap-3 py-3">
+            <View className="gap-2">
+              <Text className="font-BeVietnamRegular text-14 text-mineShaft-950 ml-2">
+                Hình thức thuê phòng
+              </Text>
+              <View className="gap-2">
+                <RadioCard
+                  title="Ở ghép"
+                  description="Nhiều hợp đồng/phòng"
+                  onPress={() => editConfig("allow_shared_room", true)}
+                  hasActive={isShared}
+                />
+
+                <RadioCard
+                  title="Ở đơn"
+                  description="1 hợp đồng/phòng"
+                  onPress={() => editConfig("allow_shared_room", false)}
+                  hasActive={!isShared}
+                />
+              </View>
             </View>
           </View>
         </ScrollView>

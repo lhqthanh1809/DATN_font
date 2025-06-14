@@ -90,7 +90,16 @@ const RentPaymentItem: React.FC<{
   ]);
 
   return (
-    <Button className="w-full bg-white-50 rounded-xl p-4 border-1 shadow-soft-md flex-col items-start border-white-100 gap-2">
+    <Button
+      className="w-full bg-white-50 rounded-xl p-4 border-1 shadow-soft-md flex-col items-start border-white-100 gap-2"
+      onPress={() =>
+        router.push(
+          `/payment_history/rental/${rental.id}?redirect_from=${
+            lodgingId ? "lodging" : "user"
+          }` as Href
+        )
+      }
+    >
       <View className="flex-row gap-4 w-full items-center">
         <View className="border-1 items-stretch px-6 py-3 rounded-md border-white-200 gap-2">
           <View>
@@ -107,14 +116,15 @@ const RentPaymentItem: React.FC<{
                   : "text-happyOrange-600"
               )}
             >
-              {paymentDate.month() + 1}
+              {rental.room_rent_invoice?.month_billing ??
+                paymentDate.month() + 1}
             </Text>
           </View>
           <View className="">
             <Divide className="h-1 w-full bg-lime-800" />
           </View>
           <Text className="font-BeVietnamMedium text-center text-mineShaft-950">
-            {paymentDate.year()}
+            {rental.room_rent_invoice?.year_billing ?? paymentDate.year()}
           </Text>
         </View>
         <View className="gap-2 flex-1">
@@ -163,20 +173,6 @@ const RentPaymentItem: React.FC<{
           </View>
 
           <View className="w-full flex-row gap-2">
-            <Button
-              className=" flex-1 border-1 border-lime-500 px-4 py-2"
-              onPress={() =>
-                router.push(
-                  `/payment_history/rental/${rental.id}?redirect_from=${
-                    lodgingId ? "lodging" : "user"
-                  }` as Href
-                )
-              }
-            >
-              <Text className="font-BeVietnamMedium text-mineShaft-950">
-                Xem chi tiết
-              </Text>
-            </Button>
             {diffAmount > 0 && (
               <Button
                 onPress={handleOpenPayment}

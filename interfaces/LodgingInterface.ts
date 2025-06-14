@@ -65,5 +65,6 @@ export interface ILodging {
 
 export interface ILodgingConfig {
   password_for_client: string;
+  allow_shared_room?: boolean;
 }
 

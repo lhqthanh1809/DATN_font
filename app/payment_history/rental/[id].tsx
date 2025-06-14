@@ -197,9 +197,7 @@ function RentalPaymentHistory() {
                 </Text>
                 <Text className="font-BeVietnamSemiBold text-16">
                   {rental
-                    ? moment(new Date(rental.payment_date))
-                        .tz(getTimezone())
-                        .format("[Tháng] MM/YYYY")
+                    ? `${rental.room_rent_invoice?.month_billing}/${rental.room_rent_invoice?.year_billing}`
                     : reference.undefined.name}
                 </Text>
               </View>

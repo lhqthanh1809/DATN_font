@@ -1,18 +1,9 @@
-import {
-  Href,
-  router,
-  SplashScreen,
-  Stack,
-  useRouter,
-} from "expo-router";
+import { Href, router, SplashScreen, Stack, useRouter } from "expo-router";
 import "../global.css";
 import {
-  AppState,
-  AppStateStatus,
   Platform,
   SafeAreaView,
   StatusBar,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -31,6 +22,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IUser } from "@/interfaces/UserInterface";
 import { Image } from "react-native";
 import NotificationService from "@/services/Notification/NotificationService";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 export default function RootLayout() {
   const [user, setUser] = useState<IUser | null>(null);
@@ -86,14 +86,19 @@ export default function RootLayout() {
   }, []);
 
   const handlePushData = useCallback(
-    async (response: Notifications.NotificationResponse) => {
-      if (response.notification && response.notification.request.content.data) {
-        const data = response.notification.request.content.data;
+    async (response: Notifications.Notification) => {
+      if (response && response.request.content.data) {
+        const data = response.request.content.data;
+
+        if (data.rule != user?.rule) {
+          router.push("/not_found" as Href);
+          return;
+        }
         new NotificationService().toggleRead(data.id as string);
         router.push(data.end_point as Href);
       }
     },
-    []
+    [user]
   );
 
   useEffect(() => {
@@ -134,7 +139,7 @@ export default function RootLayout() {
   //Push notification
   useEffect(() => {
     const responseListener =
-      Notifications.addNotificationResponseReceivedListener(handlePushData);
+      Notifications.addNotificationResponseReceivedListener((res) => handlePushData(res.notification));
 
     return () => {
       responseListener.remove();

@@ -1,4 +1,5 @@
 import { IContract } from "./ContractInterface"
+import { IRoomServiceInvoice } from "./RoomServiceInvoiceInterface"
 
 export interface IRentPayment{
     id: string,
@@ -11,6 +12,7 @@ export interface IRentPayment{
     payment_method?: string | null,
     due_date: string,
     contract?: IContract
+    room_rent_invoice?: IRoomServiceInvoice
 }
 
 export interface IListRental{

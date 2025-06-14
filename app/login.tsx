@@ -2,11 +2,14 @@ import Button from "@/ui/Button";
 import Input from "@/ui/Input";
 import {
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import BackView from "@/ui/BackView";
@@ -27,14 +30,13 @@ import TabsBlock from "@/ui/components/TabsBlock";
 const tabs = [
   {
     rule: "user",
-    name: "Người dùng"
-
+    name: "Người dùng",
   },
   {
     rule: "manager",
-    name: "Quản lý"
-  }
-]
+    name: "Quản lý",
+  },
+];
 
 function LoginScreen() {
   const { addToast } = useToastStore();
@@ -45,9 +47,7 @@ function LoginScreen() {
   const [activeLogin, setActiveLogin] = useState<Boolean>(false);
   const [loading, setLoading] = useState(false);
   const userServer = new UserService();
-  const [tab, setTab] = useState(tabs[0])
-
-
+  const [tab, setTab] = useState(tabs[0]);
 
   const handleInputPhone = useCallback((text: string) => setPhone(text), []);
   const handleInputPassword = useCallback(
@@ -61,15 +61,15 @@ function LoginScreen() {
       phone,
       token,
       password: encrypt(password),
-      rule: tab.rule
+      rule: tab.rule,
     };
     setLoading(true);
     setActiveLogin(false);
     try {
       const dataLogin: IError | string = await new AuthService().login(fields);
 
-      if (typeof dataLogin != "string" ) {
-        addToast(constant.toast.type.error,dataLogin.message);
+      if (typeof dataLogin != "string") {
+        addToast(constant.toast.type.error, dataLogin.message);
         return;
       }
 
@@ -103,7 +103,10 @@ function LoginScreen() {
 
   return (
     <BackView>
-      <View
+      <Pressable
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
         className="px-8 gap-9 flex-1 justify-center items-center"
         style={{
           flex: 1,
@@ -119,7 +122,14 @@ function LoginScreen() {
           </View>
         </View>
         <View className="w-full flex gap-3">
-          <TabsBlock renderKey="name" tabs={tabs} onChange={(tab) => {setTab(tab)}} className="bg-gray-100 border-1 border-white-100 mb-4"/>
+          <TabsBlock
+            renderKey="name"
+            tabs={tabs}
+            onChange={(tab) => {
+              setTab(tab);
+            }}
+            className="bg-gray-100 border-1 border-white-100 mb-4"
+          />
           <View className="gap-5">
             <Input
               className=""
@@ -136,7 +146,11 @@ function LoginScreen() {
             />
           </View>
           <View className="flex items-end pr-5 mb-4">
-            <Button onPress={() => {route.push("/auth/request_otp")}}>
+            <Button
+              onPress={() => {
+                route.push("/auth/request_otp");
+              }}
+            >
               <Text className="font-BeVietnamRegular text-14 text-mineShaft-950">
                 Quên mật khẩu?
               </Text>
@@ -174,7 +188,7 @@ function LoginScreen() {
 
           <OAuthLogin />
         </View>
-      </View>
+      </Pressable>
     </BackView>
   );
 }

@@ -43,7 +43,9 @@
     "plugins": [
       "expo-location",
       "expo-router",
-      "expo-notifications",
+      ["expo-notifications", {
+        "icon": "./assets/images/app-icon.png"
+      }],
       [
         "expo-splash-screen",
         {

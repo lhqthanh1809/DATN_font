@@ -13,7 +13,7 @@ import {
 import Button from "./Button";
 import Divide from "./Divide";
 import Icon from "./Icon";
-import { CrossMedium } from "./icon/symbol";
+import { Calender, CrossMedium, Home } from "./icon/symbol";
 
 interface Props {
   label?: string;
@@ -26,6 +26,7 @@ interface Props {
   disabled?: boolean;
   prefix?: ReactNode;
   required?: boolean;
+  showIcon?: boolean;
 }
 
 const MonthPicker = ({
@@ -35,10 +36,11 @@ const MonthPicker = ({
   className,
   icon,
   value,
-  placeHolder = "",
+  placeHolder = "MM/YYYY",
   disabled = false,
   required,
   prefix,
+  showIcon = false,
 }: Props) => {
   const { showModal } = useUI();
 
@@ -67,7 +69,10 @@ const MonthPicker = ({
       )}
       <Pressable
         disabled={disabled}
-        className="z-10 relative"
+        className={cn(
+          "z-10 relative flex-row border-1 border-mineShaft-200 px-3 py-2 rounded-xl items-center gap-2 justify-between",
+          disabled && "bg-mineShaft-50"
+        )}
         onPress={() => {
           Keyboard.dismiss();
           openModal();
@@ -75,7 +80,7 @@ const MonthPicker = ({
       >
         <View
           className={cn(
-            "border-1 border-mineShaft-200 px-3 py-2 rounded-xl flex-row items-center gap-2 relative",
+            "flex-row items-center gap-2 relative",
             disabled && "bg-mineShaft-50"
           )}
         >
@@ -93,6 +98,8 @@ const MonthPicker = ({
               : placeHolder}
           </Text>
         </View>
+
+        {showIcon && <Icon icon={Calender} />}
       </Pressable>
     </View>
   );
@@ -169,7 +176,10 @@ const ModalMonthPicker: React.FC<{
                 onPress={() => handleSelectDate(index, currentYear)}
                 className={cn(
                   "flex-col flex-1 basis-1/4 gap-1 p-4",
-                  selectDate && index === selectDate.getMonth() && selectDate.getFullYear() == currentYear && "bg-lime-100"
+                  selectDate &&
+                    index === selectDate.getMonth() &&
+                    selectDate.getFullYear() == currentYear &&
+                    "bg-lime-100"
                 )}
               >
                 <Text
@@ -177,7 +187,8 @@ const ModalMonthPicker: React.FC<{
                   className={cn(
                     "font-BeVietnamSemiBold",
                     selectDate &&
-                      index === selectDate.getMonth() && selectDate.getFullYear() == currentYear &&
+                      index === selectDate.getMonth() &&
+                      selectDate.getFullYear() == currentYear &&
                       "text-lime-700"
                   )}
                 >
@@ -187,9 +198,10 @@ const ModalMonthPicker: React.FC<{
                 <Text className="font-BeVietnamRegular text-12">
                   {currentYear}
                 </Text>
-                {index === now.getMonth() && (
-                  <View className="absolute right-4 top-4 w-2 h-2 bg-lime-400 rounded-full" />
-                )}
+                {index === now.getMonth() &&
+                  currentYear === now.getFullYear() && (
+                    <View className="absolute right-4 top-4 w-2 h-2 bg-lime-400 rounded-full" />
+                  )}
               </Button>
             ))}
           </View>

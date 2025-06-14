@@ -158,7 +158,13 @@ const ServicePaymentItem = ({
   ]);
 
   return (
-    <Button className="w-full bg-white-50 rounded-xl p-4 border border-white-100 shadow-soft-md flex-col items-start gap-2">
+    <Button className="w-full bg-white-50 rounded-xl p-4 border border-white-100 shadow-soft-md flex-col items-start gap-2"           onPress={() =>
+            router.push(
+              `/payment_history/service/${payment.id}?redirect_from=${
+                lodgingId ? "lodging" : "user"
+              }` as Href
+            )
+          }>
       {/* Header */}
       <View className="flex-row justify-between items-start w-full gap-4">
         <View className="gap-2 flex-1">
@@ -214,20 +220,6 @@ const ServicePaymentItem = ({
 
       {/* Actions */}
       <View className="w-full flex-row gap-2">
-        <Button
-          onPress={() =>
-            router.push(
-              `/payment_history/service/${payment.id}?redirect_from=${
-                lodgingId ? "lodging" : "user"
-              }` as Href
-            )
-          }
-          className="flex-1 border border-lime-500 px-4 py-2"
-        >
-          <Text className="font-BeVietnamMedium text-mineShaft-950">
-            Xem chi tiết
-          </Text>
-        </Button>
         {diffAmount > 0 && (
           <Button
             className="flex-1 bg-lime-300 px-4 py-2"
